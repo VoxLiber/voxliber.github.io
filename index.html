@@ -210,6 +210,11 @@ html.leyendo{overflow:hidden}
 .lec-share-row a,.lec-share-row button{height:42px;padding:0 16px;border-radius:21px;border:none;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;color:#fff}
 .lec-cta{margin-top:36px;border-radius:18px;background:var(--navy);color:#fff;padding:24px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
 .lec-cta p{margin:0;font-family:var(--serif);font-size:21px;font-weight:600;flex:1 1 260px}
+.lec-mas{max-width:1120px;margin:0 auto;padding:0 20px 110px}
+.lec-mas-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;border-top:1px solid var(--line);padding-top:32px}
+.lec-mas-head h2{margin:0;font-family:var(--serif);font-size:28px}
+.lec-mas .cat-grid{margin-top:20px}
+.lec-art+.lec-mas{margin-top:-60px}
 .lec-estado{max-width:720px;margin:0 auto;padding:80px 20px;text-align:center;color:var(--muted);font-size:16px}
 @media (max-width:760px){
   .lec-art{padding:28px 18px 120px}.lec-art h1{font-size:31px}.lec-bajada{font-size:19px}
@@ -852,8 +857,29 @@ function cargarItem(slug){
   fetch(CONFIG.apiUrl+'?api=item&id='+encodeURIComponent(slug)).then(function(r){return r.json()}).then(function(r){
     if(new URLSearchParams(location.search).get('leer')!==slug)return;
     if(!r.ok){estado(esc(r.error||'Este contenido no está disponible.'),true);return}
-    lecActual=r.item;pintarLector(r.item,r.categoria);
+    lecActual=r.item;pintarLector(r.item,r.categoria);cargarRelacionados(r.item);
   }).catch(function(){estado('No hay conexión. Revisa tu internet e intenta de nuevo.',true)});
+}
+function tarjeta(x,k){
+  var img=imagenDe(x)||x.portada;
+  return '<a class="cat-card js-leer" data-slug="'+esc(x.slug)+'" href="?leer='+encodeURIComponent(x.slug)+'">'+
+    '<div class="cc-img">'+(img?'<img src="'+esc(img)+'" alt="" loading="lazy" onerror="this.remove()">':ico(I[k.icono]||I.inv,40,1.5))+
+    (ytId(x.enlace)?'<span class="cc-play">'+ico('M8 5v14l11-7z',22,0).replace('fill="none"','fill="currentColor"')+'</span>':'')+'</div>'+
+    '<div class="cc-b"><small>'+fechaLarga(x.fecha)+'</small><h3>'+esc(x.titulo)+'</h3>'+(x.bajada?'<p>'+esc(x.bajada)+'</p>':'')+'</div></a>';
+}
+var MAS_TITULO={investigacion:'Más documentos de investigación',columnas:'Más columnas',youtube:'Más videos',radio:'Más de la radio',revista:'Más números de la revista',papers:'Más papers'};
+function cargarRelacionados(it){
+  if(!it.categoria||DEMO_LECTURA[it.slug]||!CONFIG.apiUrl)return;
+  fetch(CONFIG.apiUrl+'?api=categoria&id='+encodeURIComponent(it.categoria)).then(function(r){return r.json()}).then(function(r){
+    if(!r.ok||!lecActual||lecActual.slug!==it.slug)return;
+    var otros=r.items.filter(function(x){return x.slug!==it.slug}).slice(0,6);
+    if(!otros.length)return;
+    var k=r.categoria,sec=document.createElement('section');sec.className='lec-mas fade';
+    sec.innerHTML='<div class="lec-mas-head"><h2>'+esc(MAS_TITULO[k.id]||('Más en '+k.nombre))+'</h2>'+
+      '<a class="btn btn-blue js-cat" data-cat="'+k.id+'" href="?cat='+k.id+'" style="height:44px">Ver todos ('+r.items.length+')</a></div>'+
+      '<div class="cat-grid">'+otros.map(function(x){return tarjeta(x,k)}).join('')+'</div>';
+    $('#lecCont').appendChild(sec);
+  }).catch(function(){});
 }
 function cargarCategoria(id){
   mostrarCapa();lecActual=null;$('#lecCompartir').style.visibility='hidden';estado('Cargando…');lector.scrollTop=0;$('#lecProg').style.width='0';
@@ -861,13 +887,7 @@ function cargarCategoria(id){
     if(new URLSearchParams(location.search).get('cat')!==id)return;
     if(!r.ok){estado(esc(r.error||'Esta categoría no existe.'),true);return}
     var k=r.categoria,ci=CAT_INFO[k.id]||['',k.color];document.title=k.nombre+' · Vox Liber';
-    var cards=r.items.map(function(x){
-      var img=imagenDe(x)||x.portada;
-      return '<a class="cat-card js-leer" data-slug="'+esc(x.slug)+'" href="?leer='+encodeURIComponent(x.slug)+'">'+
-        '<div class="cc-img">'+(img?'<img src="'+esc(img)+'" alt="" loading="lazy" onerror="this.remove()">':ico(I[k.icono],40,1.5))+
-        (k.id==='youtube'&&ytId(x.enlace)?'<span class="cc-play">'+ico('M8 5v14l11-7z',22,0).replace('fill="none"','fill="currentColor"')+'</span>':'')+'</div>'+
-        '<div class="cc-b"><small>'+fechaLarga(x.fecha)+'</small><h3>'+esc(x.titulo)+'</h3>'+(x.bajada?'<p>'+esc(x.bajada)+'</p>':'')+'</div></a>';
-    }).join('');
+    var cards=r.items.map(function(x){return tarjeta(x,k)}).join('');
     $('#lecCont').innerHTML='<section class="cat-page fade"><div class="lec-kick" style="color:'+ci[1]+'">'+r.items.length+(r.items.length===1?' publicación':' publicaciones')+'</div>'+
       '<h1>'+esc(k.nombre)+'</h1><p class="cat-desc">'+esc(k.desc)+'</p>'+
       (cards?'<div class="cat-grid">'+cards+'</div>':'<p class="cat-desc" style="margin-top:32px">Todavía no hay publicaciones en esta categoría. Vuelve pronto.</p>')+'</section>';
