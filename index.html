@@ -223,7 +223,9 @@ form{display:flex;flex-direction:column;gap:10px}
   .hero p{font-size:15.5px}
   .hero-img{flex:none;min-height:0;height:230px;margin:0 -16px;padding:18px}
   .cover{width:130px;padding:10px}.cover .c-title{font-size:15px}.cover .c-top,.cover .c-foot{font-size:7px}
-  .body{padding-top:28px;padding-bottom:150px;gap:44px}
+  .body{padding-top:28px;padding-bottom:40px;gap:44px}
+  .foot{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+  .foot-in{padding-bottom:16px}
   .main{gap:44px}
   .h2{font-size:24px}
   .tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
