@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vox Liber</title>
-<meta name="description" content="Vox Liber: pensamiento crítico sobre cultura, educación, economía, tecnología y política. Documentos de investigación, revista, columnas, papers, videos y radio en vivo.">
+<meta name="description" content="Vox Liber: pensamiento crítico sobre cultura, educación, economía, tecnología y política. Informes especiales, revista, columnas, papers, videos y radio en vivo.">
 <meta property="og:title" content="Vox Liber">
 <meta property="og:description" content="Pensamiento crítico sobre cultura, educación, economía, tecnología y política.">
 <meta property="og:type" content="website">
@@ -223,6 +223,14 @@ html.leyendo,html.ruta{overflow:hidden}
 .lec-orig{margin-top:32px;border-radius:16px;background:var(--soft);padding:20px 22px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
 .lec-orig b{display:block;font-size:15px}.lec-orig span{font-size:14px;color:var(--muted)}
 .lec-orig a{height:42px;padding:0 18px;border-radius:21px;border:1.5px solid var(--line2);font-size:14px;font-weight:600;display:inline-flex;align-items:center}
+.cita{margin-top:32px;border-radius:16px;border:1px solid var(--line);background:var(--card);padding:20px 22px}
+.cita-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 12px}
+.cita-h b{font-size:15px}.cita-h span{font-size:12.5px;color:var(--muted)}
+.cita .ref{margin:14px 0 0;font-family:var(--serif);font-size:17px;line-height:1.6;padding-left:2em;text-indent:-2em;word-break:break-word}
+.cita .ref a{color:inherit;text-decoration:none}
+.cita-pie{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;font-size:14px;color:var(--muted)}
+.cita-pie b{color:var(--ink);font-family:var(--serif);font-size:16px}
+.cita button{height:40px;padding:0 16px;border-radius:20px;border:1.5px solid var(--line2);background:transparent;color:var(--ink);font-size:14px;font-weight:600}
 .lec-share{margin-top:36px;padding-top:24px;border-top:1px solid var(--line)}
 .lec-share b{display:block;font-size:15px;margin-bottom:12px}
 .lec-share-row{display:flex;flex-wrap:wrap;gap:8px}
@@ -359,7 +367,7 @@ html.leyendo,html.ruta{overflow:hidden}
       <button type="button" id="catBtn" aria-expanded="false" aria-controls="mega">Categorías
         <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <a href="?cat=investigacion" class="js-cat" data-cat="investigacion">Investigación</a>
+      <a href="?cat=investigacion" class="js-cat" data-cat="investigacion">Informe Especial</a>
       <a href="?cat=columnas" class="js-cat" data-cat="columnas">Columnas</a>
       <a href="?cat=youtube" class="yt js-cat" data-cat="youtube"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="#E62117"/><path d="M10 9v6l5-3z" fill="#fff"/></svg>YouTube</a>
       <a href="#recomendados">Recomendados</a>
@@ -480,7 +488,7 @@ html.leyendo,html.ruta{overflow:hidden}
       <div style="font-size:14px;line-height:1.6;max-width:460px">Pensamiento crítico sobre cultura, educación, economía, tecnología y política, desde 2010. Dirigida por Luis Leyton-Johns.</div>
     </div>
     <div class="foot-links">
-      <a href="?cat=investigacion" class="js-cat" data-cat="investigacion">Investigación</a><a href="?cat=revista" class="js-cat" data-cat="revista">Revista</a><a href="?cat=columnas" class="js-cat" data-cat="columnas">Columnas</a><a href="?cat=papers" class="js-cat" data-cat="papers">Papers</a>
+      <a href="?cat=investigacion" class="js-cat" data-cat="investigacion">Informe Especial</a><a href="?cat=revista" class="js-cat" data-cat="revista">Revista</a><a href="?cat=columnas" class="js-cat" data-cat="columnas">Columnas</a><a href="?cat=papers" class="js-cat" data-cat="papers">Papers e Investigación</a>
       <a href="#recomendados">Recomendados</a><a href="#envia">Envía tu columna</a><a href="#comunidad">Redes sociales</a>
       <a href="mailto:vox.liber.comunicaciones@gmail.com" style="color:#3BB4E8">vox.liber.comunicaciones@gmail.com</a>
       <a class="foot-admin" href="admin.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Administración</a>
@@ -562,20 +570,20 @@ var I = {
 
 var DATA = {
   destacados: [
-    { slug:'demo-lectura', tipo:'Documento de Investigación', titulo:'Chile S.A.D.P.: los ciudadanos se quedan con la marca, otros con la renta', bajada:'Sobre la desafección ciudadana con la clase política y quién se queda con lo que produce el país.', boton:'Leer documento', url:'#', imagen:'https://picsum.photos/seed/voxliber-chile/1400/900', color:'#1D3A63',
-      portada:{ titulo:'Chile S.A.D.P.', serie:'Documento de Investigación', num:'Número VII · 2026', fondo:'#0F2E57', tinta:'#FFFFFF', acento:'#3BB4E8' } },
-    { tipo:'Documento de Investigación', titulo:'¿S.O.S. a la Humanidad o paremos para que no bajen nuestras acciones?', bajada:'El miedo a la inteligencia artificial, leído desde la lógica de la sospecha: quién gana cuando la tecnología nos asusta.', boton:'Leer documento', url:'#', imagen:'https://picsum.photos/seed/voxliber-ia/1400/900', color:'#2A2353',
-      portada:{ titulo:'¿S.O.S. a la Humanidad?', serie:'Documento de Investigación', num:'Número VIII · 2026', fondo:'#1E1B3A', tinta:'#FFFFFF', acento:'#B79CFF' } },
+    { slug:'demo-lectura', tipo:'Informe Especial', titulo:'Chile S.A.D.P.: los ciudadanos se quedan con la marca, otros con la renta', bajada:'Sobre la desafección ciudadana con la clase política y quién se queda con lo que produce el país.', boton:'Leer documento', url:'#', imagen:'https://picsum.photos/seed/voxliber-chile/1400/900', color:'#1D3A63',
+      portada:{ titulo:'Chile S.A.D.P.', serie:'Informe Especial', num:'Número VII · 2026', fondo:'#0F2E57', tinta:'#FFFFFF', acento:'#3BB4E8' } },
+    { tipo:'Informe Especial', titulo:'¿S.O.S. a la Humanidad o paremos para que no bajen nuestras acciones?', bajada:'El miedo a la inteligencia artificial, leído desde la lógica de la sospecha: quién gana cuando la tecnología nos asusta.', boton:'Leer documento', url:'#', imagen:'https://picsum.photos/seed/voxliber-ia/1400/900', color:'#2A2353',
+      portada:{ titulo:'¿S.O.S. a la Humanidad?', serie:'Informe Especial', num:'Número VIII · 2026', fondo:'#1E1B3A', tinta:'#FFFFFF', acento:'#B79CFF' } },
     { slug:'demo-columna', tipo:'Columna de opinión', titulo:'Educación autopoiética: entre Maturana y Altman', bajada:'Qué queda de la educación cuando la máquina también aprende, y por qué la pregunta de Maturana sigue vigente.', boton:'Leer columna', url:'#', imagen:'https://picsum.photos/seed/voxliber-educacion/1400/900', color:'#0F4A4A',
       portada:{ titulo:'Educación autopoiética', serie:'Columna de opinión', num:'Vox Liber · 2026', fondo:'#F3EFE6', tinta:'#1B2430', acento:'#0E9F8E' } }
   ],
   categorias: [
-    { id:'investigacion', img:'https://picsum.photos/seed/vl-inv/600/400', nombre:'Documentos de Investigación', corto:'Investigación', desc:'Análisis con dossier, glosario y preguntas para discutir.', color:'#1B5A99', tinta:'#FFFFFF', icono:'inv', ultimo:'¿S.O.S. a la Humanidad o paremos para que no bajen nuestras acciones?', mas:'Ver investigación' },
+    { id:'investigacion', img:'https://picsum.photos/seed/vl-inv/600/400', nombre:'Informe Especial', corto:'Informe Especial', desc:'Los especiales de Vox Liber, con dossier, glosario y preguntas para discutir.', color:'#1B5A99', tinta:'#FFFFFF', icono:'inv', ultimo:'¿S.O.S. a la Humanidad o paremos para que no bajen nuestras acciones?', mas:'Ver informes especiales' },
     { slug:'demo-columna', id:'columnas', img:'https://picsum.photos/seed/vl-col/600/400', nombre:'Columnas de prensa', corto:'Columnas', desc:'Columnas de opinión publicadas en Vox Liber y en otros medios.', color:'#0E9F8E', tinta:'#FFFFFF', icono:'col', ultimo:'Educación autopoiética: entre Maturana y Altman', mas:'Ver columnas' },
     { id:'youtube', img:'https://picsum.photos/seed/vl-yt/600/400', nombre:'YouTube', corto:'YouTube', desc:'Los documentos explicados en video.', color:'#F5A400', tinta:'#0B1B33', icono:'yt', ultimo:'Meritocracia: ¿una mentira noble? Explicado en 12 minutos', mas:'Ver videos' },
     { id:'radio', img:'https://picsum.photos/seed/vl-radio/600/400', nombre:'Radio y podcast', corto:'Radio', desc:'Vox Liber Radio en vivo y episodios.', color:'#6A3FC1', tinta:'#FFFFFF', icono:'radio', ultimo:'En vivo: Cinismo Ilustrado, conversación sin anestesia', mas:'Escuchar' },
     { id:'revista', img:'https://picsum.photos/seed/vl-rev/600/400', nombre:'Revista Vox Liber', corto:'Revista', desc:'Todos los números de la revista.', color:'#0F172A', tinta:'#FFFFFF', icono:'rev', ultimo:'N° II: El capitalismo cognitivo y la renta del conocimiento', mas:'Ver revista' },
-    { id:'papers', img:'https://picsum.photos/seed/vl-pap/600/400', nombre:'Papers', corto:'Papers', desc:'Artículos académicos indexados.', color:'#3BB4E8', tinta:'#0B1B33', icono:'pap', ultimo:'Tecnoestrés en trabajadores del retail: un análisis bibliométrico', mas:'Ver papers' }
+    { id:'papers', img:'https://picsum.photos/seed/vl-pap/600/400', nombre:'Papers e Investigación', corto:'Papers e Investigación', desc:'Papers en revistas científicas indexadas e investigaciones publicadas en Vox Liber.', color:'#3BB4E8', tinta:'#0B1B33', icono:'pap', ultimo:'Tecnoestrés en trabajadores del retail: un análisis bibliométrico', mas:'Ver papers e investigación' }
   ],
   extras: [
     { nombre:'Recomendados', desc:'Libros, discos, películas y actividades.', color:'#D9468F', tinta:'#FFFFFF', icono:'rec', url:'#recomendados' },
@@ -783,7 +791,7 @@ $('#colForm').addEventListener('submit',function(e){
 });
 
 /* Contenido real desde la API. Mientras no haya nada publicado, se muestra el contenido de ejemplo. */
-var CAT_BOTON={investigacion:'Leer documento',columnas:'Leer columna',youtube:'Ver video',radio:'Escuchar',revista:'Leer la revista',papers:'Leer el paper'};
+var CAT_BOTON={investigacion:'Leer el informe',columnas:'Leer columna',youtube:'Ver video',radio:'Escuchar',revista:'Leer la revista',papers:'Leer'};
 var CAT_COLOR={investigacion:'#1D3A63',columnas:'#0F4A4A',youtube:'#4A3410',radio:'#2A2353',revista:'#1B2430',papers:'#123B52'};
 function leerCache(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
 function guardarCache(k,v){
@@ -844,7 +852,7 @@ var DEMO_LECTURA={
   'demo-columna':{categoria:'columnas',titulo:'Educación autopoiética: entre Maturana y Altman',bajada:'Qué queda de la educación cuando la máquina también aprende.',fecha:'2026-01-12',imagen:'https://picsum.photos/seed/voxliber-educacion/1400/900',pdf:'',enlace:'',medio:'El Heraldo',
     texto:'Así se verá una columna de opinión. El texto completo se lee aquí, en Vox Liber. Si se publicó antes en otro medio, al final aparece el recuadro «Publicada originalmente en…», con el enlace a la versión original; si es solo de Vox Liber, no aparece.\n\nEste es un texto de ejemplo. Cuando publiques tus columnas desde el panel, aquí aparecerá cada una con su propia dirección para compartir.'}
 };
-var CAT_INFO={investigacion:['Documento de Investigación','#1B5A99'],columnas:['Columna','#0E9F8E'],youtube:['Video','#E62117'],radio:['Radio y podcast','#6A3FC1'],revista:['Revista Vox Liber','#3B8FE0'],papers:['Paper académico','#0B76AE']};
+var CAT_INFO={investigacion:['Informe Especial','#1B5A99'],columnas:['Columna','#0E9F8E'],youtube:['Video','#E62117'],radio:['Radio y podcast','#6A3FC1'],revista:['Revista Vox Liber','#3B8FE0'],papers:['Papers e Investigación','#0B76AE']};
 var MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 function fechaLarga(f){var p=String(f||'').split('-');if(p.length<3)return '';return (+p[2])+' de '+MESES[(+p[1])-1]+' de '+p[0]}
 function md(t){
@@ -880,6 +888,7 @@ function pintarLector(it,cat){
     (function(){var ext=it.enlace&&!emb,origen=it.medio||(ext?medio(it.enlace):'');if(!origen)return '';
       return '<div class="lec-orig"><div><b>Publicada originalmente en '+esc(origen)+'</b>'+(ext?'<span>Puedes consultar la versión original en el medio.</span>':'')+'</div>'+
         (ext?'<a href="'+esc(it.enlace)+'" target="_blank" rel="noopener">Ver publicación original</a>':'')+'</div>'})()+
+    bloqueCita(it)+
     '<div class="lec-share"><b>Comparte esta lectura</b><div class="lec-share-row">'+
       '<a href="https://wa.me/?text='+txt+'%20'+encodeURIComponent(url)+'" target="_blank" rel="noopener" style="background:#1FA855">WhatsApp</a>'+
       '<a href="https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+txt+'" target="_blank" rel="noopener" style="background:#229ED9">Telegram</a>'+
@@ -892,7 +901,7 @@ function pintarLector(it,cat){
   $('#lecCont').innerHTML=h;lector.scrollTop=0;$('#lecProg').style.width='0';
   document.title=it.titulo+' · Vox Liber';
   $('#lecCopiar').onclick=function(){var b=this;(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){b.textContent='Enlace copiado'},function(){prompt('Copia este enlace:',url)})};
-  activarSuscripcion($('#lecCont'));
+  activarSuscripcion($('#lecCont'));activarCita();
 }
 function ytId(u){var m=String(u||'').match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|live\/|embed\/)|youtu\.be\/)([\w-]{11})/);return m?m[1]:''}
 function imagenDe(x){if(x.imagen)return x.imagen;var id=ytId(x.enlace);return id?'https://i.ytimg.com/vi/'+id+'/hqdefault.jpg':''}
@@ -914,14 +923,75 @@ function cargarItem(slug){
     if(JSON.stringify(r.item)!==mostrado){var y=lector.scrollTop;lecActual=r.item;pintarLector(r.item,r.categoria);cargarRelacionados(r.item);if(mostrado)lector.scrollTop=y}
   }).catch(function(){if(!mostrado)estado('No hay conexión. Revisa tu internet e intenta de nuevo.',true)});
 }
+/* Cómo citar (APA 7.ª edición) */
+function autoresLista(it){
+  var l=String(it.autores||'').split(';').map(function(x){return x.trim()}).filter(Boolean);
+  if(!l.length)l=[(it.categoria==='youtube'?'Vox Liber':'Leyton-Johns, L.')];
+  return l;
+}
+function apellidoDe(x){return x.split(',')[0].trim()}
+function autoresAPA(l){
+  var t;
+  if(l.length===1)t=l[0];
+  else if(l.length<=20)t=l.slice(0,-1).join(', ')+', y '+l[l.length-1];
+  else t=l.slice(0,19).join(', ')+', . . . '+l[l.length-1];
+  return /\.$/.test(t)?t:t+'.';
+}
+function citaEnTexto(it){
+  var l=autoresLista(it),m=String(it.referencia||'').match(/\((\d{4})/),y=m?m[1]:(String(it.fecha||'').slice(0,4)||'s. f.');
+  var n=l.length===1?apellidoDe(l[0]):l.length===2?apellidoDe(l[0])+' y '+apellidoDe(l[1]):apellidoDe(l[0])+' et al.';
+  return '('+n+', '+y+')';
+}
+function fechaAPA(it,completa){
+  var p=String(it.fecha||'').split('-');if(p.length<3)return '(s. f.)';
+  return completa?'('+p[0]+', '+(+p[2])+' de '+MESES[(+p[1])-1]+')':'('+p[0]+')';
+}
+function conPunto(t){t=String(t||'').trim();return /[.?!]$/.test(t)?t:t+'.'}
+function referenciaAPA(it){
+  if(it.referencia&&String(it.referencia).trim())
+    return esc(String(it.referencia).trim()).replace(/\*([^*]+)\*/g,'<i>$1</i>').replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+  var c=it.categoria,ext=String(it.enlace||''),propio=it.compartir||urlLectura(it.slug);
+  var esVideo=!!ytId(ext),esEpisodio=/open\.spotify\.com\/episode\//.test(ext),esPodcast=/open\.spotify\.com\/show\//.test(ext),esAudio=esEpisodio||esPodcast||c==='radio';
+  var lista=autoresLista(it),grupo=lista.length===1&&!/,/.test(lista[0]);
+  var A=esc(autoresAPA(lista));
+  if(esAudio&&!grupo)A=A+' ('+(lista.length>1?'Presentadores':'Presentador')+').';
+  var T=esc(it.titulo),L=function(u){return '<a href="'+esc(u)+'" target="_blank" rel="noopener">'+esc(u)+'</a>'};
+  var serie=esc(it.medio||(c==='radio'&&!esEpisodio&&!esPodcast?'Vox Liber Radio':'Vox Liber'));
+  if(esVideo)return A+' '+fechaAPA(it,true)+'. <i>'+T+'</i> [Video]. YouTube. '+L(ext);
+  if(esEpisodio)return A+' '+fechaAPA(it,true)+'. '+T+' [Episodio de podcast de audio]. En <i>'+serie+'</i>. Spotify. '+L(ext);
+  if(esPodcast)return A+' '+fechaAPA(it)+'. <i>'+T+'</i> [Podcast de audio]. Spotify. '+L(ext);
+  if(c==='radio')return A+' '+fechaAPA(it,true)+'. '+T+' [Programa de radio]. En <i>'+serie+'</i>. Vox Liber. '+L(propio);
+  if(c==='columnas'){var url=it.medio&&ext?ext:propio;return A+' '+fechaAPA(it,true)+'. '+conPunto(T)+' <i>'+esc(it.medio||'Vox Liber')+'</i>. '+L(url)}
+  if(c==='revista')return A+' '+fechaAPA(it)+'. '+conPunto(T)+' <i>Revista Vox Liber</i>. '+L(propio);
+  var tipo=c==='investigacion'?'Informe especial':'Documento de investigación';
+  return A+' '+fechaAPA(it)+'. <i>'+T+'</i> ['+tipo+']. Vox Liber. '+L(propio);
+}
+function bloqueCita(it){
+  return '<section class="cita" aria-labelledby="citaT"><div class="cita-h"><b id="citaT">Cómo citar este contenido</b><span>Norma APA, 7.ª edición</span></div>'+
+    '<p class="ref" id="citaRef">'+referenciaAPA(it)+'</p>'+
+    '<div class="cita-pie"><span>En el texto: <b>'+esc(citaEnTexto(it))+'</b></span><button type="button" id="copiarCita">Copiar referencia</button></div></section>';
+}
+function activarCita(){
+  var b=$('#copiarCita');if(!b)return;
+  b.onclick=function(){
+    var el=$('#citaRef'),html=el.innerHTML.replace(/<a [^>]*>([^<]*)<\/a>/g,'$1'),txt=el.textContent;
+    var ok=function(){b.textContent='Referencia copiada'},mal=function(){prompt('Copia la referencia:',txt)};
+    try{
+      if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write)
+        navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([txt],{type:'text/plain'})})]).then(ok,function(){navigator.clipboard.writeText(txt).then(ok,mal)});
+      else if(navigator.clipboard)navigator.clipboard.writeText(txt).then(ok,mal);else mal();
+    }catch(e){mal()}
+  };
+}
+
 /* Suscripción al boletín dentro de cada categoría y cada lectura */
 var SUB_TEXTO={
-  investigacion:['Recibe cada nuevo documento de investigación','Un correo por semana con lo último de Vox Liber. Te das de baja con un clic.'],
+  investigacion:['Recibe cada nuevo informe especial','Un correo por semana con lo último de Vox Liber. Te das de baja con un clic.'],
   columnas:['No te pierdas ninguna columna','Un correo por semana con las nuevas columnas y lo último de Vox Liber.'],
   youtube:['Los videos nuevos, en tu correo','Cada domingo, los videos de la semana y lo último de Vox Liber.'],
   radio:['La programación de la radio, cada semana','Un correo por semana con lo que viene en Vox Liber Radio y lo nuevo del sitio.'],
   revista:['Recibe cada número de la revista','Un correo por semana con los nuevos números y lo último de Vox Liber.'],
-  papers:['Las nuevas publicaciones académicas','Un correo por semana con los nuevos papers y lo último de Vox Liber.']
+  papers:['Papers e investigaciones nuevas','Un correo por semana con los nuevos papers e investigaciones y lo último de Vox Liber.']
 };
 function yaSuscrito(){try{return localStorage.getItem('vl-suscrito')||''}catch(e){return ''}}
 function cajaSuscripcion(t){
@@ -956,7 +1026,7 @@ function tarjeta(x,k){
     (ytId(x.enlace)?'<span class="cc-play">'+ico('M8 5v14l11-7z',22,0).replace('fill="none"','fill="currentColor"')+'</span>':'')+'</div>'+
     '<div class="cc-b"><small>'+fechaLarga(x.fecha)+'</small><h3>'+esc(x.titulo)+'</h3>'+(x.bajada?'<p>'+esc(x.bajada)+'</p>':'')+'</div></a>';
 }
-var MAS_TITULO={investigacion:'Más documentos de investigación',columnas:'Más columnas',youtube:'Más videos',radio:'Más de la radio',revista:'Más números de la revista',papers:'Más papers'};
+var MAS_TITULO={investigacion:'Más informes especiales',columnas:'Más columnas',youtube:'Más videos',radio:'Más de la radio',revista:'Más números de la revista',papers:'Más papers e investigación'};
 function cargarRelacionados(it){
   if(!it.categoria||DEMO_LECTURA[it.slug]||!CONFIG.apiUrl)return;
   fetch(CONFIG.apiUrl+'?api=categoria&id='+encodeURIComponent(it.categoria)).then(function(r){return r.json()}).then(function(r){
