@@ -372,7 +372,7 @@ var CONFIG = {
   zenoStream: 'https://stream.zeno.fm/dpwt2bwi0mgvv',   // URL del stream de Zeno (la entrega el panel de Zeno, ej. https://stream.zeno.fm/xxxx)
   zenoPage: 'https://zeno.fm/radio/vox-liber-radio/',
   redes: {
-    instagram: '#', facebook: '#', x: '#', spotify: '#', youtube: '#', telegram: '#', whatsapp: '#'
+    instagram: 'https://www.instagram.com/voxliberradio/', facebook: 'https://www.facebook.com/share/1D12NETjwE/', x: 'https://x.com/liber_vox', spotify: 'https://open.spotify.com/show/0UL2naOZ30gsQa4OqzjV6p', youtube: 'https://www.youtube.com/@voxliber?sub_confirmation=1', telegram: 'https://t.me/voxliberadio', whatsapp: ''   // pega aquí el enlace del canal de WhatsApp cuando lo crees
   },
   apiUrl: ''        // URL del backend en Apps Script (se completa en el paso 2)
 };
@@ -553,12 +553,13 @@ var REDES=[
   {k:'x',n:'X',d:'Debate y análisis sobre la coyuntura.',b:'Seguir',c:'var(--xBg)',ci:'var(--xInk)'},
   {k:'facebook',n:'Facebook',d:'La comunidad de lectores de Vox Liber.',b:'Seguir la página',c:'#1877F2',ci:'#fff'}
 ];
-$('#comGrid').innerHTML=REDES.map(function(r){
+var ACTIVAS=REDES.filter(function(r){var u=CONFIG.redes[r.k];return u&&u!=='#'});
+$('#comGrid').innerHTML=ACTIVAS.map(function(r){
   return '<article class="red" style="--c:'+r.c+';--ci:'+r.ci+'"><div class="red-top"><span class="red-ico">'+SVG[r.k]+'</span><b>'+r.n+'</b></div><p>'+r.d+'</p>'+
   '<a class="go" href="'+(CONFIG.redes[r.k]||'#')+'" target="_blank" rel="noopener">'+r.b+'</a></article>'}).join('');
 
 /* Redes en la barra lateral */
-$('#socials').innerHTML=REDES.map(function(r){return '<a href="'+(CONFIG.redes[r.k]||'#')+'" target="_blank" rel="noopener" aria-label="'+r.n+'" style="background:'+r.c+';color:'+r.ci+'">'+SVG[r.k]+'</a>'}).join('');
+$('#socials').innerHTML=ACTIVAS.map(function(r){return '<a href="'+(CONFIG.redes[r.k]||'#')+'" target="_blank" rel="noopener" aria-label="'+r.n+'" style="background:'+r.c+';color:'+r.ci+'">'+SVG[r.k]+'</a>'}).join('');
 
 /* Radio */
 var hs=[10,18,26,14,30,22,12,28,34,20,16,26,32,18,24,12,30,22,14,28,20,10,24,30,16,22,12,18];
