@@ -208,8 +208,17 @@ html.leyendo{overflow:hidden}
 .lec-share b{display:block;font-size:15px;margin-bottom:12px}
 .lec-share-row{display:flex;flex-wrap:wrap;gap:8px}
 .lec-share-row a,.lec-share-row button{height:42px;padding:0 16px;border-radius:21px;border:none;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;color:#fff}
-.lec-cta{margin-top:36px;border-radius:18px;background:var(--navy);color:#fff;padding:24px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
-.lec-cta p{margin:0;font-family:var(--serif);font-size:21px;font-weight:600;flex:1 1 260px}
+.sub-box{margin-top:40px;border-radius:20px;background:var(--navy);color:#fff;padding:26px;display:flex;flex-wrap:wrap;gap:18px 28px;align-items:center}
+.sub-box .sb-t{flex:1 1 280px}
+.sub-box .sb-t b{display:block;font-family:var(--serif);font-size:23px;line-height:1.2}
+.sub-box .sb-t span{display:block;font-size:14.5px;line-height:1.5;color:#C7D4E4;margin-top:6px}
+.sub-box form{flex:1 1 320px;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px}
+.sub-box input[type=email]{flex:1 1 200px;min-width:0;height:48px;border:none;border-radius:24px;background:#fff;color:#0F172A;padding:0 18px;font:inherit;font-size:15px}
+.sub-box button{height:48px;padding:0 22px;border:none;border-radius:24px;background:#3BB4E8;color:#0B1B33;font:inherit;font-size:15px;font-weight:700}
+.sub-box button:hover{background:#5CC2F0}
+.sub-box .ok{flex:1 1 320px;background:rgba(255,255,255,.12)}
+.sub-box .form-err{flex-basis:100%}
+.cat-page .sub-box{margin-top:48px}
 .lec-mas{max-width:1120px;margin:0 auto;padding:0 20px 110px}
 .lec-mas-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;border-top:1px solid var(--line);padding-top:32px}
 .lec-mas-head h2{margin:0;font-family:var(--serif);font-size:28px}
@@ -738,7 +747,7 @@ function errorForm(form,msg){var e=form.querySelector('.form-err');if(!e){e=docu
 $('#subForm').addEventListener('submit',function(e){
   e.preventDefault();var f=this,b=f.querySelector('button');b.disabled=true;b.textContent='Enviando…';
   api({accion:'suscribir',email:f.email.value,web:f.web.value}).then(function(r){
-    if(r.ok)done(f,r.mensaje,'rgba(255,255,255,.12)');else{errorForm(f,r.error);b.disabled=false;b.textContent='Suscribirme'}
+    if(r.ok){try{localStorage.setItem('vl-suscrito',f.email.value.trim())}catch(x){}done(f,r.mensaje,'rgba(255,255,255,.12)')}else{errorForm(f,r.error);b.disabled=false;b.textContent='Suscribirme'}
   }).catch(function(){errorForm(f,'No hay conexión. Intenta de nuevo en unos minutos.');b.disabled=false;b.textContent='Suscribirme'});
 });
 $('#fileInput').addEventListener('change',function(){$('#fileName').textContent=this.files[0]?this.files[0].name:'Adjuntar archivo Word o PDF'});
@@ -838,12 +847,12 @@ function pintarLector(it,cat){
       '<a href="https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url)+'" target="_blank" rel="noopener" style="background:#1877F2">Facebook</a>'+
       '<a href="https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(url)+'" target="_blank" rel="noopener" style="background:#0A66C2">LinkedIn</a>'+
       '<button type="button" id="lecCopiar" style="background:var(--soft);color:var(--ink)">Copiar enlace</button></div></div>'+
-    '<div class="lec-cta"><p>¿Te sirvió esta lectura? Recibe lo nuevo de Vox Liber cada domingo.</p><button type="button" class="btn" id="lecSuscribir" style="background:#fff;color:#0F2E57">Suscribirme al boletín</button></div>'+
+    cajaSuscripcion(['¿Te sirvió esta lectura?','Recibe cada domingo lo nuevo de Vox Liber en tu correo: documentos, columnas, videos y la programación de la radio.'])+
     '</article>';
   $('#lecCont').innerHTML=h;lector.scrollTop=0;$('#lecProg').style.width='0';
   document.title=it.titulo+' · Vox Liber';
   $('#lecCopiar').onclick=function(){var b=this;(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){b.textContent='Enlace copiado'},function(){prompt('Copia este enlace:',url)})};
-  $('#lecSuscribir').onclick=function(){history.replaceState({},'',location.pathname);pasos=0;enrutar();setTimeout(function(){var bx=$('#boletin');bx.scrollIntoView({behavior:'smooth',block:'center'});var i=bx.querySelector('input[type=email]');if(i)i.focus({preventScroll:true})},80)};
+  activarSuscripcion($('#lecCont'));
 }
 function ytId(u){var m=String(u||'').match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|live\/|embed\/)|youtu\.be\/)([\w-]{11})/);return m?m[1]:''}
 function imagenDe(x){if(x.imagen)return x.imagen;var id=ytId(x.enlace);return id?'https://i.ytimg.com/vi/'+id+'/hqdefault.jpg':''}
@@ -860,6 +869,41 @@ function cargarItem(slug){
     lecActual=r.item;pintarLector(r.item,r.categoria);cargarRelacionados(r.item);
   }).catch(function(){estado('No hay conexión. Revisa tu internet e intenta de nuevo.',true)});
 }
+/* Suscripción al boletín dentro de cada categoría y cada lectura */
+var SUB_TEXTO={
+  investigacion:['Recibe cada nuevo documento de investigación','Un correo por semana con lo último de Vox Liber. Te das de baja con un clic.'],
+  columnas:['No te pierdas ninguna columna','Un correo por semana con las nuevas columnas y lo último de Vox Liber.'],
+  youtube:['Los videos nuevos, en tu correo','Cada domingo, los videos de la semana y lo último de Vox Liber.'],
+  radio:['La programación de la radio, cada semana','Un correo por semana con lo que viene en Vox Liber Radio y lo nuevo del sitio.'],
+  revista:['Recibe cada número de la revista','Un correo por semana con los nuevos números y lo último de Vox Liber.'],
+  papers:['Las nuevas publicaciones académicas','Un correo por semana con los nuevos papers y lo último de Vox Liber.']
+};
+function yaSuscrito(){try{return localStorage.getItem('vl-suscrito')||''}catch(e){return ''}}
+function cajaSuscripcion(t){
+  t=t||['Recibe lo nuevo de Vox Liber','Un correo por semana. Te das de baja con un clic.'];
+  var ya=yaSuscrito();
+  if(ya)return '<div class="sub-box"><div class="sb-t"><b>Ya estás en la lista del boletín</b><span>Si aún no lo hiciste, confirma tu suscripción desde el correo que te enviamos a '+esc(ya)+'.</span></div></div>';
+  return '<div class="sub-box"><div class="sb-t"><b>'+esc(t[0])+'</b><span>'+esc(t[1])+'</span></div>'+
+    '<form class="js-sub" novalidate><label class="sr" for="sb'+(++subN)+'">Tu correo electrónico</label>'+
+    '<input type="email" id="sb'+subN+'" name="email" required placeholder="Tu correo electrónico" autocomplete="email">'+
+    '<input type="text" name="web" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">'+
+    '<button type="submit">Suscribirme</button></form></div>';
+}
+var subN=0;
+function activarSuscripcion(raiz){
+  raiz.querySelectorAll('form.js-sub').forEach(function(f){
+    f.addEventListener('submit',function(e){
+      e.preventDefault();var b=f.querySelector('button'),correo=f.email.value.trim();
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correo)){errorForm(f,'Revisa el correo: parece incompleto.');f.email.focus();return}
+      b.disabled=true;b.textContent='Enviando…';
+      api({accion:'suscribir',email:correo,web:f.web.value}).then(function(r){
+        if(r.ok){try{localStorage.setItem('vl-suscrito',correo)}catch(x){}done(f,r.mensaje,'rgba(255,255,255,.12)')}
+        else{errorForm(f,r.error);b.disabled=false;b.textContent='Suscribirme'}
+      }).catch(function(){errorForm(f,'No hay conexión. Intenta de nuevo en unos minutos.');b.disabled=false;b.textContent='Suscribirme'});
+    });
+  });
+}
+
 function tarjeta(x,k){
   var img=imagenDe(x)||x.portada;
   return '<a class="cat-card js-leer" data-slug="'+esc(x.slug)+'" href="?leer='+encodeURIComponent(x.slug)+'">'+
@@ -890,7 +934,9 @@ function cargarCategoria(id){
     var cards=r.items.map(function(x){return tarjeta(x,k)}).join('');
     $('#lecCont').innerHTML='<section class="cat-page fade"><div class="lec-kick" style="color:'+ci[1]+'">'+r.items.length+(r.items.length===1?' publicación':' publicaciones')+'</div>'+
       '<h1>'+esc(k.nombre)+'</h1><p class="cat-desc">'+esc(k.desc)+'</p>'+
-      (cards?'<div class="cat-grid">'+cards+'</div>':'<p class="cat-desc" style="margin-top:32px">Todavía no hay publicaciones en esta categoría. Vuelve pronto.</p>')+'</section>';
+      (cards?'<div class="cat-grid">'+cards+'</div>':'<p class="cat-desc" style="margin-top:32px">Todavía no hay publicaciones en esta categoría. Vuelve pronto.</p>')+
+      cajaSuscripcion(SUB_TEXTO[k.id])+'</section>';
+    activarSuscripcion($('#lecCont'));
   }).catch(function(){estado('No hay conexión. Revisa tu internet e intenta de nuevo.',true)});
 }
 function enrutar(){
