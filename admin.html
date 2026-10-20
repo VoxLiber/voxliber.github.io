@@ -264,7 +264,8 @@ function filaContenido(c) {
     (c.publicado === 'SI' ? '<span class="chip" style="background:#E3F6EE;color:#0E7A55">Publicado</span>' : '<span class="chip" style="background:#F1F5F9;color:#475569">Borrador</span>') +
     (c.destacado === 'SI' ? '<span class="chip" style="background:#FDF1D8;color:#8A5A00">En el carrusel</span>' : '') +
     (c.pdfUrl ? '<a href="' + esc(c.pdfUrl) + '" target="_blank">PDF</a>' : '') + '</div></div>' +
-    '<div class="row-actions"><button class="btn btn-s btn-sm" data-ed="' + c.id + '">Editar</button><button class="btn btn-d btn-sm" data-del="' + c.id + '">Eliminar</button></div></div>';
+    '<div class="row-actions">' + (c.publicado === 'SI' && c.slug ? '<button class="btn btn-s btn-sm" data-link="' + esc(c.pagina === 'SI' ? S.cfg.sitio + 'l/' + encodeURIComponent(c.slug) + '/' : S.cfg.sitio + '?leer=' + encodeURIComponent(c.slug)) + '" title="Copiar el enlace para compartir">Copiar enlace</button>' : '') +
+    '<button class="btn btn-s btn-sm" data-ed="' + c.id + '">Editar</button><button class="btn btn-d btn-sm" data-del="' + c.id + '">Eliminar</button></div></div>';
 }
 
 /* ===== Recomendados ===== */
@@ -290,6 +291,12 @@ function pintarRecomendados() {
 }
 
 function enlazarAcciones(tipo) {
+  $$('[data-link]').forEach(function (b) {
+    b.onclick = function () {
+      var u = b.getAttribute('data-link');
+      (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { toast('Enlace copiado: ' + u); }, function () { prompt('Copia este enlace:', u); });
+    };
+  });
   $$('[data-ed]').forEach(function (b) { b.onclick = function () { abrirEditor(tipo, S.datos[tipo].filter(function (x) { return x.id === b.getAttribute('data-ed'); })[0]); }; });
   $$('[data-del]').forEach(function (b) {
     b.onclick = function () {
@@ -377,7 +384,7 @@ $('#edForm').addEventListener('submit', function (e) {
   if (A.quitar_imagen) d.quitarImagen = true; if (A.quitar_portada) d.quitarPortada = true; if (A.quitar_pdf) d.quitarPdf = true;
   var btn = $('#edGuardar'); btn.disabled = true; btn.textContent = (A.pdf || A.imagen || A.portada) ? 'Subiendo archivos…' : 'Guardando…';
   var tipo = S.edit.tipo;
-  run('adminGuardar', tipo, d).then(function () { cerrarEditor(); toast('Guardado. El sitio se actualiza en unos segundos.'); ir(tipo); })
+  run('adminGuardar', tipo, d).then(function (r) { cerrarEditor(); if (r && r._aviso) toast(r._aviso, true); else toast('Guardado. El sitio se actualiza en unos segundos.'); ir(tipo); })
     .catch(function (err) { toast(err.message, true); })
     .then(function () { btn.disabled = false; btn.textContent = 'Guardar'; });
 });
@@ -493,7 +500,18 @@ function vAjustes() {
     '<div><b>URL pública de la API</b><div class="sub" style="word-break:break-all">' + (c.urlPublica ? esc(c.urlPublica) : 'Se registrará sola la primera vez que el sitio consulte la API.') + '</div></div>' +
     '<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-s btn-sm" href="' + esc(c.planilla) + '" target="_blank">Abrir la planilla</a>' +
     '<a class="btn btn-s btn-sm" href="' + esc(c.carpeta) + '" target="_blank">Abrir la carpeta en Drive</a>' +
-    '<a class="btn btn-s btn-sm" href="' + esc(c.sitio) + '" target="_blank">Ver el sitio</a></div></div>';
+    '<a class="btn btn-s btn-sm" href="' + esc(c.sitio) + '" target="_blank">Ver el sitio</a></div></div>' +
+    '<div class="upload" style="max-width:640px;gap:12px;margin-top:16px">' +
+    '<div><b>Páginas para compartir</b><div class="sub">' + (c.paginasActivas
+      ? 'Activas. Cada contenido publicado tiene su propia vista previa en WhatsApp, X y Facebook.'
+      : 'Sin configurar. Falta la llave GITHUB_TOKEN en las propiedades del proyecto de Apps Script.') + '</div></div>' +
+    '<div class="hint">Usa este botón una vez para crear las páginas de los contenidos que ya estaban publicados. Los nuevos se crean solos al guardar.</div>' +
+    '<div><button class="btn btn-p btn-sm" id="regen"' + (c.paginasActivas ? '' : ' disabled') + '>Generar páginas para todo el contenido</button></div></div>';
+  if ($('#regen')) $('#regen').onclick = function () {
+    var b = this; b.disabled = true; b.textContent = 'Generando… puede tardar un par de minutos';
+    run('adminRegenerarPaginas').then(function (m) { toast(m); }).catch(function (e) { toast(e.message, true); })
+      .then(function () { b.disabled = false; b.textContent = 'Generar páginas para todo el contenido'; });
+  };
 }
 </script>
 </body>
