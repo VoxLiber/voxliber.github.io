@@ -17,12 +17,12 @@
 <style>
 :root{
   --bg:#F8FAFC;--head:#FFFFFF;--card:#FFFFFF;--soft:#EEF2F7;--ink:#0F172A;--ink2:#334155;--muted:#5B6676;
-  --line:#E2E8F0;--line2:#B8C2D0;--blue:#1B5A99;--celeste:#3BB4E8;--navy:#0F2E57;--night:#0B1B33;--logoChip:transparent;
+  --line:#E2E8F0;--line2:#B8C2D0;--blue:#1B5A99;--ytBg:#FDECEC;--ytBgH:#FBDADA;--ytInk:#B4170F;--xBg:#0F172A;--xInk:#FFFFFF;--celeste:#3BB4E8;--navy:#0F2E57;--night:#0B1B33;--logoChip:transparent;
   --serif:'Source Serif 4',Georgia,serif;--sans:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
 }
 :root[data-theme="dark"]{
   --bg:#0B1220;--head:#0F172A;--card:#111C2E;--soft:#1A2638;--ink:#EEF2F7;--ink2:#C9D3DF;--muted:#9AA7B8;
-  --line:#24324A;--line2:#3A4A63;--blue:#3B8FE0;--logoChip:#FFFFFF;
+  --line:#24324A;--line2:#3A4A63;--blue:#3B8FE0;--ytBg:rgba(230,33,23,.16);--ytBgH:rgba(230,33,23,.26);--ytInk:#FF8A85;--xBg:#E7E9EA;--xInk:#0F172A;--logoChip:#FFFFFF;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -41,7 +41,10 @@ img{display:block}
 .head-in{display:flex;align-items:center;gap:24px;padding-top:12px;padding-bottom:12px}
 .logo{display:flex;background:var(--logoChip);border-radius:12px;padding:2px 8px;flex:none}
 .logo img{height:52px;width:156px;object-fit:cover}
-.nav{display:flex;align-items:center;gap:0;flex:1;min-width:0;flex-wrap:nowrap;white-space:nowrap}
+.nav{display:flex;align-items:center;gap:0;flex:1;flex-wrap:nowrap;white-space:nowrap}
+.t-short{display:none}
+.nav a.yt{background:var(--ytBg);color:var(--ytInk);font-weight:600;border-radius:22px;margin:0 4px}
+.nav a.yt:hover{background:var(--ytBgH);color:var(--ytInk)}
 .nav a,.nav button{position:relative;padding:14px 11px;border:none;background:none;color:var(--ink2);font-size:15px;font-weight:500;display:flex;align-items:center;gap:7px;border-radius:10px}
 .nav a:hover,.nav button:hover{background:var(--soft);color:var(--ink)}
 .nav a.on{color:var(--ink);font-weight:600}
@@ -155,6 +158,20 @@ img{display:block}
 .ok{border-radius:10px;padding:14px;font-size:14.5px;line-height:1.45}
 form{display:flex;flex-direction:column;gap:10px}
 
+/* COMUNIDAD */
+.comunidad{background:var(--soft);padding:64px 0}
+.com-head{max-width:640px;margin-bottom:28px}
+.com-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.red{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;transition:transform .15s,box-shadow .15s}
+.red:hover{transform:translateY(-3px);box-shadow:0 16px 30px -20px rgba(15,23,42,.55)}
+.red-top{display:flex;align-items:center;gap:12px}
+.red-ico{width:44px;height:44px;border-radius:22px;background:var(--c);color:var(--ci);display:flex;align-items:center;justify-content:center;flex:none}
+.red b{font-family:var(--serif);font-size:19px}
+.red p{margin:0;font-size:14px;line-height:1.5;color:var(--muted);flex:1}
+.red a.go{align-self:flex-start;height:40px;padding:0 18px;border-radius:20px;background:var(--c);color:var(--ci);font-size:14px;font-weight:600;display:inline-flex;align-items:center}
+.red a.go:hover{filter:brightness(1.08)}
+@media (max-width:760px){.comunidad{padding:40px 0}.com-grid{grid-template-columns:1fr;gap:10px}.red{flex-direction:row;flex-wrap:wrap;align-items:center}.red p{flex-basis:100%}}
+
 /* PIE */
 .foot{background:var(--night);color:#C7D4E4}
 .foot-in{display:flex;flex-wrap:wrap;gap:32px;justify-content:space-between;padding-top:44px;padding-bottom:44px}
@@ -164,10 +181,17 @@ form{display:flex;flex-direction:column;gap:10px}
 /* BARRA INFERIOR MÓVIL */
 .mobile-radio,.tabbar{display:none}
 
-@media (max-width:1400px){
+@media (max-width:1440px){
+  .head-in{gap:16px}
+  .nav a,.nav button{padding:14px 9px;font-size:14.5px}
+  .nav a.on::after{left:9px;right:9px}
+  .radio-pill{padding:0 14px 0 7px;gap:8px}
+  .radio-pill svg.wave,.t-long{display:none}
+  .t-short{display:inline}
+}
+@media (max-width:1199px){
   .nav{display:none}
   .burger{display:flex}
-  .radio-pill span.txt,.radio-pill svg.wave{display:none}
   .head-in{justify-content:space-between}
   .nav.drawer{display:flex;position:fixed;inset:76px 0 0 0;background:var(--head);flex-direction:column;align-items:stretch;padding:16px;gap:4px;overflow-y:auto}
   .nav.drawer a,.nav.drawer button{font-size:17px;padding:16px}
@@ -213,7 +237,7 @@ form{display:flex;flex-direction:column;gap:10px}
       </button>
       <a href="#ultimo">Investigación</a>
       <a href="#ultimo">Columnas</a>
-      <a href="#ultimo"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="#E62117"/><path d="M10 9v6l5-3z" fill="#fff"/></svg>YouTube</a>
+      <a href="#ultimo" class="yt"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="#E62117"/><path d="M10 9v6l5-3z" fill="#fff"/></svg>YouTube</a>
       <a href="#recomendados">Recomendados</a>
       <a href="#nosotros">Nosotros</a>
     </nav>
@@ -225,7 +249,7 @@ form{display:flex;flex-direction:column;gap:10px}
       </div>
       <button type="button" class="radio-pill js-play">
         <span class="pp js-ppicon"></span>
-        <span class="txt">Radio en vivo</span>
+        <span class="txt"><span class="t-long">Radio en vivo</span><span class="t-short">Radio</span></span>
         <svg class="wave" width="22" height="18" viewBox="0 0 22 18" fill="#3BB4E8" aria-hidden="true"><rect x="0" y="7" width="2" height="4" rx="1"/><rect x="4" y="3" width="2" height="12" rx="1"/><rect x="8" y="0" width="2" height="18" rx="1"/><rect x="12" y="4" width="2" height="10" rx="1"/><rect x="16" y="6" width="2" height="6" rx="1"/><rect x="20" y="8" width="2" height="2" rx="1"/></svg>
       </button>
       <button class="icon-btn burger" type="button" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -274,6 +298,7 @@ form{display:flex;flex-direction:column;gap:10px}
 
     <div class="box box-line">
       <h3 style="font-size:19px">Síguenos en redes</h3>
+      <div style="font-size:13.5px;color:var(--muted);margin-top:4px">Y únete a nuestro canal de Telegram para recibir cada publicación.</div>
       <nav class="socials" aria-label="Redes sociales" id="socials"></nav>
     </div>
 
@@ -306,6 +331,16 @@ form{display:flex;flex-direction:column;gap:10px}
   </aside>
 </div>
 
+<section class="comunidad" id="comunidad" aria-labelledby="t-com">
+  <div class="wrap">
+    <div class="com-head">
+      <h2 class="h2" id="t-com">Súmate a la conversación</h2>
+      <p class="lead">Vox Liber está en tus redes. Elige dónde quieres seguirnos y no te pierdas ninguna publicación.</p>
+    </div>
+    <div class="com-grid" id="comGrid"></div>
+  </div>
+</section>
+
 <footer class="foot" id="nosotros">
   <div class="wrap foot-in">
     <div style="flex:1 1 320px;display:flex;flex-direction:column;gap:8px">
@@ -314,7 +349,7 @@ form{display:flex;flex-direction:column;gap:10px}
     </div>
     <div class="foot-links">
       <a href="#ultimo">Investigación</a><a href="#ultimo">Revista</a><a href="#ultimo">Columnas</a><a href="#ultimo">Papers</a>
-      <a href="#recomendados">Recomendados</a><a href="#envia">Envía tu columna</a>
+      <a href="#recomendados">Recomendados</a><a href="#envia">Envía tu columna</a><a href="#comunidad">Redes sociales</a>
       <a href="mailto:vox.liber.comunicaciones@gmail.com" style="color:#3BB4E8">vox.liber.comunicaciones@gmail.com</a>
     </div>
   </div>
@@ -337,7 +372,7 @@ var CONFIG = {
   zenoStream: 'https://stream.zeno.fm/dpwt2bwi0mgvv',   // URL del stream de Zeno (la entrega el panel de Zeno, ej. https://stream.zeno.fm/xxxx)
   zenoPage: 'https://zeno.fm/radio/vox-liber-radio/',
   redes: {
-    instagram: '#', facebook: '#', x: '#', spotify: '#', youtube: '#'
+    instagram: '#', facebook: '#', x: '#', spotify: '#', youtube: '#', telegram: '#', whatsapp: '#'
   },
   apiUrl: ''        // URL del backend en Apps Script (se completa en el paso 2)
 };
@@ -499,14 +534,31 @@ function renderRecs(){
 }
 renderRecs();
 
-/* Redes */
-var R=CONFIG.redes;
-$('#socials').innerHTML=
- '<a href="'+R.instagram+'" target="_blank" rel="noopener" aria-label="Instagram" style="background:#D6249F"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor"/></svg></a>'+
- '<a href="'+R.facebook+'" target="_blank" rel="noopener" aria-label="Facebook" style="background:#1877F2"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5H16l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.8 1.4-3.8 3.9v2.3H8v3h2.5V21z"/></svg></a>'+
- '<a href="'+R.x+'" target="_blank" rel="noopener" aria-label="X" style="background:#000"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.8 8 10.2h-6.3l-4.9-6.4L5.3 21H2.2l7.3-8.3L1.9 3h6.4l4.4 5.9zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg></a>'+
- '<a href="'+R.spotify+'" target="_blank" rel="noopener" aria-label="Spotify" style="background:#1DB954;color:#000"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6.5 9.3c3.8-1.1 7.6-.7 11 1.1M7.2 12.6c3.1-.8 6.1-.4 8.8 1M7.9 15.8c2.3-.6 4.6-.3 6.6.8"/></svg></a>'+
- '<a href="'+R.youtube+'" target="_blank" rel="noopener" aria-label="YouTube" style="background:#E62117"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 7.5v9l7.5-4.5z"/></svg></a>';
+/* Comunidad en redes */
+var SVG={
+  youtube:'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 7.5v9l7.5-4.5z"/></svg>',
+  telegram:'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.4 4.6 2.9 11.8c-1.3.5-1.2 1.2-.2 1.5l4.7 1.5 1.8 5.5c.2.6.4.8.9.8.4 0 .6-.2.9-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8l3.1-14.6c.3-1.3-.5-1.9-1.5-1.5zM9.3 14.4l8.6-5.4-6.9 6.4-.3 3z"/></svg>',
+  whatsapp:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 20.5l1.3-4A8.5 8.5 0 1 1 8 19.6z"/><path d="M9 9.5c.3 2 2.3 4.3 4.6 4.9l1.2-1.1 1.7.8-.4 1.6c-3.7.2-7.4-3.5-7.6-7.1l1.6-.5.8 1.6z" fill="currentColor" stroke="none"/></svg>',
+  instagram:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor"/></svg>',
+  spotify:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6.5 9.3c3.8-1.1 7.6-.7 11 1.1M7.2 12.6c3.1-.8 6.1-.4 8.8 1M7.9 15.8c2.3-.6 4.6-.3 6.6.8"/></svg>',
+  x:'<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.8 8 10.2h-6.3l-4.9-6.4L5.3 21H2.2l7.3-8.3L1.9 3h6.4l4.4 5.9zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg>',
+  facebook:'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5H16l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.8 1.4-3.8 3.9v2.3H8v3h2.5V21z"/></svg>'
+};
+var REDES=[
+  {k:'youtube',n:'YouTube',d:'Los documentos explicados en video, cada semana.',b:'Suscribirme al canal',c:'#E62117',ci:'#fff'},
+  {k:'telegram',n:'Telegram',d:'Un aviso en tu celular cada vez que publicamos algo nuevo.',b:'Unirme al canal',c:'#229ED9',ci:'#fff'},
+  {k:'whatsapp',n:'WhatsApp',d:'El canal de Vox Liber, con lo esencial de cada semana.',b:'Seguir el canal',c:'#25D366',ci:'#0B1B33'},
+  {k:'instagram',n:'Instagram',d:'Citas, portadas y adelantos de cada número.',b:'Seguir',c:'#D6249F',ci:'#fff'},
+  {k:'spotify',n:'Spotify',d:'El podcast de Vox Liber en tu app de audio.',b:'Seguir el podcast',c:'#1DB954',ci:'#0B1B33'},
+  {k:'x',n:'X',d:'Debate y análisis sobre la coyuntura.',b:'Seguir',c:'var(--xBg)',ci:'var(--xInk)'},
+  {k:'facebook',n:'Facebook',d:'La comunidad de lectores de Vox Liber.',b:'Seguir la página',c:'#1877F2',ci:'#fff'}
+];
+$('#comGrid').innerHTML=REDES.map(function(r){
+  return '<article class="red" style="--c:'+r.c+';--ci:'+r.ci+'"><div class="red-top"><span class="red-ico">'+SVG[r.k]+'</span><b>'+r.n+'</b></div><p>'+r.d+'</p>'+
+  '<a class="go" href="'+(CONFIG.redes[r.k]||'#')+'" target="_blank" rel="noopener">'+r.b+'</a></article>'}).join('');
+
+/* Redes en la barra lateral */
+$('#socials').innerHTML=REDES.map(function(r){return '<a href="'+(CONFIG.redes[r.k]||'#')+'" target="_blank" rel="noopener" aria-label="'+r.n+'" style="background:'+r.c+';color:'+r.ci+'">'+SVG[r.k]+'</a>'}).join('');
 
 /* Radio */
 var hs=[10,18,26,14,30,22,12,28,34,20,16,26,32,18,24,12,30,22,14,28,20,10,24,30,16,22,12,18];
