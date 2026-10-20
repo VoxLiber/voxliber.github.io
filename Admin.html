@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="es">
+<head>
+<title>Vox Liber · Administración</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="64x64" href="data:image/png;base64,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">
+<meta name="theme-color" content="#0F2E57">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F6FA;--card:#FFFFFF;--soft:#EEF2F7;--ink:#0F172A;--ink2:#334155;--muted:#5B6676;--line:#E2E8F0;--blue:#1B5A99;--navy:#0F2E57;--night:#0B1B33;--celeste:#3BB4E8;--ok:#0E9F6E;--warn:#B45309;--bad:#C2312D;--serif:'Source Serif 4',Georgia,serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:15px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--celeste);outline-offset:2px}
+.hidden{display:none!important}
+.wordmark{font-family:var(--serif);font-weight:700;font-size:24px;color:#fff}.wordmark span{color:var(--celeste)}
+
+/* Ingreso */
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--night);padding:24px}
+.login-box{width:100%;max-width:380px;background:var(--card);border-radius:20px;padding:32px}
+.login-box .wordmark{color:var(--blue);font-size:30px}
+.login-box h1{font-family:var(--serif);font-size:22px;margin:18px 0 18px}
+
+/* Estructura */
+.top{background:var(--navy);color:#fff;position:sticky;top:0;z-index:20}
+.top-in{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;flex:1}
+.tabs button{border:none;background:transparent;color:#C7D4E4;padding:10px 14px;border-radius:10px;font-weight:500;display:flex;align-items:center;gap:8px}
+.tabs button:hover{background:rgba(255,255,255,.08);color:#fff}
+.tabs button[aria-current="true"]{background:#fff;color:var(--navy);font-weight:700}
+.badge{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#FF5A5F;color:#fff;font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.main{max-width:1200px;margin:0 auto;padding:28px 20px 80px}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+h2{font-family:var(--serif);font-size:30px;margin:0}
+.sub{color:var(--muted);margin:6px 0 0}
+
+/* Controles */
+.btn{height:44px;padding:0 20px;border-radius:22px;border:none;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+.btn-p{background:var(--blue);color:#fff}.btn-p:hover{background:#1F68B0}
+.btn-s{background:var(--soft);color:var(--ink)}.btn-s:hover{background:#E2E8F0}
+.btn-d{background:#FDECEC;color:var(--bad)}
+.btn-sm{height:36px;padding:0 14px;font-size:14px}
+.btn:disabled{opacity:.55;cursor:wait}
+.field{display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:600;color:var(--ink2)}
+.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#fff;color:var(--ink);font-weight:400;font-size:15px}
+.field textarea{min-height:90px;resize:vertical}
+.hint{font-size:12.5px;font-weight:400;color:var(--muted)}
+.check{display:flex;align-items:center;gap:10px;font-weight:500;padding:6px 0}
+.check input{width:20px;height:20px;accent-color:var(--blue)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+
+/* Resumen */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.stat{background:var(--card);border-radius:16px;padding:20px;border:1px solid var(--line)}
+.stat b{display:block;font-family:var(--serif);font-size:36px;line-height:1.1}
+.stat span{color:var(--muted);font-size:14px}
+
+/* Listas */
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.filters button{height:36px;padding:0 14px;border-radius:18px;border:1px solid var(--line);background:#fff;color:var(--ink2);font-size:14px;font-weight:500}
+.filters button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.list{display:flex;flex-direction:column;gap:10px}
+.row{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;gap:14px;align-items:center}
+.thumb{width:84px;height:56px;border-radius:8px;background:var(--soft);flex:none;object-fit:cover;display:flex;align-items:center;justify-content:center;color:#94A3B8;font-size:11px}
+.row-main{flex:1;min-width:0}
+.row-title{font-family:var(--serif);font-weight:600;font-size:17px;line-height:1.25;overflow:hidden;text-overflow:ellipsis}
+.row-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px;font-size:13px;color:var(--muted)}
+.chip{font-size:12px;font-weight:700;padding:3px 9px;border-radius:9px}
+.row-actions{display:flex;gap:6px;flex:none}
+.empty{background:var(--card);border:1.5px dashed #CBD5E1;border-radius:16px;padding:40px;text-align:center;color:var(--muted)}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);font-size:14px}
+th{background:var(--soft);font-size:12.5px;color:var(--muted)}
+.tablewrap{overflow-x:auto}
+
+/* Editor */
+.drawer-bg{position:fixed;inset:0;background:rgba(11,27,51,.55);z-index:40;display:flex;justify-content:flex-end}
+.drawer{width:100%;max-width:640px;height:100%;background:var(--bg);overflow-y:auto;display:flex;flex-direction:column}
+.drawer-head{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--line);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;z-index:2}
+.drawer-head h3{font-family:var(--serif);font-size:22px;margin:0}
+.drawer-body{padding:20px;display:flex;flex-direction:column;gap:16px}
+.drawer-foot{position:sticky;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:14px 20px;display:flex;gap:10px;justify-content:flex-end;margin-top:auto}
+.upload{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.upload-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.upload-top b{font-size:14px}
+.preview{width:100%;border-radius:10px;background:var(--soft);overflow:hidden;display:flex;align-items:center;justify-content:center;color:#94A3B8;font-size:13px;position:relative}
+.preview img{width:100%;height:100%;object-fit:cover}
+.preview .size{position:absolute;right:8px;bottom:8px;background:rgba(11,27,51,.75);color:#fff;font-size:11.5px;padding:3px 8px;border-radius:8px}
+.picker{position:relative;overflow:hidden}
+.picker input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.pdfline{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink2)}
+
+/* Avisos */
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:13px 20px;border-radius:12px;z-index:60;font-size:14.5px;max-width:90vw;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.toast.err{background:var(--bad)}
+.err-msg{color:var(--bad);font-size:14px;margin-top:10px}
+iframe.prev{width:100%;height:640px;border:1px solid var(--line);border-radius:14px;background:#fff}
+@media (max-width:640px){.row{flex-wrap:wrap}.row-actions{width:100%;justify-content:flex-end}h2{font-size:24px}}
+</style>
+</head>
+<body>
+
+<!-- VERIFICACIÓN DE ACCESO -->
+<section class="login" id="vLogin">
+  <div class="login-box">
+    <div class="wordmark">vox <span>liber</span></div>
+    <h1>Panel de administración</h1>
+    <p class="sub" id="loginMsg" role="status">Entra con la cuenta de Google de Vox Liber.</p>
+    <div id="gBtn" style="margin-top:20px;min-height:44px"></div>
+    <p class="hint" style="margin-top:20px">Solo las cuentas autorizadas pueden administrar el sitio. <a href="./">Volver a Vox Liber</a></p>
+  </div>
+</section>
+
+<!-- PANEL -->
+<div id="vApp" class="hidden">
+  <header class="top">
+    <div class="top-in">
+      <div class="wordmark">vox <span>liber</span></div>
+      <nav class="tabs" id="tabs" aria-label="Secciones del panel">
+        <button data-tab="resumen" aria-current="true">Resumen</button>
+        <button data-tab="contenidos">Contenidos</button>
+        <button data-tab="recomendados">Recomendados</button>
+        <button data-tab="columnas">Columnas <span class="badge hidden" id="bCol"></span></button>
+        <button data-tab="suscriptores">Suscriptores</button>
+        <button data-tab="boletin">Boletín</button>
+        <button data-tab="ajustes">Ajustes</button>
+      </nav>
+      <span id="cuenta" style="font-size:13px;color:#A9C6E3"></span>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.12);color:#fff" id="salir" type="button">Cerrar sesión</button>
+    </div>
+  </header>
+  <main class="main" id="vista"></main>
+</div>
+
+<!-- EDITOR -->
+<div class="drawer-bg hidden" id="editor" role="dialog" aria-modal="true" aria-labelledby="edTitulo">
+  <form class="drawer" id="edForm">
+    <div class="drawer-head"><h3 id="edTitulo">Nuevo contenido</h3><button type="button" class="btn btn-s btn-sm" id="edCerrar">Cerrar</button></div>
+    <div class="drawer-body" id="edBody"></div>
+    <div class="drawer-foot"><button type="button" class="btn btn-s" id="edCancelar">Cancelar</button><button type="submit" class="btn btn-p" id="edGuardar">Guardar</button></div>
+  </form>
+</div>
+
+<script>
+var S = { cfg: null, tab: 'resumen', datos: {}, filtro: 'todas', edit: null, archivos: {} };
+var COLORES = {}; var TIPO_COLOR = { 'Libro': ['#E8F0FB', '#1B5A99'], 'Disco': ['#F2ECFB', '#6A3FC1'], 'Película': ['#FDF1D8', '#8A5A00'], 'Actividad': ['#E0F5F2', '#0A7568'] };
+var ESTADO_COL = { recibida: ['#E8F0FB', '#1B5A99', 'Recibida'], aprobada: ['#E3F6EE', '#0E7A55', 'Aprobada'], rechazada: ['#FDECEC', '#C2312D', 'Rechazada'] };
+
+function $(s) { return document.querySelector(s); }
+function $$(s) { return Array.prototype.slice.call(document.querySelectorAll(s)); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function toast(msg, err) { var t = document.createElement('div'); t.className = 'toast' + (err ? ' err' : ''); t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t); setTimeout(function () { t.remove(); }, err ? 6000 : 3500); }
+
+/* ===== Conexión con la API de Apps Script ===== */
+var API_URL = 'https://script.google.com/macros/s/AKfycbyBjD9Sp1odRUtUT0Ci6y0Fstb-Bgk7rdk2KaywK9Gp3fASOCPz_ZKC2rUz_cCiwgi0/exec';
+var CLIENT_ID = '475829252455-tbf7d9u8apb885trvt7n5nlggbpk1qvi.apps.googleusercontent.com';
+var TOKEN = '';
+
+function run(fn) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  var nombre = fn.replace(/^admin/, ''); nombre = nombre.charAt(0).toLowerCase() + nombre.slice(1);
+  return fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'admin', token: TOKEN, fn: nombre, args: args }) })
+    .then(function (r) { return r.json(); }, function () { throw new Error('No hay conexión con el servidor. Revisa tu internet e intenta de nuevo.'); })
+    .then(function (res) {
+      if (res && res.ok) return res.data;
+      var m = (res && res.error) || 'Error desconocido.';
+      if (/sesión|no autorizado|venció/i.test(m)) bloquear(m);
+      throw new Error(m);
+    });
+}
+
+/* ===== Iniciar sesión con Google ===== */
+function leerToken(t) {
+  try { var p = JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); return p; } catch (e) { return null; }
+}
+function bloquear(m) {
+  TOKEN = ''; try { sessionStorage.removeItem('vl-token'); } catch (e) {}
+  $('#vApp').classList.add('hidden'); $('#vLogin').classList.remove('hidden');
+  $('#loginMsg').textContent = m; $('#loginMsg').style.color = 'var(--bad)';
+  if (window.google && google.accounts) google.accounts.id.prompt();
+}
+function conToken(t) {
+  var p = leerToken(t);
+  if (!p || p.exp * 1000 < Date.now() + 60000) return false;
+  TOKEN = t; try { sessionStorage.setItem('vl-token', t); } catch (e) {}
+  $('#loginMsg').style.color = ''; $('#loginMsg').textContent = 'Verificando acceso de ' + p.email + '…';
+  run('adminIniciar').then(function (cfg) {
+    S.cfg = cfg; cfg.categorias.forEach(function (k) { COLORES[k.id] = k; });
+    $('#cuenta').textContent = cfg.cuenta;
+    $('#vLogin').classList.add('hidden'); $('#vApp').classList.remove('hidden');
+    pintarBadge(); ir(S.tab || 'resumen');
+    clearTimeout(window._venc);
+    window._venc = setTimeout(function () { bloquear('Tu sesión venció. Vuelve a iniciar sesión para seguir.'); }, p.exp * 1000 - Date.now() - 30000);
+  }).catch(function (e) { bloquear(e.message); });
+  return true;
+}
+function iniciarGoogle() {
+  if (!(window.google && google.accounts && google.accounts.id)) { setTimeout(iniciarGoogle, 200); return; }
+  google.accounts.id.initialize({ client_id: CLIENT_ID, callback: function (r) { conToken(r.credential); }, auto_select: true, cancel_on_tap_outside: false, ux_mode: 'popup' });
+  google.accounts.id.renderButton($('#gBtn'), { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'signin_with', locale: 'es', width: 300 });
+  var guardado = ''; try { guardado = sessionStorage.getItem('vl-token') || ''; } catch (e) {}
+  if (!(guardado && conToken(guardado))) google.accounts.id.prompt();
+}
+$('#salir').onclick = function () {
+  if (window.google && google.accounts) google.accounts.id.disableAutoSelect();
+  TOKEN = ''; try { sessionStorage.removeItem('vl-token'); } catch (e) {}
+  $('#vApp').classList.add('hidden'); $('#vLogin').classList.remove('hidden');
+  $('#loginMsg').style.color = ''; $('#loginMsg').textContent = 'Cerraste la sesión.';
+};
+iniciarGoogle();
+
+function pintarBadge() { var n = S.cfg.resumen.columnasNuevas; var b = $('#bCol'); b.textContent = n; b.classList.toggle('hidden', !n); }
+
+/* ===== Navegación ===== */
+$$('#tabs button').forEach(function (b) { b.onclick = function () { ir(b.getAttribute('data-tab')); }; });
+function ir(tab) {
+  S.tab = tab; S.filtro = 'todas';
+  $$('#tabs button').forEach(function (b) { b.setAttribute('aria-current', b.getAttribute('data-tab') === tab ? 'true' : 'false'); });
+  var v = $('#vista'); v.innerHTML = '<p class="sub">Cargando…</p>';
+  ({ resumen: vResumen, contenidos: vContenidos, recomendados: vRecomendados, columnas: vColumnas, suscriptores: vSuscriptores, boletin: vBoletin, ajustes: vAjustes })[tab]();
+}
+
+/* ===== Resumen ===== */
+function vResumen() {
+  run('adminIniciar').then(function (cfg) {
+    S.cfg = cfg; pintarBadge(); var r = cfg.resumen;
+    $('#vista').innerHTML = '<div class="head"><div><h2>Resumen</h2><p class="sub">Estado actual de Vox Liber.</p></div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-s" href="' + esc(cfg.sitio) + '" target="_blank">Ver el sitio</a><a class="btn btn-s" href="' + esc(cfg.planilla) + '" target="_blank">Abrir la planilla</a></div></div>' +
+      '<div class="stats">' +
+      stat(r.contenidos, 'contenidos') + stat(r.recomendados, 'recomendados') + stat(r.activos, 'suscriptores activos') +
+      stat(r.pendientes, 'suscripciones por confirmar') + stat(r.columnasNuevas, 'columnas por revisar') + stat(r.cuotaCorreo, 'correos disponibles hoy') +
+      '</div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px"><button class="btn btn-p" id="qNuevo">Nuevo contenido</button><button class="btn btn-s" id="qRec">Nueva recomendación</button></div>';
+    $('#qNuevo').onclick = function () { ir('contenidos'); abrirEditor('contenidos'); };
+    $('#qRec').onclick = function () { ir('recomendados'); abrirEditor('recomendados'); };
+  }).catch(function (e) { toast(e.message, true); });
+}
+function stat(n, t) { return '<div class="stat"><b>' + n + '</b><span>' + t + '</span></div>'; }
+
+/* ===== Contenidos ===== */
+function vContenidos() {
+  run('adminListar', 'contenidos').then(function (l) { S.datos.contenidos = l; pintarContenidos(); }).catch(function (e) { toast(e.message, true); });
+}
+function pintarContenidos() {
+  var l = S.datos.contenidos, f = S.filtro;
+  var fil = [['todas', 'Todas']].concat(S.cfg.categorias.map(function (k) { return [k.id, k.corto]; }));
+  var items = l.filter(function (c) { return f === 'todas' || c.categoria === f; });
+  $('#vista').innerHTML = '<div class="head"><div><h2>Contenidos</h2><p class="sub">Documentos, columnas, videos, radio, revista y papers.</p></div><button class="btn btn-p" id="nuevo">Nuevo contenido</button></div>' +
+    '<div class="filters">' + fil.map(function (x) { return '<button data-f="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+    (items.length ? '<div class="list">' + items.map(filaContenido).join('') + '</div>' : '<div class="empty">Todavía no hay contenidos aquí. Crea el primero con «Nuevo contenido».</div>');
+  $('#nuevo').onclick = function () { abrirEditor('contenidos'); };
+  $$('.filters button').forEach(function (b) { b.onclick = function () { S.filtro = b.getAttribute('data-f'); pintarContenidos(); }; });
+  enlazarAcciones('contenidos');
+}
+function filaContenido(c) {
+  var k = COLORES[c.categoria] || { corto: c.categoria, color: '#64748B', tinta: '#fff' };
+  return '<div class="row">' + (c.imagenUrl || c.portadaUrl ? '<img class="thumb" src="' + esc(c.imagenUrl || c.portadaUrl) + '" alt="">' : '<div class="thumb">Sin imagen</div>') +
+    '<div class="row-main"><div class="row-title">' + esc(c.titulo) + '</div><div class="row-meta">' +
+    '<span class="chip" style="background:' + k.color + ';color:' + k.tinta + '">' + esc(k.corto) + '</span><span>' + esc(c.fecha) + '</span>' +
+    (c.publicado === 'SI' ? '<span class="chip" style="background:#E3F6EE;color:#0E7A55">Publicado</span>' : '<span class="chip" style="background:#F1F5F9;color:#475569">Borrador</span>') +
+    (c.destacado === 'SI' ? '<span class="chip" style="background:#FDF1D8;color:#8A5A00">En el carrusel</span>' : '') +
+    (c.pdfUrl ? '<a href="' + esc(c.pdfUrl) + '" target="_blank">PDF</a>' : '') + '</div></div>' +
+    '<div class="row-actions"><button class="btn btn-s btn-sm" data-ed="' + c.id + '">Editar</button><button class="btn btn-d btn-sm" data-del="' + c.id + '">Eliminar</button></div></div>';
+}
+
+/* ===== Recomendados ===== */
+function vRecomendados() {
+  run('adminListar', 'recomendados').then(function (l) { S.datos.recomendados = l; pintarRecomendados(); }).catch(function (e) { toast(e.message, true); });
+}
+function pintarRecomendados() {
+  var l = S.datos.recomendados, f = S.filtro;
+  var items = l.filter(function (r) { return f === 'todas' || r.tipo === f; });
+  $('#vista').innerHTML = '<div class="head"><div><h2>Recomendados</h2><p class="sub">Libros, discos, películas y actividades.</p></div><button class="btn btn-p" id="nuevo">Nueva recomendación</button></div>' +
+    '<div class="filters">' + [['todas', 'Todas']].concat(S.cfg.tipos.map(function (t) { return [t, t]; })).map(function (x) { return '<button data-f="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+    (items.length ? '<div class="list">' + items.map(function (r) {
+      var c = TIPO_COLOR[r.tipo] || ['#F1F5F9', '#475569'];
+      return '<div class="row">' + (r.imagenUrl ? '<img class="thumb" src="' + esc(r.imagenUrl) + '" alt="" style="width:56px;height:72px">' : '<div class="thumb" style="width:56px;height:72px">Sin imagen</div>') +
+        '<div class="row-main"><div class="row-title">' + esc(r.titulo) + '</div><div class="row-meta"><span class="chip" style="background:' + c[0] + ';color:' + c[1] + '">' + esc(r.tipo) + '</span>' +
+        (r.autor ? '<span>' + esc(r.autor) + '</span>' : '') + '<span>' + esc(r.fecha) + '</span>' +
+        (r.publicado === 'SI' ? '<span class="chip" style="background:#E3F6EE;color:#0E7A55">Publicado</span>' : '<span class="chip" style="background:#F1F5F9;color:#475569">Borrador</span>') + '</div></div>' +
+        '<div class="row-actions"><button class="btn btn-s btn-sm" data-ed="' + r.id + '">Editar</button><button class="btn btn-d btn-sm" data-del="' + r.id + '">Eliminar</button></div></div>';
+    }).join('') + '</div>' : '<div class="empty">Todavía no hay recomendaciones aquí.</div>');
+  $('#nuevo').onclick = function () { abrirEditor('recomendados'); };
+  $$('.filters button').forEach(function (b) { b.onclick = function () { S.filtro = b.getAttribute('data-f'); pintarRecomendados(); }; });
+  enlazarAcciones('recomendados');
+}
+
+function enlazarAcciones(tipo) {
+  $$('[data-ed]').forEach(function (b) { b.onclick = function () { abrirEditor(tipo, S.datos[tipo].filter(function (x) { return x.id === b.getAttribute('data-ed'); })[0]); }; });
+  $$('[data-del]').forEach(function (b) {
+    b.onclick = function () {
+      var it = S.datos[tipo].filter(function (x) { return x.id === b.getAttribute('data-del'); })[0];
+      if (!confirm('¿Eliminar «' + it.titulo + '»? También se enviarán a la papelera de Drive su imagen y su PDF.')) return;
+      b.disabled = true;
+      run('adminEliminar', tipo, it.id).then(function () { toast('Eliminado.'); ir(tipo); }).catch(function (e) { b.disabled = false; toast(e.message, true); });
+    };
+  });
+}
+
+/* ===== Editor ===== */
+function abrirEditor(tipo, it) {
+  it = it || {}; S.edit = { tipo: tipo, id: it.id || '' }; S.archivos = {};
+  var hoy = new Date(); var f = it.fecha || (hoy.getFullYear() + '-' + ('0' + (hoy.getMonth() + 1)).slice(-2) + '-' + ('0' + hoy.getDate()).slice(-2));
+  var esRec = tipo === 'recomendados';
+  $('#edTitulo').textContent = it.id ? 'Editar' : (esRec ? 'Nueva recomendación' : 'Nuevo contenido');
+  var h = '';
+  if (esRec) {
+    h += '<div class="grid2"><label class="field">Tipo<select name="tipo" required>' + S.cfg.tipos.map(function (t) { return '<option' + (it.tipo === t ? ' selected' : '') + '>' + t + '</option>'; }).join('') + '</select></label>' +
+      '<label class="field">Fecha<input type="date" name="fecha" value="' + esc(f) + '"></label></div>' +
+      '<label class="field">Título<input name="titulo" required value="' + esc(it.titulo) + '"></label>' +
+      '<label class="field">Autor, artista o director<input name="autor" value="' + esc(it.autor) + '"><span class="hint">En actividades: quién la organiza.</span></label>' +
+      '<label class="field">Por qué lo recomiendas<textarea name="nota" maxlength="280">' + esc(it.nota) + '</textarea><span class="hint">Una o dos frases. Máximo 280 caracteres.</span></label>' +
+      '<label class="field">Enlace (opcional)<input type="url" name="enlace" value="' + esc(it.enlace) + '" placeholder="https://"></label>' +
+      bloqueImagen('imagen', 'Imagen', 'Portada del libro, del disco o afiche. Proporción 3:4 (1:1 para discos).', it.imagenUrl, '3 / 4', 1200, 1600);
+  } else {
+    h += '<div class="grid2"><label class="field">Categoría<select name="categoria" required>' + S.cfg.categorias.map(function (k) { return '<option value="' + k.id + '"' + (it.categoria === k.id ? ' selected' : '') + '>' + k.nombre + '</option>'; }).join('') + '</select></label>' +
+      '<label class="field">Fecha de publicación<input type="date" name="fecha" value="' + esc(f) + '"></label></div>' +
+      '<label class="field">Título<input name="titulo" required value="' + esc(it.titulo) + '"></label>' +
+      '<label class="field">Bajada<textarea name="bajada" maxlength="260">' + esc(it.bajada) + '</textarea><span class="hint">Una o dos frases que aparecen bajo el título. Máximo 260 caracteres.</span></label>' +
+      '<label class="field">Enlace externo (opcional)<input type="url" name="enlace" value="' + esc(it.enlace) + '" placeholder="https://"><span class="hint">Video de YouTube, columna en El Heraldo, DOI del paper o episodio.</span></label>' +
+      bloqueImagen('imagen', 'Imagen principal', 'Fotografía para el carrusel y las tarjetas. Proporción 16:9.', it.imagenUrl, '16 / 9', 1600, 900) +
+      bloqueImagen('portada', 'Portada del documento', 'La portada del número o documento. Proporción 3:4.', it.portadaUrl, '3 / 4', 1200, 1600) +
+      '<div class="upload"><div class="upload-top"><b>Documento PDF</b><span class="picker btn btn-s btn-sm">Elegir PDF<input type="file" accept="application/pdf" id="pdfIn"></span></div>' +
+      '<div class="pdfline" id="pdfInfo">' + (it.pdfUrl ? '<a href="' + esc(it.pdfUrl) + '" target="_blank">Ver PDF actual</a><button type="button" class="btn btn-d btn-sm" id="pdfQuitar">Quitar</button>' : 'Sin PDF') + '</div></div>' +
+      '<label class="check"><input type="checkbox" name="destacado"' + (it.destacado === 'SI' ? ' checked' : '') + '> Mostrar en el carrusel de destacados</label>';
+  }
+  h += '<label class="check"><input type="checkbox" name="publicado"' + (it.id ? (it.publicado === 'SI' ? ' checked' : '') : ' checked') + '> Publicado en el sitio</label>';
+  $('#edBody').innerHTML = h;
+  $('#editor').classList.remove('hidden');
+  $('#edBody input[name="titulo"]').focus();
+
+  $$('[data-img]').forEach(function (inp) {
+    inp.onchange = function () {
+      var k = inp.getAttribute('data-img'), file = inp.files[0]; if (!file) return;
+      var box = $('#prev-' + k); box.innerHTML = 'Procesando imagen…';
+      comprimir(file, +inp.getAttribute('data-w'), +inp.getAttribute('data-h')).then(function (r) {
+        S.archivos[k] = r;
+        box.innerHTML = '<img src="data:' + r.mime + ';base64,' + r.base64 + '" alt="Vista previa"><span class="size">' + Math.round(r.base64.length * 0.75 / 1024) + ' KB · ' + r.w + '×' + r.h + '</span>';
+      }).catch(function (e) { box.innerHTML = 'No se pudo leer la imagen.'; toast(e.message, true); });
+    };
+  });
+  $$('[data-quitar]').forEach(function (b) { b.onclick = function () { var k = b.getAttribute('data-quitar'); S.archivos['quitar_' + k] = true; delete S.archivos[k]; $('#prev-' + k).innerHTML = 'Sin imagen'; b.remove(); }; });
+  if ($('#pdfIn')) $('#pdfIn').onchange = function () {
+    var file = this.files[0]; if (!file) return;
+    if (file.size > 30 * 1024 * 1024) { toast('El PDF supera los 30 MB. Exporta una versión más liviana.', true); return; }
+    leerBase64(file).then(function (b64) { S.archivos.pdf = { nombre: file.name, mime: 'application/pdf', base64: b64 }; $('#pdfInfo').textContent = file.name + ' · ' + (file.size / 1048576).toFixed(1) + ' MB'; });
+  };
+  if ($('#pdfQuitar')) $('#pdfQuitar').onclick = function () { S.archivos.quitar_pdf = true; $('#pdfInfo').textContent = 'Sin PDF'; };
+}
+
+function bloqueImagen(k, titulo, ayuda, url, ratio, w, h) {
+  return '<div class="upload"><div class="upload-top"><div><b>' + titulo + '</b><div class="hint">' + ayuda + '</div></div>' +
+    '<span class="picker btn btn-s btn-sm">Elegir imagen<input type="file" accept="image/jpeg,image/png,image/webp" data-img="' + k + '" data-w="' + w + '" data-h="' + h + '"></span></div>' +
+    '<div class="preview" id="prev-' + k + '" style="aspect-ratio:' + ratio + ';max-height:300px">' + (url ? '<img src="' + esc(url) + '" alt="Imagen actual">' : 'Sin imagen') + '</div>' +
+    (url ? '<div><button type="button" class="btn btn-d btn-sm" data-quitar="' + k + '">Quitar imagen</button></div>' : '') + '</div>';
+}
+
+function cerrarEditor() { $('#editor').classList.add('hidden'); S.edit = null; S.archivos = {}; }
+$('#edCerrar').onclick = cerrarEditor; $('#edCancelar').onclick = cerrarEditor;
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && S.edit) cerrarEditor(); });
+
+$('#edForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var fd = new FormData(this), d = { id: S.edit.id };
+  fd.forEach(function (v, k) { d[k] = v; });
+  d.publicado = !!this.publicado.checked;
+  if (this.destacado) d.destacado = !!this.destacado.checked;
+  var A = S.archivos;
+  if (A.imagen) d.imagenNueva = A.imagen; if (A.portada) d.portadaNueva = A.portada; if (A.pdf) d.pdfNuevo = A.pdf;
+  if (A.quitar_imagen) d.quitarImagen = true; if (A.quitar_portada) d.quitarPortada = true; if (A.quitar_pdf) d.quitarPdf = true;
+  var btn = $('#edGuardar'); btn.disabled = true; btn.textContent = (A.pdf || A.imagen || A.portada) ? 'Subiendo archivos…' : 'Guardando…';
+  var tipo = S.edit.tipo;
+  run('adminGuardar', tipo, d).then(function () { cerrarEditor(); toast('Guardado. El sitio se actualiza en unos segundos.'); ir(tipo); })
+    .catch(function (err) { toast(err.message, true); })
+    .then(function () { btn.disabled = false; btn.textContent = 'Guardar'; });
+});
+
+/* Compresión de imágenes en el navegador */
+function leerBase64(file) {
+  return new Promise(function (ok, ko) { var r = new FileReader(); r.onload = function () { ok(String(r.result).split(',')[1]); }; r.onerror = ko; r.readAsDataURL(file); });
+}
+function comprimir(file, maxW, maxH) {
+  return new Promise(function (ok, ko) {
+    var url = URL.createObjectURL(file), img = new Image();
+    img.onload = function () {
+      var f = Math.min(1, maxW / img.width, maxH / img.height);
+      if (img.width < img.height && maxW > maxH) f = Math.min(1, maxH / img.width, maxW / img.height);
+      var w = Math.round(img.width * f), h = Math.round(img.height * f);
+      var cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      var cx = cv.getContext('2d');
+      var png = file.type === 'image/png';
+      if (!png) { cx.fillStyle = '#FFFFFF'; cx.fillRect(0, 0, w, h); }
+      cx.drawImage(img, 0, 0, w, h); URL.revokeObjectURL(url);
+      var mime = png ? 'image/png' : 'image/jpeg', q = 0.86, data = cv.toDataURL(mime, q);
+      if (png && data.length * 0.75 > 600 * 1024) { mime = 'image/jpeg'; cx.globalCompositeOperation = 'destination-over'; cx.fillStyle = '#FFFFFF'; cx.fillRect(0, 0, w, h); data = cv.toDataURL(mime, q); }
+      while (mime === 'image/jpeg' && data.length * 0.75 > 300 * 1024 && q > 0.5) { q -= 0.06; data = cv.toDataURL(mime, q); }
+      var nombre = file.name.replace(/\.[^.]+$/, '') + (mime === 'image/png' ? '.png' : '.jpg');
+      ok({ nombre: nombre, mime: mime, base64: data.split(',')[1], w: w, h: h });
+    };
+    img.onerror = function () { ko(new Error('El archivo no es una imagen válida.')); };
+    img.src = url;
+  });
+}
+
+/* ===== Columnas ===== */
+function vColumnas() {
+  run('adminListar', 'columnas').then(function (l) { S.datos.columnas = l; pintarColumnas(); }).catch(function (e) { toast(e.message, true); });
+}
+function pintarColumnas() {
+  var l = S.datos.columnas, f = S.filtro;
+  var items = l.filter(function (c) { return f === 'todas' || c.estado === f; });
+  $('#vista').innerHTML = '<div class="head"><div><h2>Columnas recibidas</h2><p class="sub">Textos que enviaron los lectores desde el sitio.</p></div></div>' +
+    '<div class="filters">' + [['todas', 'Todas'], ['recibida', 'Por revisar'], ['aprobada', 'Aprobadas'], ['rechazada', 'Rechazadas']].map(function (x) { return '<button data-f="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+    (items.length ? '<div class="list">' + items.map(function (c) {
+      var e = ESTADO_COL[c.estado] || ESTADO_COL.recibida;
+      return '<div class="row"><div class="row-main"><div class="row-title">' + esc(c.titulo) + '</div><div class="row-meta"><span class="chip" style="background:' + e[0] + ';color:' + e[1] + '">' + e[2] + '</span>' +
+        '<span>' + esc(c.nombre) + '</span><a href="mailto:' + esc(c.correo) + '">' + esc(c.correo) + '</a><span>' + esc(c.fecha) + '</span></div>' +
+        (c.nota ? '<div class="hint" style="margin-top:6px">Nota: ' + esc(c.nota) + '</div>' : '') + '</div>' +
+        '<div class="row-actions"><a class="btn btn-s btn-sm" href="' + esc(c.archivoUrl) + '" target="_blank">Abrir</a>' +
+        (c.estado !== 'aprobada' ? '<button class="btn btn-sm" style="background:#E3F6EE;color:#0E7A55" data-col="' + c.id + '" data-est="aprobada">Aprobar</button>' : '') +
+        (c.estado !== 'rechazada' ? '<button class="btn btn-d btn-sm" data-col="' + c.id + '" data-est="rechazada">Rechazar</button>' : '') + '</div></div>';
+    }).join('') + '</div>' : '<div class="empty">No hay columnas en esta lista.</div>');
+  $$('.filters button').forEach(function (b) { b.onclick = function () { S.filtro = b.getAttribute('data-f'); pintarColumnas(); }; });
+  $$('[data-col]').forEach(function (b) {
+    b.onclick = function () {
+      var est = b.getAttribute('data-est');
+      var nota = prompt(est === 'aprobada' ? 'Nota para el autor (opcional):' : 'Motivo o comentario para el autor (opcional):', '');
+      if (nota === null) return;
+      var avisar = confirm('¿Avisar al autor por correo?');
+      b.disabled = true;
+      run('adminColumna', b.getAttribute('data-col'), est, nota, avisar).then(function () {
+        toast(est === 'aprobada' ? 'Columna aprobada.' : 'Columna rechazada.');
+        S.cfg.resumen.columnasNuevas = Math.max(0, S.cfg.resumen.columnasNuevas - 1); pintarBadge(); vColumnas();
+      }).catch(function (e) { b.disabled = false; toast(e.message, true); });
+    };
+  });
+}
+
+/* ===== Suscriptores ===== */
+function vSuscriptores() {
+  run('adminListar', 'suscriptores').then(function (l) {
+    S.datos.suscriptores = l;
+    var act = l.filter(function (s) { return s.estado === 'activo'; }).length;
+    var pen = l.filter(function (s) { return s.estado === 'pendiente'; }).length;
+    var baj = l.filter(function (s) { return s.estado === 'baja'; }).length;
+    $('#vista').innerHTML = '<div class="head"><div><h2>Suscriptores</h2><p class="sub">Solo reciben el boletín quienes confirmaron su correo.</p></div><button class="btn btn-s" id="csv">Descargar CSV</button></div>' +
+      '<div class="stats" style="margin-bottom:20px">' + stat(act, 'activos') + stat(pen, 'por confirmar') + stat(baj, 'dados de baja') + '</div>' +
+      (l.length ? '<div class="tablewrap"><table><thead><tr><th>Correo</th><th>Nombre</th><th>Estado</th><th>Alta</th><th>Último boletín</th></tr></thead><tbody>' +
+        l.map(function (s) { return '<tr><td>' + esc(s.email) + '</td><td>' + esc(s.nombre) + '</td><td>' + esc(s.estado) + '</td><td>' + esc(s.alta) + '</td><td>' + esc(s.ultimoBoletin) + '</td></tr>'; }).join('') +
+        '</tbody></table></div>' : '<div class="empty">Aún no hay suscriptores.</div>');
+    $('#csv').onclick = function () {
+      var csv = 'correo,nombre,estado,alta,ultimo_boletin\n' + l.map(function (s) { return [s.email, s.nombre, s.estado, s.alta, s.ultimoBoletin].map(function (v) { return '"' + String(v || '').replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+      var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv' })); a.download = 'suscriptores_voxliber.csv'; a.click();
+    };
+  }).catch(function (e) { toast(e.message, true); });
+}
+
+/* ===== Boletín ===== */
+function vBoletin() {
+  Promise.all([run('adminVistaBoletin'), run('adminListar', 'boletines')]).then(function (r) {
+    var vista = r[0], hist = r[1];
+    $('#vista').innerHTML = '<div class="head"><div><h2>Boletín semanal</h2><p class="sub">Sale solo cada semana con lo publicado en los últimos 7 días. Si no hay novedades, no se envía.</p></div>' +
+      '<button class="btn btn-p" id="enviar"' + (vista.cantidad ? '' : ' disabled') + '>Enviar ahora</button></div>' +
+      '<p class="sub" style="margin-bottom:12px">Vista previa del próximo boletín: ' + vista.cantidad + ' publicaciones.</p>' +
+      '<iframe class="prev" id="prevBol" title="Vista previa del boletín"></iframe>' +
+      '<h3 style="font-family:var(--serif);font-size:22px;margin:28px 0 12px">Envíos anteriores</h3>' +
+      (hist.length ? '<div class="tablewrap"><table><thead><tr><th>Edición</th><th>Asunto</th><th>Enviados</th><th>Estado</th></tr></thead><tbody>' +
+        hist.map(function (b) { return '<tr><td>' + esc(b.edicion) + '</td><td>' + esc(b.asunto) + '</td><td>' + esc(b.enviados) + '</td><td>' + esc(b.estado) + '</td></tr>'; }).join('') +
+        '</tbody></table></div>' : '<div class="empty">Todavía no se ha enviado ningún boletín.</div>');
+    $('#prevBol').srcdoc = vista.html;
+    $('#enviar').onclick = function () {
+      if (!confirm('¿Enviar el boletín ahora a todos los suscriptores activos?')) return;
+      var b = this; b.disabled = true; b.textContent = 'Enviando…';
+      run('adminEnviarBoletin').then(function (res) { toast(res.mensaje, !res.ok); vBoletin(); }).catch(function (e) { toast(e.message, true); b.disabled = false; b.textContent = 'Enviar ahora'; });
+    };
+  }).catch(function (e) { toast(e.message, true); });
+}
+
+/* ===== Ajustes ===== */
+function vAjustes() {
+  var c = S.cfg;
+  $('#vista').innerHTML = '<div class="head"><div><h2>Ajustes</h2><p class="sub">Acceso y datos del sistema.</p></div></div>' +
+    '<div class="upload" style="max-width:640px;gap:14px">' +
+    '<div><b>Cuenta con acceso al panel</b><div class="sub">' + esc(c.cuenta) + '</div></div>' +
+    '<div class="hint">El panel solo se abre con esta cuenta de Google. Para más seguridad, activa la verificación en dos pasos en myaccount.google.com.</div>' +
+    '<div><b>URL pública de la API</b><div class="sub" style="word-break:break-all">' + (c.urlPublica ? esc(c.urlPublica) : 'Se registrará sola la primera vez que el sitio consulte la API.') + '</div></div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-s btn-sm" href="' + esc(c.planilla) + '" target="_blank">Abrir la planilla</a>' +
+    '<a class="btn btn-s btn-sm" href="' + esc(c.carpeta) + '" target="_blank">Abrir la carpeta en Drive</a>' +
+    '<a class="btn btn-s btn-sm" href="' + esc(c.sitio) + '" target="_blank">Ver el sitio</a></div></div>';
+}
+</script>
+</body>
+</html>
