@@ -321,7 +321,9 @@ function abrirEditor(tipo, it) {
       '<label class="field">Fecha de publicación<input type="date" name="fecha" value="' + esc(f) + '"></label></div>' +
       '<label class="field">Título<input name="titulo" required value="' + esc(it.titulo) + '"></label>' +
       '<label class="field">Bajada<textarea name="bajada" maxlength="260">' + esc(it.bajada) + '</textarea><span class="hint">Una o dos frases que aparecen bajo el título. Máximo 260 caracteres.</span></label>' +
-      '<label class="field">Enlace externo (opcional)<input type="url" name="enlace" value="' + esc(it.enlace) + '" placeholder="https://"><span class="hint">Video de YouTube, columna en El Heraldo, DOI del paper o episodio.</span></label>' +
+      '<label class="field">Texto completo (opcional)<textarea name="texto" id="edTexto" style="min-height:260px;font-family:\'Source Serif 4\',Georgia,serif;font-size:16px;line-height:1.6">' + esc(it.texto) + '</textarea>' +
+      '<span class="hint">Se lee dentro del sitio. Deja una línea en blanco entre párrafos. Subtítulo: <b>## Texto</b>. Negrita: <b>**texto**</b>. Cita destacada: <b>&gt; texto</b>. <span id="edCuenta"></span></span></label>' +
+      '<label class="field">Enlace original o de referencia (opcional)<input type="url" name="enlace" value="' + esc(it.enlace) + '" placeholder="https://"><span class="hint">Columna en El Heraldo, DOI del paper, video de YouTube o episodio de Spotify. Los videos y episodios se reproducen dentro del sitio.</span></label>' +
       bloqueImagen('imagen', 'Imagen principal', 'Fotografía para el carrusel y las tarjetas. Proporción 16:9.', it.imagenUrl, '16 / 9', 1600, 900) +
       bloqueImagen('portada', 'Portada del documento', 'La portada del número o documento. Proporción 3:4.', it.portadaUrl, '3 / 4', 1200, 1600) +
       '<div class="upload"><div class="upload-top"><b>Documento PDF</b><span class="picker btn btn-s btn-sm">Elegir PDF<input type="file" accept="application/pdf" id="pdfIn"></span></div>' +
@@ -331,6 +333,7 @@ function abrirEditor(tipo, it) {
   h += '<label class="check"><input type="checkbox" name="publicado"' + (it.id ? (it.publicado === 'SI' ? ' checked' : '') : ' checked') + '> Publicado en el sitio</label>';
   $('#edBody').innerHTML = h;
   $('#editor').classList.remove('hidden');
+  if ($('#edTexto')) { var cuenta = function () { var n = $('#edTexto').value.length; $('#edCuenta').textContent = ' ' + n.toLocaleString('es-CL') + ' de 45.000 caracteres.'; $('#edCuenta').style.color = n > 45000 ? 'var(--bad)' : ''; }; $('#edTexto').oninput = cuenta; cuenta(); }
   $('#edBody input[name="titulo"]').focus();
 
   $$('[data-img]').forEach(function (inp) {

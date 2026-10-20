@@ -175,6 +175,47 @@ form{display:flex;flex-direction:column;gap:10px}
 .red a.go:hover{filter:brightness(1.08)}
 @media (max-width:760px){.comunidad{padding:40px 0}.com-grid{grid-template-columns:1fr;gap:10px}.red{flex-direction:row;flex-wrap:wrap;align-items:center}.red p{flex-basis:100%}}
 
+/* VISTA DE LECTURA */
+html.leyendo{overflow:hidden}
+.lector{position:fixed;inset:0;z-index:70;background:var(--bg);overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
+.lector.open{display:block}
+.lec-bar{position:sticky;top:0;z-index:3;background:var(--head);border-bottom:1px solid var(--line)}
+.lec-bar-in{max-width:960px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.lec-back{height:44px;padding:0 16px 0 10px;border-radius:22px;border:none;background:var(--soft);color:var(--ink);font-weight:600;font-size:15px;display:flex;align-items:center;gap:6px}
+.lec-bar img{height:40px;width:120px;object-fit:cover;border-radius:8px;background:var(--logoChip)}
+.lec-prog{position:absolute;left:0;bottom:-1px;height:3px;width:0;background:var(--celeste);transition:width .1s linear}
+.lec-art{max-width:720px;margin:0 auto;padding:44px 20px 96px}
+.lec-kick{font-size:14px;font-weight:700}
+.lec-art h1{margin:10px 0 0;font-family:var(--serif);font-size:46px;font-weight:700;line-height:1.08;letter-spacing:-.01em}
+.lec-meta{margin-top:14px;font-size:14px;color:var(--muted)}
+.lec-bajada{margin:22px 0 0;font-family:var(--serif);font-size:23px;line-height:1.5;color:var(--ink2)}
+.lec-fig{margin:32px 0 0}
+.lec-fig img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;background:var(--soft)}
+.lec-embed{position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000;margin-top:32px}
+.lec-embed.sp{aspect-ratio:auto;height:232px;background:transparent}
+.lec-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.lec-body{margin-top:36px;font-family:var(--serif);font-size:20px;line-height:1.75;color:var(--ink)}
+.lec-body p{margin:0 0 1.15em}
+.lec-body h2{font-size:27px;line-height:1.25;margin:1.6em 0 .6em}
+.lec-body blockquote{margin:1.6em 0;font-style:italic;font-size:27px;line-height:1.4;color:var(--blue)}
+.lec-body blockquote::before{content:"«"}.lec-body blockquote::after{content:"»"}
+.lec-body a{color:var(--blue);text-decoration:underline}
+.lec-pdf{margin-top:28px}
+.lec-orig{margin-top:32px;border-radius:16px;background:var(--soft);padding:20px 22px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.lec-orig b{display:block;font-size:15px}.lec-orig span{font-size:14px;color:var(--muted)}
+.lec-orig a{height:42px;padding:0 18px;border-radius:21px;border:1.5px solid var(--line2);font-size:14px;font-weight:600;display:inline-flex;align-items:center}
+.lec-share{margin-top:36px;padding-top:24px;border-top:1px solid var(--line)}
+.lec-share b{display:block;font-size:15px;margin-bottom:12px}
+.lec-share-row{display:flex;flex-wrap:wrap;gap:8px}
+.lec-share-row a,.lec-share-row button{height:42px;padding:0 16px;border-radius:21px;border:none;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;color:#fff}
+.lec-cta{margin-top:36px;border-radius:18px;background:var(--navy);color:#fff;padding:24px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+.lec-cta p{margin:0;font-family:var(--serif);font-size:21px;font-weight:600;flex:1 1 260px}
+.lec-estado{max-width:720px;margin:0 auto;padding:80px 20px;text-align:center;color:var(--muted);font-size:16px}
+@media (max-width:760px){
+  .lec-art{padding:28px 18px 120px}.lec-art h1{font-size:31px}.lec-bajada{font-size:19px}
+  .lec-body{font-size:18.5px;line-height:1.72}.lec-body h2{font-size:23px}.lec-body blockquote{font-size:22px}
+}
+
 /* INSTALAR APP */
 .instalar{position:fixed;left:16px;bottom:16px;z-index:45;max-width:380px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:14px 14px 14px 16px;display:none;align-items:center;gap:12px;box-shadow:0 20px 40px -16px rgba(15,23,42,.45)}
 .instalar.ver{display:flex;animation:fade .35s ease}
@@ -381,6 +422,18 @@ form{display:flex;flex-direction:column;gap:10px}
 </div>
 <nav class="tabbar" aria-label="Navegación inferior" id="tabbar"></nav>
 
+<div class="lector" id="lector" role="dialog" aria-modal="true" aria-label="Lectura">
+  <div class="lec-bar">
+    <div class="lec-bar-in">
+      <button type="button" class="lec-back" id="lecVolver"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Volver</button>
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAb8BvwMBIgACEQEDEQH/xAAcAAEAAgMBAQEAAAAAAAAAAAAABgcBBAUCAwj/xABNEAACAQICBQULCQUGBQUAAAAAAQIDBAURBhIhMVEHQVRhkxMVFzI1cYGRkrHRFCIjQlVyc6HBFjM0UlNDRGKy4fAkJXSCojaDlLPx/8QAGgEBAAMBAQEAAAAAAAAAAAAAAAMEBQIBBv/EACkRAQACAQMEAQQCAwEAAAAAAAABAgMEEVESFCExEwUVMjMiNEFCUmH/2gAMAwEAAhEDEQA/ALxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAzPLeXmAzmZI1jOmWF4XUdJ1J3Fdf2dFZ5ed7iNV+Um5csrfDacV/jqNv8AJIlrgyW9Qr31OOs7TKyhmlzlYeEbEehW3tSHhHxDoVv7UjvtcvDjvcSz8zGa4orDwj4h0K29qQ8JGIdCt/al8R2uXg73Es/NcTOa4lX+EjEOhW/tSHhIxDoVv7Uh2uXg7zFytAFYeEfEOhW/tSHhHxHoVt7Uh2uXg73Es8FYeEfEehW3tSHhHxHoVt7UjztMvB3mLlZ2a4oZriVh4R8Q6Fb+1IeEjEOhW/tSHa5eDvMXK0AVf4R8Q6Fbe1IeEfEOhW3tSPe1y8He4lobBmuJV/hHxDoVv7Uh4SMQ6Fb+1Idrl4O9xLPzXEzmVf4R8Q6Fb+1IeEjEOhW/tSHaZeDvMXK0AVh4R8R6Fbe1I90+Ue7z+mw6jOP+GbT/ADHa5eDvMSzDJEsH06wq+nGlW17So1sVVLVfmaJVGpGcU4tNPc1zkNqTX3CxTJW/qXsGFtBy7ZBgJgZAMMDIMZjMDIMDMDIAAAAAAAAAAAAAAAAAAAAAAAAAYHzlLVK2020tq1q1TDsMqyhRi9WrWg/Gf8qfAlOnWKPC8EqSpyyrVn3KD4N8/qKeSy4Zl3SYYt/KWbrdRNZ6IPS9+fUHs5vSx1JZvgWPoloXRp0oXmLwVSs8pRoy8WHn4sv5s1cVd1DDivmlXtK2uK37q3r1FxhSkz6d7b97rG77CXwL2o0KdKChThGMVzRWR71UUe+twvR9PryobvbiHQLvsJ/Ax3tv+gXfYT+BfequA1VwHfW4e/bq8qF723/QbvsJ/Ad7b/oF32E/gX1qrgNVcB31uD7dXlQqw6/6Bd9hP4Ge91/0C77CfwL51VwQ1VwHfW4Pt9eVDd7r/oF32E/gYeHYh0C77CfwL6yjwGquA763B9uryoXvbiHQLvsJ/Ad7cQ6Bd9hP4F9aq4DVXAd9bg+3V5UL3txDoF32E/gO9t/0C7/+PP4F9aq4DVXAd/bg+3V5UL3tv+g3fYT+Bjvbf9Au+wn8C+9VcBkuA7+3B9uryoXvbf8AQLvsJ/Ad7b/oN32E/gX1qrgNVcB31uD7dXlQFW3r0P39vVp/iU3H3nzz4etF/wBW3p1YuNSClF7GpLNEcv8AQbB7ys6qp1KDe9UZ6qfoJKa/mEd/p8/4lUby6vWSjRHSyvhNaNvd1HUsZNL5zzdLrXUSvweYP/Uuu0/0Hg7wj+pddp/oeZdTiyRtMGLS5cdt4lLaNWNWCnCSlGSTTTzTRmpUjThKc3lGKbbNXCcPp4XY07SlUqTp09kXUebyPOMfNw64a3qlJ/kZ8RvbZpWtNKTLlz0qtFVaUKjin4+Ww7ttWhXpQq03rRms0+orFJJbs9xPtGvI9r9wt6nBXHWJhnaHWXzZLVl1XsNPEcRoYfT7pcSyT3Jb2bhGtLrOtXhRrUoynGm3rJbytjrFrREruovamObVh0cNxy2xCbp0taM0s9WSy2G9dXNO2oyq1nqxitrIZo3YV54lTrOEowpt5trLet35ne0qz7z1c9+cfeS5MVYyRWs+FfDqck4JveNpeKGk9nUrKDVSKk8lKUckd2MtaOfMVavzLLsn/wALSef1V7jvU4IxbbI/p+rtn3izZRkxmMyo1GQYTGYGQedYa3UB6B51gB6B5M5gZBjMAZBjPzDNgZBjMyAAAAxLdsMmJbgK35V6rdbDqH1Uqk/8pA+YnHKt/H4f+FP3og7yyefA2tH+qGDrfOWd0k0BwyOI49CVWOtSto90kubPPJL9S1b66o4fZVru5nqUaEHOb35JLaQjkppR7niFXnc4R9WZNsTsaOI4fcWVwm6Vem4S9KM7U26sm0tLR16cW8K3uOVzKs/kmFuVLPZKrVybXHJLYSrQ3TO20mVamqcre6opSnSk084vnT50UhjGH1sIxS5sLjPulCWq3/MuZ+lGxotjE8Bxy1vov5kHq1Yr60Hkmv19BLbT16N6lc09W0v0jHajJ8betCvRhVpSUoTSlFp70z6OWSKK5u5uP4za4FhlW/vZtU6exJb5N7kusryfK7U7p9HhC1OEqyUvgc3lax75discJoT+hs3nVae+o8vcmQHbk9ZbOdl3Dp6zXqsp5c0xbar9FaK6SW2kmHu6tlKEoy1alOW+DOpdXVK1pSq3FWFKnFZylN5JekjfJ7gLwLR+lGqnG5uPpqy/lbWyPoRXnKnpDWxDGquGU5tWdplHVX16nO3x6vMV64+q+0JpydNd5THEuVPBbabhZQrXsls1oLVj63v9Rxp8r1XW+jwhav8Aiq/6FYc23cdvD9EsfxG3Ve0wuvKlLxZSyjn6y3ODHSP5K8Zr29Jl4Xq/2RDtn8D6UeV2Tl9NhKUc/qVtv5oiX7BaT/ZVTtIfE0cV0axnB6Pd8Qw+vRo5/vNkoxfXkzyMeG3iHs3ywtnB+UvBMRnGnXlVsqkt3d4/Nf8A3ImdKpGpCMoSUotZqS5z8uvg/wD9LO5ItIa87mpgdzJzp6jqW7lLNxa8aPm5/WRZ9PFI3h3izdU7Stacso555FdY5yp2dlcSo4ZbSvNRtSqyepDZw52WFWhGpRnCa1oyWTT4FAaX6I3ejNys9arYz2Uq8lt80uD95HgpS1v5JM1rVjws3RTlDscduFaXMHZXcvEhN5xn5nxJsmfltScJKSck4vNNPJp82RaugPKB3fueF47UiquyNG5b2VOqXBkmbT9Pmvpxizb+JWhzHNxvGLLBLKd3iFbudOO5LfJ8EudmtpLpHZaP4fK6vJ7dqp0ov51R8EUVpHpBe6Q37ub2WUFspUYv5lNcF19fOR4sM5Jd5MsVjwnk+VzK4+bhMu4Z75Vcp5ebInejOkVjpFZO5sajeo9WpTmsp03waPztb0Kt1Xp29tTdSvUerCnFZtsvHk60WqaOYfVndz1ru6alUit0Elkokmox46R49o8OS9p8pjzGhjXky5/Cl7mb63GhjXky6/Cl7ivT8oS5v1yrrmJ9o15Ht/M/eyBLcie6M+Rbb7n6mjrfwhh/Sv3Wb91cRt6E6svFis2ROppVXm3qUKajzZvaSjErf5XZ1aGeWvFrPgQG+w+4sJRhcRW3PKSe/Ig0lMd52st/UsubHG9PSQYRpC7i6hb16cYOfiyizd0rf/J6vnj70RPCPKlp+KiWaVeRqnnj7zrLjrTNEQi0+a+TTW6kH2HdpaT3NGChGhTaSyTzZwvNvOhDA8RnFSjQzi1mvnIv5q4p262Tp75qzPxOh+1lzz0KfrZt2elcJTUbqlqLPLWi80cZ4HiUE38nfoazOdUjKEpRqLKSeTi0Qxg0942qtd5q8U739LNo1oVqanTacWs0095oY5iqw2jGSi5zk8oxOTofdyfdbWTbUfnQ28w00/u3nZQrh2zdEta+qmdN8lWt+1d0/wCwp+th6V3f9Gl62cKnCVSpGnT8aTyS4nQ7w4k91vn/AN6NG2HT08WY+PVavJ5o3f2ru/6NL1sz+1dzz0aXrZo94cS6P/5Ifs/iT2dw/wDJI46NKl+TXcJdgmKRxO3c9XUnGWrKPA3a9aFClKpUkoxjtbZy9HcNqYfbzVbbUqS1pZPcczTG7knStYt6rzlPJ7+CKEY4vl6a+mtbPbFg67+30u9K4qbja0XNL60nkjV/au6/oU/WzgQjKpUjCCzlLYornZ0FgeItZq3frRofBgpG1mL3mqy+aem9+1V1/Qpe0zfwfSKd3dRoV6ai5eLKJGLuzuLKSVxDVzWw++B+V7X7xzkwYpxzarvDrM8ZYpdYeexHpGFuRlGU+kj0yAA9DEtzMmJbmBWnKt/H4f8AhT96IM/0Jzyrfx9h+FP3og5taT9UMDW/tlY3JR/BYh+NH/KTxrNED5KFnZYh+NH/ACk9MvP+yWvpf1QrLlg0e7tbUsaoQ+fbx7nXy54N7G/MypurmP09fW1K7tqtvcQU6VSLjOD50z856R4NVwHFq+H1s2qTWpN/XhzMsaXJ/rKLUU2neFp8kmO/LcGeGV5N1rJ/Nbe+m3mvVnkSnSfGKeB4Lc39XLOnD5kf5pPYl6yi9D8angWP216m+46yhWXM4S2N+jf6CUcrmPK8vbbC7apnQoR7rUafjTfi+pbfSR3wT8n/AI7rljoQCtWqXNepXryc6tWTnNvnbZLOTPR/vzjquK0FK1scpzb2qUvqx/LMiUKc6lSFOnFynOSio5b29yP0HoTgMNH8CoWmqlWktetLLfN7/Vu9BPqMnRTphHhr1W3l3l4qyWw/N+kzb0jxNt5v5TP3n6Se4/Nmkv8A6hxL/qZ+8g0n5pdT6a+E04VcWsqdRZxlcU00+da2R+mKdNQilFZJLJJcyPzVgm3GbD/qaf8AmR+mEe6v8nmmjwZGjjVGNfC7unUjGUJUZpxfPsZvmpimzD7n8KfuZUr7hYt6fmOHirzEq5MW1pvh3BqqvRqMisPFXmJTyZf+t8O/9z/65GpkjfFKhT81+rca9/ZUL+1qW13RhVo1FlOE1mmbCMSeRlR4loe4UTpxoVc6O15XNqpVsNlL5s98qL4S6usiOxrPLei89PtLbHBbOpZqlC6va0GlbS2xSfPPqKNnLOTbUY5vdFZJeY08FrWr5UM1Yi3h9ru8ub2dOV3cVazpwUIOpLPUityR6w+xusRvKdrY0ZVa89kYL3vgjWJdyeaUW+jt7Uhe0IfJ7iS1riMfn0/9CTJPTX+LisdVvKytCdC7XRygqtXVr4hOK16uWyPVHgiWxWR8bWvTuKUa1CcZ0ppSjOLzUk+dM+5lWmZny0a1iI8BoYz5Muvwpe43zRxnyZc/hS9zPaflDjN+uVdLmJ9ox5GtvufqQBE+0Z8jW33P1NHW/hDD+lful1WRPTRZVLbzS/Qli3kT01/eW3ml+hU0n7YaX1H+vMuJhHlS0/FiS3SryPPzx96IlhD/AOaWn4sSWaV+SJ/ej70WtT++rN0X9S6Dv9Sy7KKVrSy/lRWr/Usuy/hKX3V7jz6hPp19H92fbVzTIFpNFQxerkt8Yv8AInxAtKvLFT7kf1ItF+xa+rRHw7vvog/+az/Cfvibmmn92+8zS0Q8qy/Cfvibmmm62879xNf+1Cpi/oyjtnVVC6o1ZZ5Qlm0vQSqOlVol+6r+yviRB7XsTb4GdSf9OfsstZ8NMk72lQ0upy4onohL/wBq7T+hX9S+J08NxO3xKm50G9mxxe9FfKnUf9nP2WSfRC2rU51q04yjTkkop7M2ilnwY613rLU0mrz5MkRePCUEH0sb77PnWosuonLINpX5Vf3ER6L9sJ/q36HjRiCniseKg2idJbCD6KeVV9x/oTpbhrZ3yn0qI+FGtK8Or3XcqtCLnqZpxjvaZzdH8Luu+NOtVpShCDzbmmsybavmCjlwI66i0U6U19DS+aMgtyPSBkgXgAADD3GTDArTlW/j7D8KfvRBiwOVa3eth1xzfPg36mvcyvzZ0c74oYGsjbLKwuSmtFUsRo5/O14T/LIsHMp7QPElh2OxVSWrTuV3OWfM+ZlwReazM7VV6cktPRX6scQy1mV9ytaPu/wqGKW0M7iz8dJeNSe/1b/WWFzHzr0oVqcqdSKlGSaafOiGlum26zevVGz8uvbt4mW3KTlJtt729rf+0d7THRy50fxetT7lN2VSTlQqqLyye3J8Gjk4fY3WI3VO1sqMqlapJRikn631cTVjJWY6mf0TE7JnyUaP98cWlitxD/h7N5QTXjVOb1bC6IrI5WjOD0cCwe2sKOT7lFa8v5pve/WdczMt+u+6/ip01YluPznpnazs9KsUpVU1/wAQ5rrjLamj9GMhenmhUNIoxurScaWIUoaqcs9WpHg/idYMnRby5zU6o8KSt68ra5o16eTnSnGcU9zaeZdmGcpmAXFtGd1Xna1svn06lNvJ9TWZUWJ6PYxhU3C+w2vTWeyag5Rl5ms0c2Sa3559ayLuSmPL53VqWvj8bL68ImjH2kuyn8Dj6TcpWELDa9HCqkrq4qwcY/McYrPnbaKc29f5nqMJyaUYyk+bVTIo09In26nNefGzxFNJL82TLkntalxphSqwTcLajOpOWWxZrVS871vyZycG0SxzGKija4fVhSe+tWi4Qj6XvLn0O0XttGbF0qcu6XNTbWq5Zaz5kuo6z5qRTpq8xY7TO8pFzEF0807pYLTlY4bq1sQktrz+bRXF9fUTe4UpUKkYy1ZOLSlweW8/N2NYTiWE3tSjitGoqzebrSTcaj4qXPmVcFK2t/JPmtNY8NK4r1LqtUr3FSdWrUevKpLa5M6Wjmj99pDfq1sY6sV+9rS8WkuPv2G3ononf6R3cVCnOjaJ/S3MobF1Liy88CwaywWwhaYfRjTpx2t73J8W+dlrJnikdNEGPDNp3lVml3JzWwy0heYLKpc06UV3anLbPNfWj1dRX+TW/cfqNwi1lzMrTT/k/wDlLqYngVLVr7ZVraH9p1xXHq5yPDqJ9Wd5cH+aonoPprX0brRt7lSr4dJ/Ogn86k+MfgXhh1/b4jaU7m0qxq0aizjKL2H5mnRqwqulUozjUTy1HF558Mi4uSTCMSw3DbmrfxlRo3ElKjRnsay3yy5szzUUr+UPcNrepWCaOM+TLn8KXuZvI08Wg6lhXjHe6cll6CtT8oS5v1zsrhfAm2jF3R73UKCqQdSMcnFPamQjmaezZk0zcwjXeKW3c3t7ovF4c5ramlcmPfd83oslsObbZY6fAiemr+ktvT+hKYbkRfTSDztp/Vzlm+G4ztN4yw2vqG86ednCwjypafixJbpX5In96PvRFMGg54raqOWammyWaURcsIqau3JxezqZa1Mx88M7RVmNLdB+bN8Se2mK2ULanGdzSTUUvGRAVtRktZ8Fcv8AlR0uqtppnwsJ4xY5N/KaezhIhWNXUL3Eatal4jSS9BpZGYQlOSjTi5SbyUVznGLT0wz1bpdRrcmpr0bO5ofCTxOpJ7lS/VfA3dNIPuVvPmUmn6jd0bwyVjbudbZVqfOkuHUbmM2Mb+ynR+tlnHzlO+aJz9TTxaa3adE+0AtavcbilVyz1JJ5E6t8Uw+dNS+UUlnxaRBbihUtqsoV4ShNPJ5rZ6GfIu5cVc+0xLKwajJpZms13WH3zw/pFH2kZWJ4ensuqWf3kV2GQ9jE/wCy1X6reP8AVZ9OrGrFSg1JczTIVpX5Vf4a/U6mhspu0rRebip/Nz3buY5mlkZLFFJ7IuCy6yHTV6M+yzrrzl0vVs86KeVV9x/oTpbiDaJpyxPNbUoPN+onMdxxrJicqb6ZExh8sjIGSq0gAAAAAMMyYaA4el+Fd+MFr28F9LFa9J8+sv8AeXpKZnGUJyhNNSi2mnvR+gGmQTTTRCV3OeIYXH6bfUorZ3TrXWXNLn+P+MqGs0/yfyqrjdtWzzFi6J6a05U4WeL1NSrH5sa78WS6+DK8qU50qkqdWEoTj40ZLJo8v/eZfy4a5oZuLNfDK/qNenWipUpxnF88ZZo+msuooGlWrUf3NarT/Dm4n174X3TbntpfEpzoLcr0fUa8L2qQp1FqzjCS4SWZ4pW9Ci26NGlTb3uEEsyi3iF70277eXxHy++6dddvL4jsb8n3CvC+s11DWRQvy++6bd9vL4j5ffdNuu3l8Tzsb8vfuNeF9ayGa6ihfl990267eXxHfC+6bc9vL4nnY25PuNeF8vVaye3qPjKztJvOdvRk+LpplGK/vn/frrt5fEz8vvunXXby+J72N+Xn3CvC8fkNl0S37NHqna21J506FGD4xgkUZ8vvunXXbS+Jh4hfdNuu2l8R2V+Tv6f8r6TihrLqKF74XvTbnt5fEfL73ptz28viedjfk+414X1rLqPnVp0q0dWrCE48JxTRRPfC96bddvL4jvjfdNuu2l8T3sbcn3GvC+IxpwioxjFRW5JZI9a0She+N70257eXxHfC96bc9vL4jsL8n3CvC9a9xSowcqlSMIpbXJ5IiuLae4bY1u5W8J3bXjOk0kvSVfUrVq376tUqdc5uR43bPcS00MR+Uo7/AFCZj+KwHyg2EqqqSweo6n87cM/WfV8pVsk28Or7N/0kSu4pyeUU2+C3sm+h+htWvOF9itLUpLbSoS+s+Zvq6jzNhw0gw5s+S3hP8Ju539jSualCVu6iz7nJ5tI25JPeIRyWXNzHozZasevLnVcHsak3OVvTcnz6p9LXDrW2nr0aEIS4qJug967be3EYqRO+zGR8Lq2pXNPUrQU48GszYGR5HjykmsTG0tGzwy1tJOdvRhCT50tptVKcakNWUU01k0z3lsCT4Hs2mZ3cxSsRtEeHMeBYc5N/JobeCMd4cN6NE6uRjJnXyX5R9vi/5cvvDh3Roeo2rewtrb9zRhHjkjbSB5N7T7l1XBjr5iDLYYZ6MHKVrXFpRuFq1qUZr/EszT7w4dz20PUdUw0zqL2j1KK2HHbzMOX3hw3o0F6AsBw/o0DqZMZHvyW5c9vi4fG3t6dvT1KNNRityij53dhb3aSuKUZ5bm1uNsZHO877pJpWY22adpYULTZQpxgupG2ZyAmZnzL2tIr4qyADx0AAAAAAAAwzy45+Y9mMgOTimj+G4r/GW0Zy/nWyS9KI5X5N8PlLOhe3VNfyvVl+hOchkd1y3r6lFbBjt7hAvBpbfaVx7ER4NLb7SuOziT3IZdZ18+Tlx22LhAvBrbfaVx2cR4Nbb7SuOziT3LrGXWPnycve2x8IF4NLb7SuPYiPBpbfaVx7ESe5dYy6x8+Tl522PhAlya232jcemEQ+TW2+0a/ZxJ8YyHz5eTtcXCtcT5OqtKlr4fd92mt8KsUs/M1uIZe2dzYXDoXlCdGpwmt/m4l+tGniGG2uIW8qN3QhWg1uksyfHrL1/JBl0NJ81UPmuJ9rSFKpeUadxN06U5qM5x3xT5ycY5yfSTlVwernxo1X7mQe9srmxqyoXlGdGquaS/UvVz1y1nb2zb4LY7RvHhPo8nFrNZrEa+T/AMET2uTW2+0a/ZxO3oTibxTAqU5POrR+innxW5+lZMkJmXzZKztMtXHp8dq77IF4Nbb7Rr9nEeDW2+0a/ZxJ+YOfnycpO1xcID4Nbb7Rr9nEyuTW2+0a/ZxJ7kMh8+Tk7XFwgXg2tvtG47OJ7pcm9ipLut/dTjwioxfryJ1kMh8+Tk7XFw4mFaL4ThbUra2Tqf1Kj1pfmdnVyPWQyI5tM+5TVpFfUCMhA8dAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYMgDy1sNLEcNs8RpOle0IVYPmktvoZvmGhEzHpzasW8Sj2BaOQwK9rys7ifyWulnQnt1ZJ8zJAjORk9mZnzL2IiPEAAPHoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/2Q==" alt="Vox Liber">
+      <button type="button" class="icon-btn" id="lecCompartir" aria-label="Compartir"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+    </div>
+    <span class="lec-prog" id="lecProg"></span>
+  </div>
+  <div id="lecCont"></div>
+</div>
+
 <div class="instalar" id="instalar" role="dialog" aria-label="Instalar Vox Liber">
   <img src="icon-192.png" alt="">
   <div style="flex:1;min-width:0"><b>Instala Vox Liber</b><span id="instTxt">Tenla a un toque, como una app, en tu celular o computador.</span></div>
@@ -427,16 +480,16 @@ var I = {
 
 var DATA = {
   destacados: [
-    { tipo:'Documento de Investigación', titulo:'Chile S.A.D.P.: los ciudadanos se quedan con la marca, otros con la renta', bajada:'Sobre la desafección ciudadana con la clase política y quién se queda con lo que produce el país.', boton:'Leer documento', url:'#', imagen:'https://picsum.photos/seed/voxliber-chile/1400/900', color:'#1D3A63',
+    { slug:'demo-lectura', tipo:'Documento de Investigación', titulo:'Chile S.A.D.P.: los ciudadanos se quedan con la marca, otros con la renta', bajada:'Sobre la desafección ciudadana con la clase política y quién se queda con lo que produce el país.', boton:'Leer documento', url:'#', imagen:'https://picsum.photos/seed/voxliber-chile/1400/900', color:'#1D3A63',
       portada:{ titulo:'Chile S.A.D.P.', serie:'Documento de Investigación', num:'Número VII · 2026', fondo:'#0F2E57', tinta:'#FFFFFF', acento:'#3BB4E8' } },
     { tipo:'Documento de Investigación', titulo:'¿S.O.S. a la Humanidad o paremos para que no bajen nuestras acciones?', bajada:'El miedo a la inteligencia artificial, leído desde la lógica de la sospecha: quién gana cuando la tecnología nos asusta.', boton:'Leer documento', url:'#', imagen:'https://picsum.photos/seed/voxliber-ia/1400/900', color:'#2A2353',
       portada:{ titulo:'¿S.O.S. a la Humanidad?', serie:'Documento de Investigación', num:'Número VIII · 2026', fondo:'#1E1B3A', tinta:'#FFFFFF', acento:'#B79CFF' } },
-    { tipo:'Columna en El Heraldo', titulo:'Educación autopoiética: entre Maturana y Altman', bajada:'Qué queda de la educación cuando la máquina también aprende, y por qué la pregunta de Maturana sigue vigente.', boton:'Leer columna', url:'#', imagen:'https://picsum.photos/seed/voxliber-educacion/1400/900', color:'#0F4A4A',
+    { slug:'demo-columna', tipo:'Columna en El Heraldo', titulo:'Educación autopoiética: entre Maturana y Altman', bajada:'Qué queda de la educación cuando la máquina también aprende, y por qué la pregunta de Maturana sigue vigente.', boton:'Leer columna', url:'#', imagen:'https://picsum.photos/seed/voxliber-educacion/1400/900', color:'#0F4A4A',
       portada:{ titulo:'Educación autopoiética', serie:'Columna de opinión', num:'El Heraldo · 2026', fondo:'#F3EFE6', tinta:'#1B2430', acento:'#0E9F8E' } }
   ],
   categorias: [
     { id:'investigacion', img:'https://picsum.photos/seed/vl-inv/600/400', nombre:'Documentos de Investigación', corto:'Investigación', desc:'Análisis con dossier, glosario y preguntas para discutir.', color:'#1B5A99', tinta:'#FFFFFF', icono:'inv', ultimo:'¿S.O.S. a la Humanidad o paremos para que no bajen nuestras acciones?', mas:'Ver investigación' },
-    { id:'columnas', img:'https://picsum.photos/seed/vl-col/600/400', nombre:'Columnas de prensa', corto:'Columnas', desc:'Opinión publicada en El Heraldo.', color:'#0E9F8E', tinta:'#FFFFFF', icono:'col', ultimo:'Educación autopoiética: entre Maturana y Altman', mas:'Ver columnas' },
+    { slug:'demo-columna', id:'columnas', img:'https://picsum.photos/seed/vl-col/600/400', nombre:'Columnas de prensa', corto:'Columnas', desc:'Opinión publicada en El Heraldo.', color:'#0E9F8E', tinta:'#FFFFFF', icono:'col', ultimo:'Educación autopoiética: entre Maturana y Altman', mas:'Ver columnas' },
     { id:'youtube', img:'https://picsum.photos/seed/vl-yt/600/400', nombre:'YouTube', corto:'YouTube', desc:'Los documentos explicados en video.', color:'#F5A400', tinta:'#0B1B33', icono:'yt', ultimo:'Meritocracia: ¿una mentira noble? Explicado en 12 minutos', mas:'Ver videos' },
     { id:'radio', img:'https://picsum.photos/seed/vl-radio/600/400', nombre:'Radio y podcast', corto:'Radio', desc:'Vox Liber Radio en vivo y episodios.', color:'#6A3FC1', tinta:'#FFFFFF', icono:'radio', ultimo:'En vivo: Cinismo Ilustrado, conversación sin anestesia', mas:'Escuchar' },
     { id:'revista', img:'https://picsum.photos/seed/vl-rev/600/400', nombre:'Revista Vox Liber', corto:'Revista', desc:'Todos los números de la revista.', color:'#0F172A', tinta:'#FFFFFF', icono:'rev', ultimo:'N° II: El capitalismo cognitivo y la renta del conocimiento', mas:'Ver revista' },
@@ -501,7 +554,7 @@ function renderSlide(){
   var s=DATA.destacados[slide];
   $('#heroTxt').innerHTML='<div class="fade" style="display:flex;flex-direction:column;gap:16px">'+
     '<div class="kicker">'+esc(s.tipo)+'</div><h1>'+esc(s.titulo)+'</h1><p>'+esc(s.bajada)+'</p>'+
-    '<div class="btns"><a class="btn btn-blue" href="'+s.url+'">'+esc(s.boton)+'</a>'+
+    '<div class="btns">'+(s.slug?'<a class="btn btn-blue js-leer" data-slug="'+esc(s.slug)+'" href="?leer='+encodeURIComponent(s.slug)+'">':'<a class="btn btn-blue" href="'+s.url+'">')+esc(s.boton)+'</a>'+
     '<button type="button" class="btn btn-ghost js-share" data-title="'+esc(s.titulo)+'">'+ico('M8.6 13.5l6.8 4M15.4 6.5l-6.8 4M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',17,2)+'Compartir</button></div></div>'+
     '<div class="car-ctl"><button type="button" class="car-arrow" id="prev" aria-label="Destacado anterior">'+ico('M15 6l-6 6 6 6',18,2.2)+'</button>'+
     '<div class="dots">'+DATA.destacados.map(function(x,i){return '<button type="button" data-go="'+i+'" aria-label="Ir al destacado '+(i+1)+'" aria-current="'+(i===slide)+'"></button>'}).join('')+'</div>'+
@@ -528,7 +581,8 @@ renderSlide();restart();
 /* Lo último de cada categoría */
 function renderTiles(){
 $('#tiles').innerHTML=DATA.categorias.map(function(c){
-  return '<a class="tile" href="'+(c.url||'#ultimo')+'"'+(c.url&&c.url.indexOf('http')===0?' target="_blank" rel="noopener"':'')+' style="background:'+c.color+';color:'+c.tinta+'">'+(c.img?'<img class="tile-ph" src="'+c.img+'" alt="" loading="lazy" onerror="this.remove()">':'')+
+  var enlace=c.slug?' class="tile js-leer" data-slug="'+esc(c.slug)+'" href="?leer='+encodeURIComponent(c.slug)+'"':' class="tile" href="'+(c.url||'#ultimo')+'"'+(c.url&&c.url.indexOf('http')===0?' target="_blank" rel="noopener"':'');
+  return '<a'+enlace+' style="background:'+c.color+';color:'+c.tinta+'">'+(c.img?'<img class="tile-ph" src="'+c.img+'" alt="" loading="lazy" onerror="this.remove()">':'')+
   '<span class="tile-name">'+ico(I[c.icono])+esc(c.corto)+'</span>'+
   '<span class="tile-title">'+esc(c.ultimo)+'</span>'+
   '<span class="tile-more">'+esc(c.mas)+ico('M5 12h14M13 6l6 6-6 6',18,2.2)+'</span></a>'}).join('');
@@ -660,13 +714,13 @@ function cargarContenido(){
     if(!hay)return;
     var nombres={};d.categorias.forEach(function(c){nombres[c.id]=c.nombre});
     DATA.destacados=d.destacados.map(function(x){
-      return {tipo:nombres[x.categoria]||'',titulo:x.titulo,bajada:x.bajada,boton:CAT_BOTON[x.categoria]||'Ver más',
+      return {slug:x.slug,tipo:nombres[x.categoria]||'',titulo:x.titulo,bajada:x.bajada,boton:CAT_BOTON[x.categoria]||'Ver más',
         url:x.pdf||x.enlace||'#',imagen:x.imagen,color:CAT_COLOR[x.categoria]||'#1D3A63',
         portada:x.portada||{titulo:x.titulo,serie:nombres[x.categoria]||'',num:'',fondo:'#0F2E57',tinta:'#FFFFFF',acento:'#3BB4E8'}};
     });
     DATA.categorias=d.categorias.map(function(c){
       var u=c.ultimo;
-      return {id:c.id,nombre:c.nombre,corto:c.corto,desc:c.desc,color:c.color,tinta:c.tinta,icono:c.icono,
+      return {slug:u?u.slug:'',id:c.id,nombre:c.nombre,corto:c.corto,desc:c.desc,color:c.color,tinta:c.tinta,icono:c.icono,
         img:u&&(u.imagen||u.portada)||'',ultimo:u?u.titulo:'Muy pronto',mas:u?c.mas:'Próximamente',url:u?(u.pdf||u.enlace||''):''};
     });
     DATA.recomendados=d.recomendados.map(function(r){return {tipo:r.tipo,titulo:r.titulo,autor:r.autor,nota:r.nota,imagen:r.imagen}});
@@ -680,6 +734,101 @@ cargarContenido();
 var tabs=[{l:'Inicio',i:'home',u:'#inicio'},{l:'Categorías',i:'grid',u:'#ultimo'},{l:'Radio',i:'radio',u:'#radioBox'},{l:'Boletín',i:'mail',u:'#boletin'},{l:'Más',i:'more',u:'#recomendados'}];
 $('#tabbar').innerHTML=tabs.map(function(t,k){return '<a href="'+t.u+'"'+(k===0?' class="on" aria-current="page"':'')+'>'+ico(I[t.i])+t.l+'</a>'}).join('');
 $$('#tabbar a').forEach(function(a){a.addEventListener('click',function(){$$('#tabbar a').forEach(function(x){x.classList.remove('on');x.removeAttribute('aria-current')});a.classList.add('on');a.setAttribute('aria-current','page')})});
+
+/* Vista de lectura: cada contenido se lee dentro del sitio, con su propia dirección (?leer=…) */
+var DEMO_LECTURA={
+  'demo-lectura':{categoria:'investigacion',titulo:'Chile S.A.D.P.: los ciudadanos se quedan con la marca, otros con la renta',bajada:'Sobre la desafección ciudadana con la clase política y quién se queda con lo que produce el país.',fecha:'2026-10-18',imagen:'https://picsum.photos/seed/voxliber-chile/1400/900',pdf:'#',enlace:'',
+    texto:'Esta es la vista de lectura de Vox Liber. Así se verá el texto completo de cada documento, columna o paper cuando lo publiques desde el panel de administración.\n\nEl lector no sale del sitio: lee aquí, comparte desde aquí y, si quiere, descarga el PDF o consulta la publicación original con los botones del final.\n\n## Un subtítulo de ejemplo\n\nLos subtítulos se escriben con dos signos numeral al comienzo de la línea. Las **negritas** van entre dos asteriscos y los enlaces se escriben así: [Vox Liber en YouTube](https://www.youtube.com/@voxliber).\n\n> Una cita destacada se escribe con el signo mayor que al comienzo de la línea.\n\nCuando publiques tu primer contenido real, este texto de ejemplo desaparece.'},
+  'demo-columna':{categoria:'columnas',titulo:'Educación autopoiética: entre Maturana y Altman',bajada:'Qué queda de la educación cuando la máquina también aprende.',fecha:'2026-01-12',imagen:'https://picsum.photos/seed/voxliber-educacion/1400/900',pdf:'',enlace:'https://example.com/columna-original',
+    texto:'Así se verá una columna publicada antes en un diario. El texto completo se lee aquí, en Vox Liber, y al final aparece el recuadro «Publicada originalmente en…», con el enlace al medio, a modo de referencia.\n\nEste es un texto de ejemplo. Cuando publiques tus columnas desde el panel, aquí aparecerá cada una con su propia dirección para compartir.'}
+};
+var CAT_INFO={investigacion:['Documento de Investigación','#1B5A99'],columnas:['Columna','#0E9F8E'],youtube:['Video','#E62117'],radio:['Radio y podcast','#6A3FC1'],revista:['Revista Vox Liber','#3B8FE0'],papers:['Paper académico','#0B76AE']};
+var MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function fechaLarga(f){var p=String(f||'').split('-');if(p.length<3)return '';return (+p[2])+' de '+MESES[(+p[1])-1]+' de '+p[0]}
+function md(t){
+  function enl(x){return x.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')}
+  return String(t||'').replace(/\r\n/g,'\n').split(/\n\s*\n/).map(function(b){
+    b=b.trim();if(!b)return '';var e=esc(b);
+    if(/^##\s+/.test(b))return '<h2>'+enl(esc(b.replace(/^##\s+/,'')))+'</h2>';
+    if(/^>\s?/.test(b))return '<blockquote>'+enl(esc(b.replace(/^>\s?/gm,'')))+'</blockquote>';
+    return '<p>'+enl(e).replace(/\n/g,'<br>')+'</p>';
+  }).join('');
+}
+function embed(url){
+  if(!url)return '';var m;
+  if((m=url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|live\/|embed\/)|youtu\.be\/)([\w-]{11})/)))
+    return '<div class="lec-embed"><iframe src="https://www.youtube-nocookie.com/embed/'+m[1]+'" title="Video" allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
+  if((m=url.match(/open\.spotify\.com\/(episode|show)\/([\w]+)/)))
+    return '<div class="lec-embed sp"><iframe src="https://open.spotify.com/embed/'+m[1]+'/'+m[2]+'" title="Spotify" allow="encrypted-media" loading="lazy"></iframe></div>';
+  return '';
+}
+function medio(url){try{return new URL(url).hostname.replace(/^www\./,'')}catch(e){return ''}}
+var lector=$('#lector'),lecAbierto=false,lecEmpujado=false,lecActual=null;
+function urlLectura(slug){return location.origin+location.pathname+'?leer='+encodeURIComponent(slug)}
+function pintarLector(it,cat){
+  var ci=CAT_INFO[it.categoria]||[cat&&cat.nombre||'','#1B5A99'];
+  var emb=embed(it.enlace),url=urlLectura(it.slug),txt=encodeURIComponent(it.titulo+' | Vox Liber');
+  var h='<article class="lec-art fade"><div class="lec-kick" style="color:'+ci[1]+'">'+esc(ci[0])+'</div>'+
+    '<h1>'+esc(it.titulo)+'</h1>'+(it.fecha?'<div class="lec-meta">'+fechaLarga(it.fecha)+'</div>':'')+
+    (it.bajada?'<p class="lec-bajada">'+esc(it.bajada)+'</p>':'')+
+    (emb||(it.imagen?'<figure class="lec-fig"><img src="'+esc(it.imagen)+'" alt="" onerror="this.parentNode.remove()"></figure>':''))+
+    (it.texto?'<div class="lec-body">'+md(it.texto)+'</div>':'<div class="lec-body"><p style="color:var(--muted)">Este contenido no tiene texto para leer aquí.'+(it.pdf?' Descárgalo en PDF con el botón de abajo.':'')+'</p></div>')+
+    (it.pdf?'<div class="lec-pdf"><a class="btn btn-blue" href="'+esc(it.pdf)+'" target="_blank" rel="noopener">'+ico('M12 3v12M7 10l5 5 5-5M4 21h16',18,2)+'Descargar el documento (PDF)</a></div>':'')+
+    (it.enlace&&!emb?'<div class="lec-orig"><div><b>Publicada originalmente en '+esc(medio(it.enlace))+'</b><span>Puedes consultar la versión original en el medio.</span></div><a href="'+esc(it.enlace)+'" target="_blank" rel="noopener">Ver publicación original</a></div>':'')+
+    '<div class="lec-share"><b>Comparte esta lectura</b><div class="lec-share-row">'+
+      '<a href="https://wa.me/?text='+txt+'%20'+encodeURIComponent(url)+'" target="_blank" rel="noopener" style="background:#1FA855">WhatsApp</a>'+
+      '<a href="https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+txt+'" target="_blank" rel="noopener" style="background:#229ED9">Telegram</a>'+
+      '<a href="https://x.com/intent/post?text='+txt+'&url='+encodeURIComponent(url)+'" target="_blank" rel="noopener" style="background:#0F172A">X</a>'+
+      '<a href="https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url)+'" target="_blank" rel="noopener" style="background:#1877F2">Facebook</a>'+
+      '<a href="https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(url)+'" target="_blank" rel="noopener" style="background:#0A66C2">LinkedIn</a>'+
+      '<button type="button" id="lecCopiar" style="background:var(--soft);color:var(--ink)">Copiar enlace</button></div></div>'+
+    '<div class="lec-cta"><p>¿Te sirvió esta lectura? Recibe lo nuevo de Vox Liber cada domingo.</p><button type="button" class="btn" id="lecSuscribir" style="background:#fff;color:#0F2E57">Suscribirme al boletín</button></div>'+
+    '</article>';
+  $('#lecCont').innerHTML=h;lector.scrollTop=0;$('#lecProg').style.width='0';
+  document.title=it.titulo+' · Vox Liber';
+  $('#lecCopiar').onclick=function(){var b=this;(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){b.textContent='Enlace copiado'},function(){prompt('Copia este enlace:',url)})};
+  $('#lecSuscribir').onclick=function(){cerrarLector();setTimeout(function(){var bx=$('#boletin');bx.scrollIntoView({behavior:'smooth',block:'center'});var i=bx.querySelector('input[type=email]');if(i)i.focus({preventScroll:true})},80)};
+}
+function abrirLector(slug,empujar){
+  lecAbierto=true;lector.classList.add('open');document.documentElement.classList.add('leyendo');
+  if(empujar){history.pushState({leer:slug},'','?leer='+encodeURIComponent(slug));lecEmpujado=true}
+  $('#lecCont').innerHTML='<div class="lec-estado">Cargando la lectura…</div>';$('#lecVolver').focus();
+  var demo=DEMO_LECTURA[slug];
+  if(demo){var d=JSON.parse(JSON.stringify(demo));d.slug=slug;lecActual=d;pintarLector(d);return}
+  if(!CONFIG.apiUrl){$('#lecCont').innerHTML='<div class="lec-estado">Este contenido no está disponible.</div>';return}
+  fetch(CONFIG.apiUrl+'?api=item&id='+encodeURIComponent(slug)).then(function(r){return r.json()}).then(function(r){
+    if(!lecAbierto)return;
+    if(!r.ok){$('#lecCont').innerHTML='<div class="lec-estado">'+esc(r.error||'Este contenido no está disponible.')+'<br><br><button type="button" class="btn btn-blue" onclick="cerrarLector()">Ir a la portada</button></div>';return}
+    lecActual=r.item;pintarLector(r.item,r.categoria);
+  }).catch(function(){$('#lecCont').innerHTML='<div class="lec-estado">No hay conexión. Revisa tu internet e intenta de nuevo.</div>'});
+}
+function cerrarLector(){
+  if(!lecAbierto)return;lecAbierto=false;lector.classList.remove('open');document.documentElement.classList.remove('leyendo');
+  document.title='Vox Liber';
+  if(new URLSearchParams(location.search).get('leer')){
+    if(lecEmpujado){lecEmpujado=false;history.back()}else{history.replaceState({},'',location.pathname)}
+  }
+}
+document.addEventListener('click',function(e){
+  var a=e.target.closest&&e.target.closest('a.js-leer');if(!a)return;
+  if(e.metaKey||e.ctrlKey||e.shiftKey)return;
+  e.preventDefault();abrirLector(a.getAttribute('data-slug'),true);
+});
+$('#lecVolver').onclick=cerrarLector;
+$('#lecCompartir').onclick=function(){
+  if(!lecActual)return;var url=urlLectura(lecActual.slug);
+  if(navigator.share)navigator.share({title:lecActual.titulo,text:lecActual.titulo+' | Vox Liber',url:url}).catch(function(){});
+  else window.open('https://wa.me/?text='+encodeURIComponent(lecActual.titulo+' | Vox Liber '+url),'_blank','noopener');
+};
+lector.addEventListener('scroll',function(){var m=lector.scrollHeight-lector.clientHeight;$('#lecProg').style.width=(m>0?Math.min(100,lector.scrollTop/m*100):0)+'%'},{passive:true});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lecAbierto)cerrarLector()});
+window.addEventListener('popstate',function(){
+  var sl=new URLSearchParams(location.search).get('leer');
+  if(sl&&!lecAbierto)abrirLector(sl,false);
+  else if(!sl&&lecAbierto){lecEmpujado=false;lecAbierto=false;lector.classList.remove('open');document.documentElement.classList.remove('leyendo');document.title='Vox Liber'}
+});
+(function(){var sl=new URLSearchParams(location.search).get('leer');if(sl)abrirLector(sl,false)})();
 
 /* Instalar como app (PWA) */
 if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
