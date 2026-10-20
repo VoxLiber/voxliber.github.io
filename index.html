@@ -233,6 +233,22 @@ html.leyendo{overflow:hidden}
 @media (max-width:760px){.cat-page{padding:28px 16px 120px}.cat-page h1{font-size:32px}.cat-grid{grid-template-columns:1fr;gap:14px}}
 
 /* INSTALAR APP */
+.app-card{display:flex;flex-wrap:wrap;align-items:center;gap:18px;border-radius:20px;background:var(--navy);color:#fff;padding:22px 24px;margin-bottom:22px}
+.app-card img{width:64px;height:64px;flex:none}
+.app-card div{flex:1 1 260px}
+.app-card b{display:block;font-family:var(--serif);font-size:22px}
+.app-card span{display:block;font-size:14.5px;line-height:1.5;color:#C7D4E4;margin-top:4px}
+.btn-app{height:48px;padding:0 22px;border-radius:24px;border:none;background:#fff;color:#0F2E57;font-weight:700;font-size:15px;display:inline-flex;align-items:center;gap:8px}
+.btn-app:hover{background:#E8F0FB}
+.foot-app{height:40px;padding:0 16px;border-radius:20px;border:1.5px solid rgba(255,255,255,.3);background:transparent;color:#fff;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;margin-top:8px}
+.guia{position:fixed;inset:0;z-index:80;background:rgba(11,27,51,.6);display:none;align-items:flex-end;justify-content:center;padding:16px}
+.guia.ver{display:flex}
+.guia-box{width:100%;max-width:440px;background:var(--card);color:var(--ink);border-radius:20px;padding:24px;box-shadow:0 30px 60px rgba(0,0,0,.4)}
+.guia-box h3{margin:0 0 6px;font-family:var(--serif);font-size:22px}
+.guia-box ol{margin:14px 0 18px;padding-left:22px;font-size:15.5px;line-height:1.7}
+.html-instalada .js-instalar,.html-instalada .app-card{display:none!important}
+@media (min-width:761px){.guia{align-items:center}}
+
 .instalar{position:fixed;left:16px;bottom:16px;z-index:45;max-width:380px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:14px 14px 14px 16px;display:none;align-items:center;gap:12px;box-shadow:0 20px 40px -16px rgba(15,23,42,.45)}
 .instalar.ver{display:flex;animation:fade .35s ease}
 .instalar img{width:44px;height:44px;flex:none}
@@ -267,6 +283,7 @@ html.leyendo{overflow:hidden}
   .head-in{justify-content:space-between}
   .nav.drawer{display:flex;position:fixed;inset:76px 0 0 0;background:var(--head);flex-direction:column;align-items:stretch;padding:16px;gap:4px;overflow-y:auto}
   .nav.drawer a,.nav.drawer button{font-size:17px;padding:16px}
+  .nav.drawer .nav-app{display:flex!important;color:var(--blue);font-weight:700}
   .mega{position:static;box-shadow:none;border:none}
 }
 @media (max-width:760px){
@@ -314,6 +331,7 @@ html.leyendo{overflow:hidden}
       <a href="?cat=youtube" class="yt js-cat" data-cat="youtube"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="#E62117"/><path d="M10 9v6l5-3z" fill="#fff"/></svg>YouTube</a>
       <a href="#recomendados">Recomendados</a>
       <a href="#nosotros">Nosotros</a>
+      <a href="#comunidad" class="js-instalar nav-app" style="display:none">Instala la app</a>
     </nav>
     <div class="tools">
       <button class="icon-btn" type="button" aria-label="Buscar"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
@@ -412,6 +430,11 @@ html.leyendo{overflow:hidden}
       <h2 class="h2" id="t-com">Súmate a la conversación</h2>
       <p class="lead">Vox Liber está en tus redes. Elige dónde quieres seguirnos y no te pierdas ninguna publicación.</p>
     </div>
+    <div class="app-card" id="appCard">
+      <img src="icon-192.png" alt="">
+      <div><b>La app de Vox Liber</b><span>Instálala gratis en tu celular o computador: un ícono en tu pantalla de inicio, a pantalla completa y con la radio a un toque.</span></div>
+      <button type="button" class="btn-app js-instalar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Instala la app</button>
+    </div>
     <div class="com-grid" id="comGrid"></div>
   </div>
 </section>
@@ -420,6 +443,7 @@ html.leyendo{overflow:hidden}
   <div class="wrap foot-in">
     <div style="flex:1 1 320px;display:flex;flex-direction:column;gap:8px">
       <div class="serif" style="font-size:22px;font-weight:700;color:#fff">Vox Liber</div>
+      <button type="button" class="foot-app js-instalar" style="order:3;align-self:flex-start"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Instala la app</button>
       <div style="font-size:14px;line-height:1.6;max-width:460px">Pensamiento crítico sobre cultura, educación, economía, tecnología y política, desde 2010. Dirigida por Luis Leyton-Johns.</div>
     </div>
     <div class="foot-links">
@@ -448,6 +472,14 @@ html.leyendo{overflow:hidden}
     <span class="lec-prog" id="lecProg"></span>
   </div>
   <div id="lecCont"></div>
+</div>
+
+<div class="guia" id="guia" role="dialog" aria-modal="true" aria-labelledby="guiaT">
+  <div class="guia-box">
+    <h3 id="guiaT">Instala Vox Liber</h3>
+    <div id="guiaTxt"></div>
+    <button type="button" class="btn btn-blue" id="guiaOk" style="width:100%;justify-content:center">Entendido</button>
+  </div>
 </div>
 
 <div class="instalar" id="instalar" role="dialog" aria-label="Instalar Vox Liber">
@@ -491,7 +523,8 @@ var I = {
   home:'M3 11l9-8 9 8M5 9.5V20h5v-6h4v6h5V9.5',
   grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
   mail:'M3 5h18v14H3zM3.5 6l8.5 7 8.5-7',
-  more:'M5 12h.01M12 12h.01M19 12h.01'
+  more:'M5 12h.01M12 12h.01M19 12h.01',
+  inst:'M12 3v12M7 10l5 5 5-5M5 21h14'
 };
 
 var DATA = {
@@ -748,8 +781,8 @@ function cargarContenido(){
 cargarContenido();
 
 /* Barra inferior móvil */
-var tabs=[{l:'Inicio',i:'home',u:'#inicio'},{l:'Categorías',i:'grid',u:'#ultimo'},{l:'Radio',i:'radio',u:'#radioBox'},{l:'Boletín',i:'mail',u:'#boletin'},{l:'Más',i:'more',u:'#recomendados'}];
-$('#tabbar').innerHTML=tabs.map(function(t,k){return '<a href="'+t.u+'"'+(k===0?' class="on" aria-current="page"':'')+'>'+ico(I[t.i])+t.l+'</a>'}).join('');
+var tabs=[{l:'Inicio',i:'home',u:'#inicio'},{l:'Categorías',i:'grid',u:'#ultimo'},{l:'Radio',i:'radio',u:'#radioBox'},{l:'Boletín',i:'mail',u:'#boletin'},{l:'Instalar',i:'inst',u:'#comunidad',c:'js-instalar'}];
+$('#tabbar').innerHTML=tabs.map(function(t,k){return '<a href="'+t.u+'"'+(k===0?' class="on" aria-current="page"':(t.c?' class="'+t.c+'"':''))+'>'+ico(I[t.i])+t.l+'</a>'}).join('');
 $$('#tabbar a').forEach(function(a){a.addEventListener('click',function(){$$('#tabbar a').forEach(function(x){x.classList.remove('on');x.removeAttribute('aria-current')});a.classList.add('on');a.setAttribute('aria-current','page')})});
 
 /* Vista de lectura: cada contenido se lee dentro del sitio, con su propia dirección (?leer=…) */
@@ -869,19 +902,33 @@ if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventLi
 (function(){
   var caja=$('#instalar'),btn=$('#instBtn'),evento=null;
   var instalada=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
-  var cerrada=false;try{cerrada=localStorage.getItem('vl-instalar-cerrado')==='1'}catch(e){}
-  if(instalada||cerrada)return;
-  function mostrar(){setTimeout(function(){caja.classList.add('ver')},6000)}
-  function ocultar(){caja.classList.remove('ver')}
-  $('#instCerrar').onclick=function(){ocultar();try{localStorage.setItem('vl-instalar-cerrado','1')}catch(e){}};
-  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();evento=e;mostrar()});
-  btn.onclick=function(){if(!evento)return;evento.prompt();evento.userChoice.then(function(){evento=null;ocultar()})};
-  window.addEventListener('appinstalled',ocultar);
-  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
-  if(ios){
-    $('#instTxt').innerHTML='Toca <b style="display:inline">Compartir</b> y luego <b style="display:inline">Agregar a inicio</b>.';
-    btn.style.display='none';mostrar();
+  if(instalada){document.documentElement.classList.add('html-instalada');return}
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var android=/android/i.test(navigator.userAgent);
+  function guia(){
+    var pasos=ios
+      ?'<ol><li>Abre este sitio en <b>Safari</b>.</li><li>Toca el botón <b>Compartir</b> (el cuadrado con una flecha hacia arriba).</li><li>Elige <b>Agregar a inicio</b> y toca <b>Agregar</b>.</li></ol>'
+      :android
+        ?'<ol><li>Abre el menú del navegador (los <b>tres puntos ⋮</b>, arriba a la derecha).</li><li>Elige <b>Instalar app</b> o <b>Agregar a la pantalla principal</b>.</li><li>Confirma con <b>Instalar</b>.</li></ol>'
+        :'<ol><li>En Chrome o Edge, toca el ícono de instalar en la barra de direcciones (una pantalla con una flecha), o abre el menú <b>⋮</b>.</li><li>Elige <b>Instalar Vox Liber</b>.</li><li>Confirma con <b>Instalar</b>.</li></ol>';
+    $('#guiaTxt').innerHTML='<p style="margin:0;color:var(--muted);font-size:14.5px">Se instala gratis y ocupa muy poco espacio.</p>'+pasos;
+    $('#guia').classList.add('ver');$('#guiaOk').focus();
   }
+  $('#guiaOk').onclick=function(){$('#guia').classList.remove('ver')};
+  $('#guia').onclick=function(e){if(e.target===this)this.classList.remove('ver')};
+  function instalar(e){
+    if(e)e.preventDefault();
+    if(evento){evento.prompt();evento.userChoice.then(function(r){evento=null;caja.classList.remove('ver');if(r&&r.outcome==='accepted')document.documentElement.classList.add('html-instalada')})}
+    else guia();
+  }
+  $$('.js-instalar').forEach(function(b){b.addEventListener('click',instalar)});
+  btn.onclick=instalar;
+  var cerrada=false;try{cerrada=localStorage.getItem('vl-instalar-cerrado')==='1'}catch(e){}
+  function mostrar(){if(!cerrada)setTimeout(function(){caja.classList.add('ver')},6000)}
+  $('#instCerrar').onclick=function(){caja.classList.remove('ver');try{localStorage.setItem('vl-instalar-cerrado','1')}catch(e){}};
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();evento=e;mostrar()});
+  window.addEventListener('appinstalled',function(){caja.classList.remove('ver');document.documentElement.classList.add('html-instalada')});
+  if(ios){$('#instTxt').innerHTML='Toca <b style="display:inline">Compartir</b> y luego <b style="display:inline">Agregar a inicio</b>.';btn.style.display='none';mostrar()}
 })();
 </script>
 </body>
