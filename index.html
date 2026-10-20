@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vox Liber</title>
+<meta name="description" content="Vox Liber: pensamiento crítico sobre cultura, educación, economía, tecnología y política. Documentos de investigación, revista, columnas, papers, videos y radio en vivo.">
+<meta property="og:title" content="Vox Liber">
+<meta property="og:description" content="Pensamiento crítico sobre cultura, educación, economía, tecnología y política.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F8FAFC;--head:#FFFFFF;--card:#FFFFFF;--soft:#EEF2F7;--ink:#0F172A;--ink2:#334155;--muted:#5B6676;
+  --line:#E2E8F0;--line2:#B8C2D0;--blue:#1B5A99;--celeste:#3BB4E8;--navy:#0F2E57;--night:#0B1B33;--logoChip:transparent;
+  --serif:'Source Serif 4',Georgia,serif;--sans:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#0B1220;--head:#0F172A;--card:#111C2E;--soft:#1A2638;--ink:#EEF2F7;--ink2:#C9D3DF;--muted:#9AA7B8;
+  --line:#24324A;--line2:#3A4A63;--blue:#3B8FE0;--logoChip:#FFFFFF;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+img{display:block}
+:focus-visible{outline:3px solid var(--celeste);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.serif{font-family:var(--serif)}
+
+/* CABECERA */
+.head{position:sticky;top:0;z-index:50;background:var(--head);border-bottom:1px solid var(--line);box-shadow:0 6px 24px -18px rgba(15,23,42,.5)}
+.head-in{display:flex;align-items:center;gap:24px;padding-top:12px;padding-bottom:12px}
+.logo{display:flex;background:var(--logoChip);border-radius:12px;padding:2px 8px;flex:none}
+.logo img{height:52px;width:156px;object-fit:cover}
+.nav{display:flex;align-items:center;gap:0;flex:1;flex-wrap:nowrap;white-space:nowrap}
+.nav a,.nav button{position:relative;padding:14px 11px;border:none;background:none;color:var(--ink2);font-size:15px;font-weight:500;display:flex;align-items:center;gap:7px;border-radius:10px}
+.nav a:hover,.nav button:hover{background:var(--soft);color:var(--ink)}
+.nav a.on{color:var(--ink);font-weight:600}
+.nav a.on::after{content:"";position:absolute;left:11px;right:11px;bottom:5px;height:3px;border-radius:2px;background:var(--blue)}
+.chev{transition:transform .2s}
+.nav button[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.tools{display:flex;align-items:center;gap:10px;flex:none}
+.icon-btn{width:44px;height:44px;border-radius:22px;border:none;background:none;color:var(--ink);display:flex;align-items:center;justify-content:center}
+.icon-btn:hover{background:var(--soft)}
+.theme{display:flex;padding:4px;border-radius:24px;background:var(--soft)}
+.theme button{width:38px;height:36px;border-radius:18px;border:none;background:transparent;color:var(--ink);display:flex;align-items:center;justify-content:center}
+.theme button[aria-pressed="true"]{background:var(--head);box-shadow:0 1px 3px rgba(15,23,42,.25)}
+.theme .sun{color:#F5A400}
+.radio-pill{height:48px;padding:0 18px 0 8px;border-radius:14px;border:none;background:var(--navy);color:#fff;font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px}
+.radio-pill .pp{width:34px;height:34px;border-radius:17px;background:#fff;color:var(--navy);display:flex;align-items:center;justify-content:center}
+.burger{display:none}
+
+/* MEGAMENÚ */
+.mega{position:absolute;left:0;right:0;top:100%;background:var(--head);border-bottom:1px solid var(--line);box-shadow:0 24px 40px -24px rgba(15,23,42,.45);display:none}
+.mega.open{display:block}
+.mega-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding-top:24px;padding-bottom:28px}
+.mega a{display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:14px;background:var(--soft)}
+.mega a:hover{outline:2px solid var(--line2)}
+.cat-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.mega b{display:block;font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink)}
+.mega span span{display:block;font-size:13.5px;line-height:1.4;color:var(--muted);margin-top:3px}
+
+/* CARRUSEL */
+.hero{background:var(--night);color:#fff}
+.hero-in{display:flex;flex-wrap:wrap;min-height:460px}
+.hero-txt{flex:1 1 520px;padding:60px 48px 44px 0;display:flex;flex-direction:column;justify-content:center;gap:16px}
+.kicker{font-size:14px;font-weight:600;color:var(--celeste)}
+.hero h1{margin:0;font-family:var(--serif);font-size:54px;font-weight:700;line-height:1.08;letter-spacing:-.01em;max-width:640px}
+.hero p{margin:0;font-size:18px;line-height:1.55;color:#C7D4E4;max-width:560px}
+.btns{display:flex;gap:12px;flex-wrap:wrap;padding-top:8px}
+.btn{height:52px;padding:0 24px;border-radius:26px;font-size:16px;font-weight:600;display:inline-flex;align-items:center;gap:8px;border:none}
+.btn-blue{background:#1B5A99;color:#fff}
+.btn-blue:hover{background:#1F68B0}
+.btn-ghost{border:1.5px solid rgba(255,255,255,.35);color:#fff;background:transparent}
+.btn-ghost:hover{background:rgba(255,255,255,.08)}
+.car-ctl{display:flex;align-items:center;gap:14px;padding-top:20px}
+.car-arrow{width:44px;height:44px;border-radius:22px;border:1.5px solid rgba(255,255,255,.3);background:transparent;color:#fff;display:flex;align-items:center;justify-content:center}
+.dots{display:flex;gap:8px}
+.dots button{width:8px;height:8px;border-radius:4px;border:none;padding:0;background:rgba(255,255,255,.35);transition:width .25s,background .25s}
+.dots button[aria-current="true"]{width:28px;background:var(--celeste)}
+.hero-img{position:relative;overflow:hidden;flex:1 1 420px;min-height:360px;display:flex;align-items:flex-end;justify-content:flex-end;padding:40px;transition:background-color .4s;margin-right:-32px}
+.hero-img .ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.15) brightness(.9)}
+.hero-img .tint{position:absolute;inset:0;background:#1B5A99;mix-blend-mode:multiply;opacity:.7}
+.hero-img .fadeL{position:absolute;inset:0;background:linear-gradient(90deg,#0B1B33 0%,rgba(11,27,51,0) 40%)}
+.cover{position:relative;z-index:2;width:230px;aspect-ratio:3/4;padding:18px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 30px 60px -20px rgba(0,0,0,.7);transform:rotate(3deg);border-radius:3px;overflow:hidden}
+.cover .c-top{display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:.06em;opacity:.85}
+.cover .c-title{font-family:var(--serif);font-weight:700;font-size:26px;line-height:1.02}
+.cover .c-foot{font-size:10px;opacity:.85;border-top:1px solid currentColor;padding-top:8px}
+.cover .c-art{position:absolute;right:-30px;top:60px;width:150px;height:150px;border-radius:50%;opacity:.25}
+.fade{animation:fade .45s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* CUERPO */
+.body{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;padding-top:56px;padding-bottom:72px}
+.main{flex:999 1 640px;min-width:0;display:flex;flex-direction:column;gap:64px}
+.side{flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:18px}
+.h2{margin:0;font-family:var(--serif);font-size:32px;font-weight:700}
+.lead{margin:6px 0 0;font-size:15px;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-top:22px}
+.tile{position:relative;overflow:hidden;isolation:isolate;min-height:190px;border-radius:18px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;gap:16px;transition:transform .15s,box-shadow .15s}
+.tile:hover{transform:translateY(-3px);box-shadow:0 18px 30px -18px rgba(15,23,42,.6)}
+.tile .tile-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;filter:grayscale(1);mix-blend-mode:luminosity;opacity:.22}
+.tile-name{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700}
+.tile-title{font-family:var(--serif);font-size:21px;font-weight:600;line-height:1.22}
+.tile-more{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:600;opacity:.88}
+
+.rec-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.seg{display:flex;flex-wrap:wrap;gap:6px;padding:5px;border-radius:26px;background:var(--soft)}
+.seg button{height:38px;padding:0 16px;border-radius:19px;border:none;background:transparent;color:var(--muted);font-size:14px;font-weight:600}
+.seg button[aria-selected="true"]{background:var(--head);color:var(--ink);box-shadow:0 1px 3px rgba(15,23,42,.18)}
+.recs{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:18px;margin-top:22px}
+.rec{display:flex;flex-direction:column;gap:10px}
+.rec-img{border-radius:12px;background:var(--soft);display:flex;align-items:center;justify-content:center;color:var(--line2);overflow:hidden}
+.rec-img img{width:100%;height:100%;object-fit:cover}
+.gc{width:100%;height:100%;padding:16px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.gc .t{font-family:var(--serif);font-weight:700;line-height:1.05;position:relative}
+.gc .a{font-size:11.5px;letter-spacing:.04em;position:relative;opacity:.9}
+.gc .deco{position:absolute;border-radius:50%}
+.rec-img{box-shadow:0 14px 28px -18px rgba(15,23,42,.55)}
+.chip{align-self:flex-start;font-size:12px;font-weight:700;padding:4px 10px;border-radius:10px}
+.rec h3{margin:0;font-family:var(--serif);font-size:18px;font-weight:600;line-height:1.25}
+.rec p{margin:0;font-size:13.5px;line-height:1.45;color:var(--muted)}
+
+.box{border-radius:18px;padding:22px}
+.box-dark{background:var(--navy);color:#fff}
+.box-line{border:1px solid var(--line);background:var(--card)}
+.box h3{margin:0;font-family:var(--serif);font-size:21px;font-weight:700}
+.live{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#8FD3F5}
+.live i{width:8px;height:8px;border-radius:4px;background:#FF5A5F}
+.player{display:flex;align-items:center;gap:14px;padding-top:18px}
+.play{width:52px;height:52px;border-radius:26px;border:none;background:var(--celeste);color:var(--night);display:flex;align-items:center;justify-content:center;flex:none}
+.bars{flex:1;height:36px;display:flex;align-items:center;gap:3px}
+.bars span{flex:1;border-radius:2px;background:rgba(143,211,245,.45);transition:background .3s}
+.playing .bars span{background:var(--celeste);animation:eq 1s ease-in-out infinite alternate}
+.playing .bars span:nth-child(3n){animation-delay:.2s}.playing .bars span:nth-child(4n){animation-delay:.45s}
+@keyframes eq{from{transform:scaleY(.4)}to{transform:scaleY(1)}}
+.socials{display:flex;gap:10px;padding-top:14px;flex-wrap:wrap}
+.socials a{width:44px;height:44px;border-radius:22px;color:#fff;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.socials a:hover{transform:scale(1.08)}
+.field{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600}
+.field input{height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:0 12px;font:inherit;font-size:14px}
+.box-dark input{height:46px;border:none;border-radius:10px;background:#fff;color:#0F172A;padding:0 14px;font:inherit;font-size:15px;width:100%}
+.file{position:relative;display:flex;align-items:center;gap:10px;min-height:46px;border:1.5px dashed var(--line2);border-radius:10px;padding:8px 12px;font-size:13.5px;color:var(--muted);cursor:pointer}
+.file input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.submit{height:46px;border:none;border-radius:23px;font-size:15px;font-weight:600;color:#fff}
+.ok{border-radius:10px;padding:14px;font-size:14.5px;line-height:1.45}
+form{display:flex;flex-direction:column;gap:10px}
+
+/* PIE */
+.foot{background:var(--night);color:#C7D4E4}
+.foot-in{display:flex;flex-wrap:wrap;gap:32px;justify-content:space-between;padding-top:44px;padding-bottom:44px}
+.foot-links{display:flex;flex-wrap:wrap;gap:8px 28px;font-size:14px}
+.foot-links a{padding:6px 0}.foot-links a:hover{color:#fff}
+
+/* BARRA INFERIOR MÓVIL */
+.mobile-radio,.tabbar{display:none}
+
+@media (max-width:1240px){
+  .nav{display:none}
+  .burger{display:flex}
+  .radio-pill span.txt,.radio-pill svg.wave{display:none}
+  .head-in{justify-content:space-between}
+  .nav.drawer{display:flex;position:fixed;inset:76px 0 0 0;background:var(--head);flex-direction:column;align-items:stretch;padding:16px;gap:4px;overflow-y:auto}
+  .nav.drawer a,.nav.drawer button{font-size:17px;padding:16px}
+  .mega{position:static;box-shadow:none;border:none}
+}
+@media (max-width:760px){
+  .wrap{padding:0 16px}
+  .logo img{height:42px;width:126px}
+  .theme{display:none}
+  .radio-pill{display:none}
+  .hero-in{flex-direction:column-reverse;min-height:0}
+  .hero-txt{padding:22px 0 26px}
+  .hero h1{font-size:30px}
+  .hero p{font-size:15.5px}
+  .hero-img{flex:none;min-height:0;height:230px;margin:0 -16px;padding:18px}
+  .cover{width:130px;padding:10px}.cover .c-title{font-size:15px}.cover .c-top,.cover .c-foot{font-size:7px}
+  .body{padding-top:28px;padding-bottom:150px;gap:44px}
+  .main{gap:44px}
+  .h2{font-size:24px}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .tile{min-height:130px;padding:14px;border-radius:14px}
+  .tile-title{font-size:15px}
+  .tile-more{display:none}
+  .recs{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .mobile-radio{display:flex;position:fixed;left:10px;right:10px;bottom:74px;z-index:40;border-radius:14px;background:var(--navy);color:#fff;padding:8px 12px 8px 8px;align-items:center;gap:10px}
+  .mobile-radio .play{width:40px;height:40px}
+  .tabbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--head);border-top:1px solid var(--line);padding:4px 4px calc(8px + env(safe-area-inset-bottom))}
+  .tabbar a{height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:500;color:var(--muted)}
+  .tabbar a.on{color:var(--blue);font-weight:700}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="head">
+  <div class="wrap head-in">
+    <a class="logo" href="#inicio" aria-label="Vox Liber, inicio"><img src="data:image/jpeg;base64,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" alt="Vox Liber"></a>
+    <nav class="nav" id="nav" aria-label="Principal">
+      <a href="#inicio" class="on">Inicio</a>
+      <button type="button" id="catBtn" aria-expanded="false" aria-controls="mega">Categorías
+        <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <a href="#ultimo">Investigación</a>
+      <a href="#ultimo">Columnas</a>
+      <a href="#ultimo"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="#E62117"/><path d="M10 9v6l5-3z" fill="#fff"/></svg>YouTube</a>
+      <a href="#recomendados">Recomendados</a>
+      <a href="#nosotros">Nosotros</a>
+    </nav>
+    <div class="tools">
+      <button class="icon-btn" type="button" aria-label="Buscar"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+      <div class="theme" role="group" aria-label="Modo de color">
+        <button type="button" class="sun" data-theme-set="light" aria-label="Modo claro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+        <button type="button" data-theme-set="dark" aria-label="Modo oscuro"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+      </div>
+      <button type="button" class="radio-pill js-play">
+        <span class="pp js-ppicon"></span>
+        <span class="txt">Radio en vivo</span>
+        <svg class="wave" width="22" height="18" viewBox="0 0 22 18" fill="#3BB4E8" aria-hidden="true"><rect x="0" y="7" width="2" height="4" rx="1"/><rect x="4" y="3" width="2" height="12" rx="1"/><rect x="8" y="0" width="2" height="18" rx="1"/><rect x="12" y="4" width="2" height="10" rx="1"/><rect x="16" y="6" width="2" height="6" rx="1"/><rect x="20" y="8" width="2" height="2" rx="1"/></svg>
+      </button>
+      <button class="icon-btn burger" type="button" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+  <div class="mega" id="mega"><div class="wrap mega-grid" id="megaGrid"></div></div>
+</header>
+
+<section class="hero" id="inicio" aria-roledescription="carrusel" aria-label="Destacados">
+  <div class="wrap hero-in">
+    <div class="hero-txt" id="heroTxt" aria-live="polite"></div>
+    <div class="hero-img" id="heroImg" role="img" aria-label="Imagen del destacado"></div>
+  </div>
+</section>
+
+<div class="wrap body">
+  <main class="main">
+    <section id="ultimo" aria-labelledby="t-ultimo">
+      <h2 class="h2" id="t-ultimo">Lo último de cada categoría</h2>
+      <div class="tiles" id="tiles"></div>
+    </section>
+
+    <section id="recomendados" aria-labelledby="t-rec">
+      <div class="rec-head">
+        <div>
+          <h2 class="h2" id="t-rec">Recomendados de Vox Liber</h2>
+          <p class="lead">Libros, discos, películas y actividades que vale la pena conocer.</p>
+        </div>
+        <div class="seg" role="tablist" aria-label="Tipo de recomendación" id="recTabs"></div>
+      </div>
+      <div class="recs" id="recs"></div>
+    </section>
+  </main>
+
+  <aside class="side">
+    <div class="box box-dark" id="radioBox">
+      <div class="live"><i></i>Radio en vivo</div>
+      <h3 style="margin-top:8px">Vox Liber Radio</h3>
+      <div style="font-size:14px;color:#C7D4E4;margin-top:2px">Ideas, cultura y conversación</div>
+      <div class="player">
+        <button type="button" class="play js-play" aria-label="Escuchar la radio en vivo"><span class="js-ppicon"></span></button>
+        <div class="bars" id="bars" aria-hidden="true"></div>
+      </div>
+      <a href="https://zeno.fm/radio/vox-liber-radio/" target="_blank" rel="noopener" style="display:inline-block;margin-top:12px;font-size:13.5px;color:#8FD3F5;padding:4px 0">También en Zeno.fm</a>
+    </div>
+
+    <div class="box box-line">
+      <h3 style="font-size:19px">Síguenos en redes</h3>
+      <nav class="socials" aria-label="Redes sociales" id="socials"></nav>
+    </div>
+
+    <div class="box box-dark" id="boletin">
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true" style="flex:none"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6l8.5 7 8.5-7"/></svg>
+        <div><h3 style="font-size:20px">Boletín semanal</h3>
+        <div style="font-size:14px;line-height:1.45;color:#C7D4E4;margin-top:4px">Lo nuevo de Vox Liber en tu correo, una vez por semana.</div></div>
+      </div>
+      <form id="subForm" style="margin-top:16px">
+        <label><span class="sr">Tu correo electrónico</span><input type="email" name="email" required placeholder="Tu correo electrónico"></label>
+        <button type="submit" class="submit" style="background:#1B6FD1">Suscribirme</button>
+      </form>
+    </div>
+
+    <div class="box box-line" id="envia">
+      <div style="display:flex;gap:12px;align-items:center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+        <h3 style="font-size:20px">Envíanos tu columna</h3>
+      </div>
+      <p style="margin:10px 0 14px;font-size:14px;line-height:1.5;color:var(--muted)">¿Tienes un análisis, una reflexión o un ensayo? Mándalo y el equipo editorial lo revisa para publicarlo en Vox Liber.</p>
+      <form id="colForm">
+        <label class="field">Nombre<input type="text" name="nombre" required></label>
+        <label class="field">Correo<input type="email" name="correo" required></label>
+        <label class="field">Título del texto<input type="text" name="titulo" required></label>
+        <label class="file"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg><span id="fileName">Adjuntar archivo Word o PDF</span><input type="file" name="archivo" accept=".doc,.docx,.pdf" id="fileInput"></label>
+        <button type="submit" class="submit" style="background:var(--blue)">Enviar columna</button>
+      </form>
+    </div>
+  </aside>
+</div>
+
+<footer class="foot" id="nosotros">
+  <div class="wrap foot-in">
+    <div style="flex:1 1 320px;display:flex;flex-direction:column;gap:8px">
+      <div class="serif" style="font-size:22px;font-weight:700;color:#fff">Vox Liber</div>
+      <div style="font-size:14px;line-height:1.6;max-width:460px">Pensamiento crítico sobre cultura, educación, economía, tecnología y política, desde 2010. Dirigida por Luis Leyton-Johns.</div>
+    </div>
+    <div class="foot-links">
+      <a href="#ultimo">Investigación</a><a href="#ultimo">Revista</a><a href="#ultimo">Columnas</a><a href="#ultimo">Papers</a>
+      <a href="#recomendados">Recomendados</a><a href="#envia">Envía tu columna</a>
+      <a href="mailto:vox.liber.comunicaciones@gmail.com" style="color:#3BB4E8">vox.liber.comunicaciones@gmail.com</a>
+    </div>
+  </div>
+</footer>
+
+<div class="mobile-radio" id="mobileRadio">
+  <button type="button" class="play js-play" aria-label="Escuchar la radio en vivo"><span class="js-ppicon"></span></button>
+  <span style="flex:1;display:flex;flex-direction:column"><span style="font-size:14px;font-weight:600">Vox Liber Radio</span><span style="font-size:12px;color:#A9C6E3" class="js-radiotext">En vivo, toca para escuchar</span></span>
+  <span style="width:8px;height:8px;border-radius:4px;background:#FF5A5F"></span>
+</div>
+<nav class="tabbar" aria-label="Navegación inferior" id="tabbar"></nav>
+
+<audio id="audio" preload="none"></audio>
+
+<script>
+/* =========================================================
+   CONFIGURACIÓN: aquí van tus enlaces reales
+   ========================================================= */
+var CONFIG = {
+  zenoStream: 'https://stream.zeno.fm/dpwt2bwi0mgvv',   // URL del stream de Zeno (la entrega el panel de Zeno, ej. https://stream.zeno.fm/xxxx)
+  zenoPage: 'https://zeno.fm/radio/vox-liber-radio/',
+  redes: {
+    instagram: '#', facebook: '#', x: '#', spotify: '#', youtube: '#'
+  },
+  apiUrl: ''        // URL del backend en Apps Script (se completa en el paso 2)
+};
+
+/* =========================================================
+   CONTENIDO: en la versión final llega desde Apps Script
+   ========================================================= */
+var I = {
+  inv:'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h6',
+  col:'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4',
+  yt:'M3 7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zM10 9v6l5-3z',
+  radio:'M3 12h2M7 8v8M11 5v14M15 8v8M19 10v4',
+  rev:'M4 5a1 1 0 0 1 1-1h5a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 5a1 1 0 0 0-1-1h-5a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z',
+  pap:'M12 3L2 8l10 5 10-5zM6 10v5c2 2 10 2 12 0v-5',
+  rec:'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z',
+  send:'M22 2L11 13M22 2l-7 20-4-9-9-4z',
+  book:'M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM8 7h7',
+  disc:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+  film:'M4 4h16v16H4zM8 4v16M16 4v16M4 9h4M4 15h4M16 9h4M16 15h4',
+  act:'M5 5h14v15H5zM8 3v3M16 3v3M5 9h14M9 13h2M13 13h2M9 16h2',
+  home:'M3 11l9-8 9 8M5 9.5V20h5v-6h4v6h5V9.5',
+  grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
+  mail:'M3 5h18v14H3zM3.5 6l8.5 7 8.5-7',
+  more:'M5 12h.01M12 12h.01M19 12h.01'
+};
+
+var DATA = {
+  destacados: [
+    { tipo:'Documento de Investigación', titulo:'Chile S.A.D.P.: los ciudadanos se quedan con la marca, otros con la renta', bajada:'Sobre la desafección ciudadana con la clase política y quién se queda con lo que produce el país.', boton:'Leer documento', url:'#', imagen:'https://picsum.photos/seed/voxliber-chile/1400/900', color:'#1D3A63',
+      portada:{ titulo:'Chile S.A.D.P.', serie:'Documento de Investigación', num:'Número VII · 2026', fondo:'#0F2E57', tinta:'#FFFFFF', acento:'#3BB4E8' } },
+    { tipo:'Documento de Investigación', titulo:'¿S.O.S. a la Humanidad o paremos para que no bajen nuestras acciones?', bajada:'El miedo a la inteligencia artificial, leído desde la lógica de la sospecha: quién gana cuando la tecnología nos asusta.', boton:'Leer documento', url:'#', imagen:'https://picsum.photos/seed/voxliber-ia/1400/900', color:'#2A2353',
+      portada:{ titulo:'¿S.O.S. a la Humanidad?', serie:'Documento de Investigación', num:'Número VIII · 2026', fondo:'#1E1B3A', tinta:'#FFFFFF', acento:'#B79CFF' } },
+    { tipo:'Columna en El Heraldo', titulo:'Educación autopoiética: entre Maturana y Altman', bajada:'Qué queda de la educación cuando la máquina también aprende, y por qué la pregunta de Maturana sigue vigente.', boton:'Leer columna', url:'#', imagen:'https://picsum.photos/seed/voxliber-educacion/1400/900', color:'#0F4A4A',
+      portada:{ titulo:'Educación autopoiética', serie:'Columna de opinión', num:'El Heraldo · 2026', fondo:'#F3EFE6', tinta:'#1B2430', acento:'#0E9F8E' } }
+  ],
+  categorias: [
+    { id:'investigacion', img:'https://picsum.photos/seed/vl-inv/600/400', nombre:'Documentos de Investigación', corto:'Investigación', desc:'Análisis con dossier, glosario y preguntas para discutir.', color:'#1B5A99', tinta:'#FFFFFF', icono:'inv', ultimo:'¿S.O.S. a la Humanidad o paremos para que no bajen nuestras acciones?', mas:'Ver investigación' },
+    { id:'columnas', img:'https://picsum.photos/seed/vl-col/600/400', nombre:'Columnas de prensa', corto:'Columnas', desc:'Opinión publicada en El Heraldo.', color:'#0E9F8E', tinta:'#FFFFFF', icono:'col', ultimo:'Educación autopoiética: entre Maturana y Altman', mas:'Ver columnas' },
+    { id:'youtube', img:'https://picsum.photos/seed/vl-yt/600/400', nombre:'YouTube', corto:'YouTube', desc:'Los documentos explicados en video.', color:'#F5A400', tinta:'#0B1B33', icono:'yt', ultimo:'Meritocracia: ¿una mentira noble? Explicado en 12 minutos', mas:'Ver videos' },
+    { id:'radio', img:'https://picsum.photos/seed/vl-radio/600/400', nombre:'Radio y podcast', corto:'Radio', desc:'Vox Liber Radio en vivo y episodios.', color:'#6A3FC1', tinta:'#FFFFFF', icono:'radio', ultimo:'En vivo: Cinismo Ilustrado, conversación sin anestesia', mas:'Escuchar' },
+    { id:'revista', img:'https://picsum.photos/seed/vl-rev/600/400', nombre:'Revista Vox Liber', corto:'Revista', desc:'Todos los números de la revista.', color:'#0F172A', tinta:'#FFFFFF', icono:'rev', ultimo:'N° II: El capitalismo cognitivo y la renta del conocimiento', mas:'Ver revista' },
+    { id:'papers', img:'https://picsum.photos/seed/vl-pap/600/400', nombre:'Papers', corto:'Papers', desc:'Artículos académicos indexados.', color:'#3BB4E8', tinta:'#0B1B33', icono:'pap', ultimo:'Tecnoestrés en trabajadores del retail: un análisis bibliométrico', mas:'Ver papers' }
+  ],
+  extras: [
+    { nombre:'Recomendados', desc:'Libros, discos, películas y actividades.', color:'#D9468F', tinta:'#FFFFFF', icono:'rec', url:'#recomendados' },
+    { nombre:'Envía tu columna', desc:'Propón un texto para publicar.', color:'#E2E8F0', tinta:'#0F172A', icono:'send', url:'#envia' }
+  ],
+  recomendados: [
+    { tipo:'Libro', titulo:'La sociedad del cansancio', autor:'Byung-Chul Han', nota:'Byung-Chul Han, 2010. Por qué el rendimiento se volvió la nueva forma de explotación.', fondo:'#E9E4D8', tinta:'#1B2430', acento:'#C2412D' },
+    { tipo:'Disco', titulo:'Credenciales Muertas', autor:'CTRL ENTROPIKØ', nota:'CTRL ENTROPIKØ. Diez temas de punk contra el cartón patriótico y el oportunismo.', fondo:'#111111', tinta:'#F2F2F2', acento:'#E5484D' },
+    { tipo:'Película', titulo:'Teorema', autor:'Pier Paolo Pasolini', nota:'Pasolini, 1968. Un visitante desarma a una familia burguesa sin decir casi nada.', fondo:'#2C3E50', tinta:'#F5E9D0', acento:'#E8B04B' },
+    { tipo:'Actividad', titulo:'Conversatorio: ¿quién se queda con la renta?', autor:'Vox Liber en vivo', nota:'Jueves 20:00 por Vox Liber Radio. Abierto a preguntas del público.', fondo:'#1B5A99', tinta:'#FFFFFF', acento:'#3BB4E8' },
+    { tipo:'Libro', titulo:'Vigilar y castigar', autor:'Michel Foucault', nota:'Foucault, 1975. La disciplina como tecnología del poder moderno.', fondo:'#F4F1EA', tinta:'#111827', acento:'#1B5A99' },
+    { tipo:'Película', titulo:'No', autor:'Pablo Larraín', nota:'Larraín, 2012. La campaña del plebiscito de 1988 contada como un problema de publicidad.', fondo:'#D9468F', tinta:'#FFFFFF', acento:'#FFE27A' },
+    { tipo:'Disco', titulo:'La voz de los \'80', autor:'Los Prisioneros', nota:'Los Prisioneros, 1984. El disco que puso a la juventud chilena a discutir.', fondo:'#F5A400', tinta:'#0B1B33', acento:'#0B1B33' },
+    { tipo:'Actividad', titulo:'Club de lectura: La distinción, de Bourdieu', autor:'Ciclo Vox Liber', nota:'Primer sábado de cada mes, en línea. Inscripción con tu correo.', fondo:'#0E9F8E', tinta:'#FFFFFF', acento:'#E0F5F2' }
+  ]
+};
+
+var REC_STYLE = {
+  'Libro':     { chip:'#E8F0FB', ink:'#1B5A99', icono:'book', ratio:'3 / 4', tab:'Libros' },
+  'Disco':     { chip:'#F2ECFB', ink:'#6A3FC1', icono:'disc', ratio:'3 / 4', tab:'Discos' },
+  'Película':  { chip:'#FDF1D8', ink:'#8A5A00', icono:'film', ratio:'3 / 4', tab:'Películas' },
+  'Actividad': { chip:'#E0F5F2', ink:'#0A7568', icono:'act',  ratio:'3 / 4', tab:'Actividades' }
+};
+
+/* ========================================================= */
+function $(s){return document.querySelector(s)}
+function $$(s){return Array.prototype.slice.call(document.querySelectorAll(s))}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function ico(path,size,sw){return '<svg width="'+(size||22)+'" height="'+(size||22)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(sw||1.9)+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+path+'"/></svg>'}
+
+/* Tema */
+var root=document.documentElement;
+function setTheme(t){root.setAttribute('data-theme',t);try{localStorage.setItem('vl-theme',t)}catch(e){}
+  $$('[data-theme-set]').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-theme-set')===t?'true':'false')})}
+var saved=null;try{saved=localStorage.getItem('vl-theme')}catch(e){}
+setTheme(saved||(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+$$('[data-theme-set]').forEach(function(b){b.addEventListener('click',function(){setTheme(b.getAttribute('data-theme-set'))})});
+
+/* Megamenú */
+var allCats=DATA.categorias.map(function(c){return{nombre:c.nombre,desc:c.desc,color:c.color,tinta:c.tinta,icono:c.icono,url:'#ultimo'}}).concat(DATA.extras);
+$('#megaGrid').innerHTML=allCats.map(function(c){return '<a href="'+c.url+'"><span class="cat-ico" style="background:'+c.color+';color:'+c.tinta+'">'+ico(I[c.icono])+'</span><span><b>'+esc(c.nombre)+'</b><span>'+esc(c.desc)+'</span></span></a>'}).join('');
+var catBtn=$('#catBtn'),mega=$('#mega');
+function closeMega(){mega.classList.remove('open');catBtn.setAttribute('aria-expanded','false')}
+catBtn.addEventListener('click',function(e){e.stopPropagation();var o=!mega.classList.contains('open');mega.classList.toggle('open',o);catBtn.setAttribute('aria-expanded',o?'true':'false')});
+document.addEventListener('click',function(e){if(!mega.contains(e.target)&&e.target!==catBtn)closeMega()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeMega();closeDrawer()}});
+$$('#megaGrid a').forEach(function(a){a.addEventListener('click',function(){closeMega();closeDrawer()})});
+
+/* Menú móvil */
+var burger=$('#burger'),nav=$('#nav');
+function closeDrawer(){nav.classList.remove('drawer');burger.setAttribute('aria-expanded','false')}
+burger.addEventListener('click',function(){var o=!nav.classList.contains('drawer');nav.classList.toggle('drawer',o);burger.setAttribute('aria-expanded',o?'true':'false');if(o){nav.appendChild(mega)}});
+$$('#nav a').forEach(function(a){a.addEventListener('click',closeDrawer)});
+
+/* Carrusel */
+var slide=0,timer=null;
+function renderSlide(){
+  var s=DATA.destacados[slide];
+  $('#heroTxt').innerHTML='<div class="fade" style="display:flex;flex-direction:column;gap:16px">'+
+    '<div class="kicker">'+esc(s.tipo)+'</div><h1>'+esc(s.titulo)+'</h1><p>'+esc(s.bajada)+'</p>'+
+    '<div class="btns"><a class="btn btn-blue" href="'+s.url+'">'+esc(s.boton)+'</a>'+
+    '<button type="button" class="btn btn-ghost js-share" data-title="'+esc(s.titulo)+'">'+ico('M8.6 13.5l6.8 4M15.4 6.5l-6.8 4M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',17,2)+'Compartir</button></div></div>'+
+    '<div class="car-ctl"><button type="button" class="car-arrow" id="prev" aria-label="Destacado anterior">'+ico('M15 6l-6 6 6 6',18,2.2)+'</button>'+
+    '<div class="dots">'+DATA.destacados.map(function(x,i){return '<button type="button" data-go="'+i+'" aria-label="Ir al destacado '+(i+1)+'" aria-current="'+(i===slide)+'"></button>'}).join('')+'</div>'+
+    '<button type="button" class="car-arrow" id="next" aria-label="Destacado siguiente">'+ico('M9 6l6 6-6 6',18,2.2)+'</button></div>';
+  var img=$('#heroImg'),c=s.portada;img.style.backgroundColor=s.color;
+  img.innerHTML=(s.imagen?'<img class="ph" src="'+s.imagen+'" alt="" onerror="this.remove()">':'')+'<span class="tint"></span><span class="fadeL"></span>'+
+    '<div class="cover fade" style="background:'+c.fondo+';color:'+c.tinta+'"><span class="c-art" style="background:'+c.acento+'"></span>'+
+    '<div class="c-top"><span>VOX LIBER</span><span>'+esc(c.num)+'</span></div>'+
+    '<div class="c-title">'+esc(c.titulo)+'</div><div class="c-foot">'+esc(c.serie)+'<br>Luis Leyton-Johns</div></div>';
+  $('#prev').onclick=function(){go(slide-1)};$('#next').onclick=function(){go(slide+1)};
+  $$('.dots button').forEach(function(b){b.onclick=function(){go(+b.getAttribute('data-go'))}});
+  bindShare();
+}
+function go(i){var n=DATA.destacados.length;slide=(i+n)%n;renderSlide();restart()}
+function restart(){clearInterval(timer);if(!matchMedia('(prefers-reduced-motion: reduce)').matches)timer=setInterval(function(){go(slide+1)},8000)}
+var tx=null;$('#inicio').addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
+$('#inicio').addEventListener('touchend',function(e){if(tx===null)return;var d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50)go(slide+(d<0?1:-1));tx=null});
+$('#inicio').addEventListener('mouseenter',function(){clearInterval(timer)});
+$('#inicio').addEventListener('mouseleave',restart);
+renderSlide();restart();
+
+/* Lo último de cada categoría */
+$('#tiles').innerHTML=DATA.categorias.map(function(c){
+  return '<a class="tile" href="#'+c.id+'" style="background:'+c.color+';color:'+c.tinta+'">'+(c.img?'<img class="tile-ph" src="'+c.img+'" alt="" loading="lazy" onerror="this.remove()">':'')+
+  '<span class="tile-name">'+ico(I[c.icono])+esc(c.corto)+'</span>'+
+  '<span class="tile-title">'+esc(c.ultimo)+'</span>'+
+  '<span class="tile-more">'+esc(c.mas)+ico('M5 12h14M13 6l6 6-6 6',18,2.2)+'</span></a>'}).join('');
+
+/* Portadas generadas para recomendados */
+function genCover(r){
+  var f=r.fondo,t=r.tinta,a=r.acento,ti=esc(r.titulo),au=esc(r.autor);
+  if(r.tipo==='Disco') return '<div class="gc" style="background:'+f+';color:'+t+';justify-content:flex-end">'+
+    '<span class="deco" style="width:150%;height:auto;aspect-ratio:1;left:-25%;top:-35%;border:18px solid '+a+';opacity:.85"></span>'+
+    '<span class="deco" style="width:46%;aspect-ratio:1;left:27%;top:6%;background:'+a+'"></span>'+
+    '<div class="t" style="font-size:19px">'+ti+'</div><div class="a">'+au+'</div></div>';
+  if(r.tipo==='Película') return '<div class="gc" style="background:'+f+';color:'+t+'">'+
+    '<div class="a">'+au.toUpperCase()+'</div><span class="deco" style="width:70%;aspect-ratio:1;right:-12%;top:28%;background:'+a+';opacity:.9"></span>'+
+    '<div class="t" style="font-size:'+(ti.length>8?22:30)+'px;text-transform:uppercase;letter-spacing:.02em">'+ti+'</div></div>';
+  if(r.tipo==='Actividad') return '<div class="gc" style="background:'+f+';color:'+t+'">'+
+    '<div class="a" style="display:flex;align-items:center;gap:6px">'+ico(I.act,16,2)+'Actividad</div>'+
+    '<div class="t" style="font-size:19px">'+ti+'</div><div class="a" style="opacity:.8">'+au+'</div></div>';
+  return '<div class="gc" style="background:'+f+';color:'+t+';border-left:10px solid '+a+'">'+
+    '<div class="a">'+au+'</div><div class="t" style="font-size:22px">'+ti+'</div><div class="a" style="color:'+a+';font-weight:700">'+ (r.tipo) +'</div></div>';
+}
+
+/* Recomendados */
+var recTab='Todo';
+function renderRecs(){
+  var tabs=['Todo','Libros','Discos','Películas','Actividades'];
+  $('#recTabs').innerHTML=tabs.map(function(t){return '<button type="button" role="tab" aria-selected="'+(t===recTab)+'" data-tab="'+t+'">'+t+'</button>'}).join('');
+  $$('#recTabs button').forEach(function(b){b.onclick=function(){recTab=b.getAttribute('data-tab');renderRecs()}});
+  var seen={};var list=DATA.recomendados.filter(function(r){if(recTab==='Todo'){if(seen[r.tipo])return false;seen[r.tipo]=1;return true}return REC_STYLE[r.tipo].tab===recTab});
+  $('#recs').innerHTML=list.map(function(r){var st=REC_STYLE[r.tipo];
+    return '<article class="rec"><div class="rec-img" style="aspect-ratio:'+st.ratio+'">'+(r.imagen?'<img src="'+r.imagen+'" alt="'+esc(r.titulo)+'">':genCover(r))+'</div>'+
+    '<span class="chip" style="background:'+st.chip+';color:'+st.ink+'">'+r.tipo+'</span><h3>'+esc(r.titulo)+'</h3><p>'+esc(r.nota)+'</p></article>'}).join('');
+}
+renderRecs();
+
+/* Redes */
+var R=CONFIG.redes;
+$('#socials').innerHTML=
+ '<a href="'+R.instagram+'" target="_blank" rel="noopener" aria-label="Instagram" style="background:#D6249F"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor"/></svg></a>'+
+ '<a href="'+R.facebook+'" target="_blank" rel="noopener" aria-label="Facebook" style="background:#1877F2"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5H16l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.8 1.4-3.8 3.9v2.3H8v3h2.5V21z"/></svg></a>'+
+ '<a href="'+R.x+'" target="_blank" rel="noopener" aria-label="X" style="background:#000"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.8 8 10.2h-6.3l-4.9-6.4L5.3 21H2.2l7.3-8.3L1.9 3h6.4l4.4 5.9zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg></a>'+
+ '<a href="'+R.spotify+'" target="_blank" rel="noopener" aria-label="Spotify" style="background:#1DB954;color:#000"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6.5 9.3c3.8-1.1 7.6-.7 11 1.1M7.2 12.6c3.1-.8 6.1-.4 8.8 1M7.9 15.8c2.3-.6 4.6-.3 6.6.8"/></svg></a>'+
+ '<a href="'+R.youtube+'" target="_blank" rel="noopener" aria-label="YouTube" style="background:#E62117"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 7.5v9l7.5-4.5z"/></svg></a>';
+
+/* Radio */
+var hs=[10,18,26,14,30,22,12,28,34,20,16,26,32,18,24,12,30,22,14,28,20,10,24,30,16,22,12,18];
+$('#bars').innerHTML=hs.map(function(h){return '<span style="height:'+h+'px"></span>'}).join('');
+var audio=$('#audio'),playing=false;
+var PLAY='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+var PAUSE='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+function paintRadio(){
+  $$('.js-ppicon').forEach(function(e){e.innerHTML=playing?PAUSE:PLAY});
+  $$('.js-play').forEach(function(b){if(b.classList.contains('play'))b.setAttribute('aria-label',playing?'Pausar la radio':'Escuchar la radio en vivo')});
+  $$('.js-radiotext').forEach(function(e){e.textContent=playing?'Sonando ahora':'En vivo, toca para escuchar'});
+  $('#radioBox').classList.toggle('playing',playing);
+}
+function toggleRadio(){
+  if(!CONFIG.zenoStream){window.open(CONFIG.zenoPage,'_blank','noopener');return}
+  if(playing){audio.pause();playing=false}else{audio.src=CONFIG.zenoStream;audio.play().catch(function(){});playing=true}
+  paintRadio();
+}
+$$('.js-play').forEach(function(b){b.addEventListener('click',toggleRadio)});
+paintRadio();
+
+/* Compartir */
+function bindShare(){$$('.js-share').forEach(function(b){b.onclick=function(){
+  var data={title:b.getAttribute('data-title'),text:b.getAttribute('data-title')+' | Vox Liber',url:location.href};
+  if(navigator.share){navigator.share(data).catch(function(){})}
+  else{window.open('https://wa.me/?text='+encodeURIComponent(data.text+' '+data.url),'_blank','noopener')}
+}})}
+
+/* Formularios (en el paso 2 se conectan a Apps Script) */
+function done(form,msg,bg){var d=document.createElement('div');d.className='ok';d.setAttribute('role','status');d.style.background=bg;d.textContent=msg;form.replaceWith(d)}
+$('#subForm').addEventListener('submit',function(e){e.preventDefault();done(this,'Revisa tu correo y confirma la suscripción.','rgba(255,255,255,.12)')});
+$('#fileInput').addEventListener('change',function(){$('#fileName').textContent=this.files[0]?this.files[0].name:'Adjuntar archivo Word o PDF'});
+$('#colForm').addEventListener('submit',function(e){e.preventDefault();done(this,'Columna recibida. Te escribiremos cuando el equipo editorial la revise.','var(--soft)')});
+
+/* Barra inferior móvil */
+var tabs=[{l:'Inicio',i:'home',u:'#inicio'},{l:'Categorías',i:'grid',u:'#ultimo'},{l:'Radio',i:'radio',u:'#radioBox'},{l:'Boletín',i:'mail',u:'#boletin'},{l:'Más',i:'more',u:'#recomendados'}];
+$('#tabbar').innerHTML=tabs.map(function(t,k){return '<a href="'+t.u+'"'+(k===0?' class="on" aria-current="page"':'')+'>'+ico(I[t.i])+t.l+'</a>'}).join('');
+$$('#tabbar a').forEach(function(a){a.addEventListener('click',function(){$$('#tabbar a').forEach(function(x){x.classList.remove('on');x.removeAttribute('aria-current')});a.classList.add('on');a.setAttribute('aria-current','page')})});
+</script>
+</body>
+</html>
