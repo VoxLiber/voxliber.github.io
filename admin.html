@@ -125,6 +125,7 @@ iframe.prev{width:100%;height:640px;border:1px solid var(--line);border-radius:1
         <button data-tab="resumen" aria-current="true">Resumen</button>
         <button data-tab="contenidos">Contenidos</button>
         <button data-tab="recomendados">Recomendados</button>
+        <button data-tab="radar">Radar</button>
         <button data-tab="columnas">Columnas <span class="badge hidden" id="bCol"></span></button>
         <button data-tab="suscriptores">Suscriptores</button>
         <button data-tab="boletin">Boletín</button>
@@ -222,7 +223,7 @@ function ir(tab) {
   S.tab = tab; S.filtro = 'todas';
   $$('#tabs button').forEach(function (b) { b.setAttribute('aria-current', b.getAttribute('data-tab') === tab ? 'true' : 'false'); });
   var v = $('#vista'); v.innerHTML = '<p class="sub">Cargando…</p>';
-  ({ resumen: vResumen, contenidos: vContenidos, recomendados: vRecomendados, columnas: vColumnas, suscriptores: vSuscriptores, boletin: vBoletin, ajustes: vAjustes })[tab]();
+  ({ resumen: vResumen, contenidos: vContenidos, recomendados: vRecomendados, radar: vRadar, columnas: vColumnas, suscriptores: vSuscriptores, boletin: vBoletin, ajustes: vAjustes })[tab]();
 }
 
 /* ===== Resumen ===== */
@@ -232,10 +233,11 @@ function vResumen() {
     $('#vista').innerHTML = '<div class="head"><div><h2>Resumen</h2><p class="sub">Estado actual de Vox Liber.</p></div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-s" href="' + esc(cfg.sitio) + '" target="_blank">Ver el sitio</a><a class="btn btn-s" href="' + esc(cfg.planilla) + '" target="_blank">Abrir la planilla</a></div></div>' +
       '<div class="stats">' +
-      stat(r.contenidos, 'contenidos') + stat(r.recomendados, 'recomendados') + stat(r.activos, 'suscriptores activos') +
+      stat(r.contenidos, 'contenidos') + stat(r.recomendados, 'recomendados') + stat(r.radar || 0, 'noticias en el Radar') + stat(r.activos, 'suscriptores activos') +
       stat(r.pendientes, 'suscripciones por confirmar') + stat(r.columnasNuevas, 'columnas por revisar') + stat(r.cuotaCorreo, 'correos disponibles hoy') +
-      '</div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px"><button class="btn btn-p" id="qNuevo">Nuevo contenido</button><button class="btn btn-s" id="qRec">Nueva recomendación</button></div>';
+      '</div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px"><button class="btn btn-p" id="qNuevo">Nuevo contenido</button><button class="btn btn-s" id="qRec">Nueva recomendación</button><button class="btn btn-s" id="qRadar">Nueva noticia del Radar</button></div>';
     $('#qNuevo').onclick = function () { ir('contenidos'); abrirEditor('contenidos'); };
+    $('#qRadar').onclick = function () { ir('radar'); abrirEditor('radar'); };
     $('#qRec').onclick = function () { ir('recomendados'); abrirEditor('recomendados'); };
   }).catch(function (e) { toast(e.message, true); });
 }
@@ -290,6 +292,53 @@ function pintarRecomendados() {
   enlazarAcciones('recomendados');
 }
 
+/* ===== Radar Vox Liber ===== */
+function iniciales(m) { var p = String(m || '?').replace(/^(el|la|los|las|the)\s+/i, '').split(/[\s.\-]+/).filter(Boolean); return ((p[0] || '?').charAt(0) + (p[1] ? p[1].charAt(0) : '')).toUpperCase(); }
+function colorMedio(m) { var h = 0; String(m || '').split('').forEach(function (c) { h = (h * 31 + c.charCodeAt(0)) % 360; }); return 'hsl(' + h + ',48%,38%)'; }
+function vRadar() {
+  run('adminListar', 'radar').then(function (l) { S.datos.radar = l; pintarRadar(); }).catch(function (e) { toast(e.message, true); });
+}
+function pintarRadar() {
+  var l = S.datos.radar, f = S.filtro;
+  var items = l.filter(function (r) { return f === 'todas' || (f === 'publicadas' ? r.publicado === 'SI' : r.publicado !== 'SI'); });
+  $('#vista').innerHTML = '<div class="head"><div><h2>Radar Vox Liber</h2><p class="sub">Noticias de otros medios, resumidas y comentadas por Vox Liber. Pega el enlace y el panel completa los datos.</p></div><button class="btn btn-p" id="nuevo">Nueva noticia</button></div>' +
+    '<div class="filters">' + [['todas', 'Todas'], ['publicadas', 'Publicadas'], ['borradores', 'Borradores']].map(function (x) { return '<button data-f="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+    (items.length ? '<div class="list">' + items.map(function (r) {
+      var tiene = String(r.resumen || '').trim();
+      return '<div class="row">' + (r.imagenUrl ? '<img class="thumb" src="' + esc(r.imagenUrl) + '" alt="">' : '<div class="thumb" style="width:56px;height:56px;border-radius:28px;background:' + colorMedio(r.medio) + ';color:#fff;font-weight:700;font-size:16px">' + esc(iniciales(r.medio)) + '</div>') +
+        '<div class="row-main"><div class="row-title">' + esc(r.titulo) + '</div><div class="row-meta">' +
+        '<span class="chip" style="background:#FDEBE5;color:#B4401F">' + esc(r.medio) + '</span><span>' + esc(r.fecha) + '</span>' +
+        (r.publicado === 'SI' ? '<span class="chip" style="background:#E3F6EE;color:#0E7A55">Publicado</span>' : '<span class="chip" style="background:#F1F5F9;color:#475569">Borrador</span>') +
+        (tiene ? '<span class="chip" style="background:#E8F0FB;color:#1B5A99">Con resumen</span>' : '') +
+        (r.destacado === 'SI' ? '<span class="chip" style="background:#FDF1D8;color:#8A5A00">En el carrusel</span>' : '') + '</div>' +
+        '<div class="hint" style="margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Vox Liber: ' + esc(r.comentario) + '</div></div>' +
+        '<div class="row-actions">' + (tiene && r.publicado === 'SI' && r.slug ? '<button class="btn btn-s btn-sm" data-link="' + esc(S.cfg.sitio + '?radar=' + encodeURIComponent(r.slug)) + '">Copiar enlace</button>' : '') +
+        '<a class="btn btn-s btn-sm" href="' + esc(r.enlace) + '" target="_blank" rel="noopener">Abrir nota</a>' +
+        '<button class="btn btn-s btn-sm" data-ed="' + r.id + '">Editar</button><button class="btn btn-d btn-sm" data-del="' + r.id + '">Eliminar</button></div></div>';
+    }).join('') + '</div>' : '<div class="empty">Todavía no hay noticias aquí. Agrega la primera con «Nueva noticia».</div>');
+  $('#nuevo').onclick = function () { abrirEditor('radar'); };
+  $$('.filters button').forEach(function (b) { b.onclick = function () { S.filtro = b.getAttribute('data-f'); pintarRadar(); }; });
+  enlazarAcciones('radar');
+}
+function traerDatos(forzar) {
+  var inp = $('#edBody input[name="enlace"]'), est = $('#rdEstado'), btn = $('#rdTraer'), u = inp.value.trim();
+  if (!/^https?:\/\//i.test(u)) { est.textContent = 'Pega el enlace completo, empezando con https://'; est.style.color = 'var(--bad)'; inp.focus(); return; }
+  var F = function (n) { return $('#edBody [name="' + n + '"]'); };
+  btn.disabled = true; btn.textContent = 'Leyendo…'; est.style.color = ''; est.textContent = 'Leyendo la página del medio…';
+  run('adminLeerEnlace', u).then(function (d) {
+    if (d.titulo && (forzar || !F('titulo').value.trim())) F('titulo').value = d.titulo;
+    if (d.medio && (forzar || !F('medio').value.trim())) F('medio').value = d.medio;
+    if (d.bajada && (forzar || !F('bajada').value.trim())) F('bajada').value = d.bajada;
+    if (d.fecha) F('fecha').value = d.fecha;
+    var falta = [];
+    if (!d.encontrado.titulo) falta.push('título'); if (!d.encontrado.medio) falta.push('nombre del medio'); if (!d.encontrado.fecha) falta.push('fecha');
+    est.textContent = falta.length ? 'Listo, pero revisa: no encontramos ' + falta.join(', ') + '.' : 'Datos cargados. Revísalos y escribe tu comentario.';
+    est.style.color = falta.length ? 'var(--warn)' : 'var(--ok)';
+    F('comentario').focus();
+  }).catch(function (e) { est.textContent = e.message; est.style.color = 'var(--bad)'; })
+    .then(function () { btn.disabled = false; btn.textContent = 'Traer datos'; });
+}
+
 function enlazarAcciones(tipo) {
   $$('[data-link]').forEach(function (b) {
     b.onclick = function () {
@@ -301,7 +350,7 @@ function enlazarAcciones(tipo) {
   $$('[data-del]').forEach(function (b) {
     b.onclick = function () {
       var it = S.datos[tipo].filter(function (x) { return x.id === b.getAttribute('data-del'); })[0];
-      if (!confirm('¿Eliminar «' + it.titulo + '»? También se enviarán a la papelera de Drive su imagen y su PDF.')) return;
+      if (!confirm(tipo === 'radar' ? '¿Quitar «' + it.titulo + '» del Radar?' : '¿Eliminar «' + it.titulo + '»? También se enviarán a la papelera de Drive su imagen y su PDF.')) return;
       b.disabled = true;
       run('adminEliminar', tipo, it.id).then(function () { toast('Eliminado.'); ir(tipo); }).catch(function (e) { b.disabled = false; toast(e.message, true); });
     };
@@ -312,10 +361,27 @@ function enlazarAcciones(tipo) {
 function abrirEditor(tipo, it) {
   it = it || {}; S.edit = { tipo: tipo, id: it.id || '' }; S.archivos = {};
   var hoy = new Date(); var f = it.fecha || (hoy.getFullYear() + '-' + ('0' + (hoy.getMonth() + 1)).slice(-2) + '-' + ('0' + hoy.getDate()).slice(-2));
-  var esRec = tipo === 'recomendados';
-  $('#edTitulo').textContent = it.id ? 'Editar' : (esRec ? 'Nueva recomendación' : 'Nuevo contenido');
+  var esRec = tipo === 'recomendados', esRadar = tipo === 'radar';
+  $('#edTitulo').textContent = it.id ? 'Editar' : (esRadar ? 'Nueva noticia del Radar' : esRec ? 'Nueva recomendación' : 'Nuevo contenido');
   var h = '';
-  if (esRec) {
+  if (esRadar) {
+    h += '<div class="upload" style="gap:8px"><label class="field" style="margin:0">Enlace de la noticia' +
+      '<div style="display:flex;gap:8px"><input type="url" name="enlace" required value="' + esc(it.enlace) + '" placeholder="https://" style="flex:1;min-width:0">' +
+      '<button type="button" class="btn btn-p btn-sm" id="rdTraer" style="height:44px;flex:none">Traer datos</button></div></label>' +
+      '<span class="hint" id="rdEstado">Pega el enlace y toca «Traer datos»: el panel completa el título, el medio, la fecha y la bajada. Siempre puedes corregirlos.</span></div>' +
+      '<label class="field">Título de la noticia<input name="titulo" required maxlength="220" value="' + esc(it.titulo) + '"></label>' +
+      '<div class="grid2"><label class="field">Medio<input name="medio" maxlength="80" value="' + esc(it.medio) + '" placeholder="Por ejemplo: La Tercera"></label>' +
+      '<label class="field">Fecha de la noticia<input type="date" name="fecha" value="' + esc(f) + '"></label></div>' +
+      '<label class="field">Bajada del medio (opcional)<textarea name="bajada" maxlength="300" style="min-height:70px">' + esc(it.bajada) + '</textarea><span class="hint">El resumen que el propio medio publica para compartir la nota. No pegues párrafos del texto.</span></label>' +
+      '<label class="field">Comentario de Vox Liber (obligatorio)<textarea name="comentario" id="rdCom" required minlength="20" maxlength="600" style="min-height:120px;font-family:\'Source Serif 4\',Georgia,serif;font-size:16px;line-height:1.55">' + esc(it.comentario) + '</textarea>' +
+      '<span class="hint">Por qué vale la pena leerla, qué le falta o qué deja en evidencia. Una o dos frases: aparece en las tarjetas, el carrusel y el boletín. <span id="rdCuenta"></span></span></label>' +
+      '<label class="field">Resumen de Vox Liber (opcional)<textarea name="resumen" id="rdRes" maxlength="6000" style="min-height:200px;font-family:\'Source Serif 4\',Georgia,serif;font-size:16px;line-height:1.6">' + esc(it.resumen) + '</textarea>' +
+      '<span class="hint">Si lo escribes, la noticia tiene su propia página en Vox Liber y el lector se informa sin salir del sitio; el medio queda como fuente. ' +
+      'Escríbelo con tus palabras: qué pasó, quiénes, las cifras clave y el contexto. <b>No copies párrafos de la nota</b>: los hechos se cuentan, el texto del periodista no se reproduce. ' +
+      'Deja una línea en blanco entre párrafos; subtítulo con <b>## Texto</b>. <span id="rdResCuenta"></span></span></label>' +
+      bloqueImagen('imagen', 'Imagen (opcional)', 'Solo imágenes propias o de libre uso (Unsplash, Pexels o generadas con IA). No uses la foto del medio: tiene derechos de autor. Proporción 16:9.', it.imagenUrl, '16 / 9', 1600, 900) +
+      '<label class="check"><input type="checkbox" name="destacado"' + (it.destacado === 'SI' ? ' checked' : '') + '> Destacar en el carrusel de la portada (requiere imagen)</label>';
+  } else if (esRec) {
     h += '<div class="grid2"><label class="field">Tipo<select name="tipo" required>' + S.cfg.tipos.map(function (t) { return '<option' + (it.tipo === t ? ' selected' : '') + '>' + t + '</option>'; }).join('') + '</select></label>' +
       '<label class="field">Fecha<input type="date" name="fecha" value="' + esc(f) + '"></label></div>' +
       '<label class="field">Título<input name="titulo" required value="' + esc(it.titulo) + '"></label>' +
@@ -343,8 +409,18 @@ function abrirEditor(tipo, it) {
   h += '<label class="check"><input type="checkbox" name="publicado"' + (it.id ? (it.publicado === 'SI' ? ' checked' : '') : ' checked') + '> Publicado en el sitio</label>';
   $('#edBody').innerHTML = h;
   $('#editor').classList.remove('hidden');
+  if (esRadar) {
+    var cr = function () { var n = $('#rdCom').value.trim().length; $('#rdCuenta').textContent = n + ' de 600 caracteres' + (n < 20 ? ' (mínimo 20).' : '.'); $('#rdCuenta').style.color = n < 20 || n > 600 ? 'var(--bad)' : ''; };
+    $('#rdCom').oninput = cr; cr();
+    var rr = function () { var n = $('#rdRes').value.length; $('#rdResCuenta').textContent = n ? n.toLocaleString('es-CL') + ' de 6.000 caracteres.' : ''; };
+    $('#rdRes').oninput = rr; rr();
+    $('#rdTraer').onclick = function () { traerDatos(true); };
+    var enl = $('#edBody input[name="enlace"]');
+    enl.addEventListener('paste', function () { setTimeout(function () { if (!$('#edBody input[name="titulo"]').value.trim()) traerDatos(false); }, 50); });
+    enl.focus();
+  }
   if ($('#edTexto')) { var cuenta = function () { var n = $('#edTexto').value.length; $('#edCuenta').textContent = ' ' + n.toLocaleString('es-CL') + ' de 45.000 caracteres.'; $('#edCuenta').style.color = n > 45000 ? 'var(--bad)' : ''; }; $('#edTexto').oninput = cuenta; cuenta(); }
-  $('#edBody input[name="titulo"]').focus();
+  if (!esRadar) $('#edBody input[name="titulo"]').focus();
 
   $$('[data-img]').forEach(function (inp) {
     inp.onchange = function () {
@@ -380,6 +456,12 @@ $('#edForm').addEventListener('submit', function (e) {
   e.preventDefault();
   var fd = new FormData(this), d = { id: S.edit.id };
   fd.forEach(function (v, k) { d[k] = v; });
+  if (S.edit.tipo === 'radar' && String(d.comentario || '').trim().length < 20) { toast('El comentario de Vox Liber es obligatorio: escribe al menos una frase.', true); $('#rdCom').focus(); return; }
+  if (S.edit.tipo === 'radar' && this.destacado && this.destacado.checked) {
+    var actual = (S.datos.radar || []).filter(function (x) { return x.id === S.edit.id; })[0];
+    var tieneImg = S.archivos.imagen || (actual && actual.imagenUrl && !S.archivos.quitar_imagen);
+    if (!tieneImg) { toast('Para destacar la noticia en el carrusel, sube una imagen propia o de libre uso.', true); return; }
+  }
   d.publicado = !!this.publicado.checked;
   if (this.destacado) d.destacado = !!this.destacado.checked;
   var A = S.archivos;
