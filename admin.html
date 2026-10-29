@@ -312,7 +312,7 @@ function pintarRadar() {
         (tiene ? '<span class="chip" style="background:#E8F0FB;color:#1B5A99">Con resumen</span>' : '') +
         (r.destacado === 'SI' ? '<span class="chip" style="background:#FDF1D8;color:#8A5A00">En el carrusel</span>' : '') + '</div>' +
         '<div class="hint" style="margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Vox Liber: ' + esc(r.comentario) + '</div></div>' +
-        '<div class="row-actions">' + (tiene && r.publicado === 'SI' && r.slug ? '<button class="btn btn-s btn-sm" data-link="' + esc(S.cfg.sitio + '?radar=' + encodeURIComponent(r.slug)) + '">Copiar enlace</button>' : '') +
+        '<div class="row-actions">' + (tiene && r.publicado === 'SI' && r.slug ? '<button class="btn btn-s btn-sm" data-link="' + esc(r.pagina === 'SI' ? S.cfg.sitio + 'r/' + encodeURIComponent(r.slug) + '/' : S.cfg.sitio + '?radar=' + encodeURIComponent(r.slug)) + '" title="Copiar el enlace para compartir">Copiar enlace</button>' : '') +
         '<a class="btn btn-s btn-sm" href="' + esc(r.enlace) + '" target="_blank" rel="noopener">Abrir nota</a>' +
         '<button class="btn btn-s btn-sm" data-ed="' + r.id + '">Editar</button><button class="btn btn-d btn-sm" data-del="' + r.id + '">Eliminar</button></div></div>';
     }).join('') + '</div>' : '<div class="empty">Todavía no hay noticias aquí. Agrega la primera con «Nueva noticia».</div>');
@@ -590,7 +590,7 @@ function vAjustes() {
     '<div><b>Páginas para compartir</b><div class="sub">' + (c.paginasActivas
       ? 'Activas. Cada contenido publicado tiene su propia vista previa en WhatsApp, X y Facebook.'
       : 'Sin configurar. Falta la llave GITHUB_TOKEN en las propiedades del proyecto de Apps Script.') + '</div></div>' +
-    '<div class="hint">Usa este botón una vez para crear las páginas de los contenidos que ya estaban publicados. Los nuevos se crean solos al guardar.</div>' +
+    '<div class="hint">Usa este botón para crear las páginas de los contenidos y de las noticias del Radar que ya estaban publicados. Los nuevos se crean solos al guardar.</div>' +
     '<div><button class="btn btn-p btn-sm" id="regen"' + (c.paginasActivas ? '' : ' disabled') + '>Generar páginas para todo el contenido</button></div></div>';
   if ($('#regen')) $('#regen').onclick = function () {
     var b = this; b.disabled = true; b.textContent = 'Generando… puede tardar un par de minutos';

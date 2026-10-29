@@ -1126,7 +1126,7 @@ function pintarCategoria(r){
   activarSuscripcion($('#lecCont'));
 }
 function pintarRadarLector(it){
-  var url=urlRadar(it.slug),txt=encodeURIComponent(it.titulo+' | Radar Vox Liber'),eu=encodeURIComponent(url);
+  var url=it.compartir||urlRadar(it.slug),txt=encodeURIComponent(it.titulo+' | Radar Vox Liber'),eu=encodeURIComponent(url);
   var h='<article class="lec-art fade"><div class="lec-kick" style="color:var(--rdInk)">Radar Vox Liber · '+esc(it.medio)+'</div>'+
     '<h1>'+esc(it.titulo)+'</h1><div class="lec-meta">Noticia de '+esc(it.medio)+(it.fecha?' del '+fechaLarga(it.fecha):'')+'. Resumen y comentario de Vox Liber.</div>'+
     (it.imagen?'<figure class="lec-fig"><img src="'+esc(it.imagen)+'" alt="" onerror="this.parentNode.remove()"></figure>':'')+
@@ -1150,8 +1150,10 @@ function pintarRadarLector(it){
 }
 function cargarRadarItem(slug){
   mostrarCapa();$('#lecCompartir').style.visibility='visible';
-  var pre=leerCache('vl-r-'+slug),mostrado='';
-  var poner=function(it){lecActual={titulo:it.titulo,slug:it.slug,compartir:urlRadar(it.slug)};pintarRadarLector(it)};
+  var pre=null,mostrado='';
+  try{pre=sessionStorage.getItem('vl-radar-'+slug)}catch(e){}
+  pre=pre?JSON.parse(pre):leerCache('vl-r-'+slug);
+  var poner=function(it){lecActual={titulo:it.titulo,slug:it.slug,compartir:it.compartir||urlRadar(it.slug)};pintarRadarLector(it)};
   if(pre){poner(pre);mostrado=JSON.stringify(pre)}else estado('Cargando la noticia…');
   fetch(CONFIG.apiUrl+'?api=radarItem&id='+encodeURIComponent(slug)).then(function(r){return r.json()}).then(function(r){
     if(new URLSearchParams(location.search).get('radar')!==slug)return;
