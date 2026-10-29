@@ -165,7 +165,7 @@ iframe.prev{width:100%;height:640px;border:1px solid var(--line);border-radius:1
       <p class="sub" id="rdsEstado" role="status" style="margin:0"></p>
       <div class="rds-fila">
         <div><b style="font-size:14px">Carrusel · 1080 × 1350</b><div class="hint" style="margin:2px 0 10px">Para el feed de Instagram y Facebook.</div><div class="rds-grid" id="rdsCar"></div></div>
-        <div><b style="font-size:14px">Historia · 1080 × 1920</b><div class="hint" style="margin:2px 0 10px">Deja espacio para el sticker de enlace.</div><div id="rdsHist"></div></div>
+        <div><b style="font-size:14px">Historia · 1080 × 1920</b><div class="hint" style="margin:2px 0 10px">Respeta las zonas que Instagram tapa arriba y abajo, y deja el espacio para el sticker de enlace.</div><div id="rdsHist"></div></div>
       </div>
       <label class="field"><span id="rdsFraseTit">Frase destacada (lámina 3)</span><textarea id="rdsFrase" maxlength="320" style="min-height:90px;font-family:'Source Serif 4',Georgia,serif;font-size:16px"></textarea>
         <span class="hint">Se toma de la cita marcada con «&gt;» o, si no hay, del párrafo de cierre. Puedes cambiarla por otra frase del texto y tocar «Actualizar imágenes». Si la dejas vacía, la lámina no se genera.</span>
@@ -796,6 +796,38 @@ function laminaPortada(d, img, portada, logo, W, H, num) {
   }
   return c;
 }
+/* Historia de 1080 × 1920. Instagram tapa unos 250 px arriba (perfil y barra de progreso) y 250 px abajo
+   (caja de respuesta), así que todo el contenido va entre los 250 y los 1670 px. */
+function laminaHistoria(d, img, portada, logo) {
+  var W = 1080, H = 1920, SUP = 250, INF = H - 250;
+  var c = lienzo(W, H), cx = c.getContext('2d'), ac = acentoDe(d);
+  cx.fillStyle = '#FFFFFF'; cx.fillRect(0, 0, W, H);
+  cx.fillStyle = ac; cx.fillRect(0, 0, W, 14);
+  if (logo) { var lh = 80, lw = Math.round(lh * logo.width / logo.height); cx.drawImage(logo, (W - lw) / 2, SUP + 10, lw, lh); }
+  var top = SUP + 130, x = 64, w = W - 128, y0;
+  if (img) {
+    var fh = 500; cx.save(); rrect(cx, x, top, w, fh, 28); cx.clip(); cubrir(cx, img, x, top, w, fh); cx.restore(); y0 = top + fh + 80;
+  } else if (portada) {
+    var ph = 520, pw = Math.round(ph * portada.width / portada.height);
+    cx.fillStyle = '#EEF2F7'; rrect(cx, x, top, w, ph + 60, 28); cx.fill();
+    cx.save(); cx.shadowColor = 'rgba(15,23,42,.35)'; cx.shadowBlur = 40; cx.shadowOffsetY = 18; cx.fillStyle = '#FFF'; cx.fillRect((W - pw) / 2, top + 30, pw, ph); cx.restore();
+    cx.drawImage(portada, (W - pw) / 2, top + 30, pw, ph); y0 = top + ph + 60 + 80;
+  } else {
+    cx.font = '700 300px ' + SERIF; cx.fillStyle = ac; cx.globalAlpha = .14; cx.textBaseline = 'alphabetic'; cx.fillText('«', W - 300, top + 220); cx.globalAlpha = 1;
+    y0 = top + 260;
+  }
+  var cajaY = INF - 250;                                     // recuadro para el sticker de enlace
+  kicker(cx, d.kicker, 64, y0, ac);
+  var fin = textoAjustado(cx, d.titulo, 64, y0 + 22, W - 128, { familia: SERIF, max: 76, min: 40, lineas: 5, alto: cajaY - 60 - (y0 + 22), color: RED_TINTA, inter: 1.14 });
+  var libre = cajaY - 50 - (fin + 24);
+  if (d.idea && libre > 90) textoAjustado(cx, recortar(d.idea, 200), 64, fin + 24, W - 128, { familia: SANS, peso: 400, max: 34, min: 28, lineas: 4, alto: libre, color: RED_GRIS, inter: 1.45 });
+  cx.save(); cx.setLineDash([14, 12]); cx.lineWidth = 3; cx.strokeStyle = ac; rrect(cx, 150, cajaY, W - 300, 130, 65); cx.stroke(); cx.restore();
+  cx.font = '600 30px ' + SANS; cx.fillStyle = ac; cx.textBaseline = 'middle'; var t = 'Pega aquí el sticker de enlace';
+  cx.fillText(t, (W - cx.measureText(t).width) / 2, cajaY + 65);
+  cx.textBaseline = 'alphabetic'; cx.font = '700 36px ' + SANS; cx.fillStyle = '#1B5A99'; var u = 'www.voxliber.cl';
+  cx.fillText(u, (W - cx.measureText(u).width) / 2, INF - 30);
+  return c;
+}
 function laminaTexto(d, titulo, texto, logo, W, H, num, esCita) {
   var c = lienzo(W, H), cx = c.getContext('2d'), ac = acentoDe(d);
   marco(cx, W, H, d, logo, num);
@@ -853,7 +885,7 @@ function generarRedes(tipo, it, frase) {
     if (d.extra) piezas.push(d.extraTit === 'cita' ? function (n) { return laminaTexto(d, '', d.extra, icono, W, H, n, true); } : function (n) { return laminaTexto(d, d.extraTit, d.extra, icono, W, H, n); });
     piezas.push(function (n) { return laminaCierre(d, icono, W, H, n); });
     var lams = piezas.map(function (f, i) { return f((i + 1) + ' / ' + piezas.length); });
-    R.laminas = lams; R.historia = laminaPortada(d, img, portada, icono, 1080, 1920, '');
+    R.laminas = lams; R.historia = laminaHistoria(d, img, portada, icono);
     // Texto sugerido para la publicación
     var tags = ['#VoxLiber'].concat(d.etiquetas.map(hashtag)).concat(d.cat === 'radar' ? [] : ['#PensamientoCrítico']).filter(function (x, i, a) { return x && a.indexOf(x) === i; }).slice(0, 8);
     R.texto = d.titulo + '\n\n' + (d.cat === 'radar' ? 'Vox Liber comenta: ' : '') + (d.idea || '') + '\n\n' + (RED_TEXTO[d.cat] || 'Lee más en') + ' ' + d.enlace +
