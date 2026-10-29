@@ -592,6 +592,7 @@ var CONFIG = {
 /* =========================================================
    CONTENIDO: en la versión final llega desde Apps Script
    ========================================================= */
+var MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 var I = {
   inv:'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h6',
   col:'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4',
@@ -902,7 +903,8 @@ function aplicarContenido(d){
 }
 function cargarContenido(){
   var cache=leerCache('vl-contenido'),firma=cache?JSON.stringify(cache):'';
-  if(cache)aplicarContenido(cache);else esqueleto();
+  // Si los datos guardados fallan al dibujarse, se descartan y se piden de nuevo: el sitio nunca queda detenido.
+  if(cache){try{aplicarContenido(cache)}catch(e){borrarCache('vl-contenido');cache=null;firma='';esqueleto()}}else esqueleto();
   if(!CONFIG.apiUrl){if(!cache)mostrarEjemplo();return}
   fetch(CONFIG.apiUrl+'?api=contenido').then(function(r){return r.json()}).then(function(d){
     if(!d||!d.ok){if(!cache)mostrarEjemplo();return}
@@ -928,7 +930,6 @@ var DEMO_LECTURA={
     texto:'Así se verá una columna de opinión. El texto completo se lee aquí, en Vox Liber. Si se publicó antes en otro medio, al final aparece el recuadro «Publicada originalmente en…», con el enlace a la versión original; si es solo de Vox Liber, no aparece.\n\nEste es un texto de ejemplo. Cuando publiques tus columnas desde el panel, aquí aparecerá cada una con su propia dirección para compartir.'}
 };
 var CAT_INFO={investigacion:['Informe Especial','#1B5A99'],columnas:['Columna','#0E9F8E'],youtube:['Video','#E62117'],radio:['Radio y podcast','#6A3FC1'],revista:['Revista Vox Liber','#3B8FE0'],papers:['Papers e Investigación','#0B76AE']};
-var MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 function fechaLarga(f){var p=String(f||'').split('-');if(p.length<3)return '';return (+p[2])+' de '+MESES[(+p[1])-1]+' de '+p[0]}
 function md(t){
   function enl(x){return x.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>')
