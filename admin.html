@@ -71,6 +71,9 @@ h2{font-family:var(--serif);font-size:30px;margin:0}
 .row-title{font-family:var(--serif);font-weight:600;font-size:17px;line-height:1.25;overflow:hidden;text-overflow:ellipsis}
 .row-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px;font-size:13px;color:var(--muted)}
 .chip{font-size:12px;font-weight:700;padding:3px 9px;border-radius:9px}
+.etq-op{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.etq-op button{height:32px;padding:0 12px;border-radius:16px;border:1px solid var(--line);background:#fff;color:var(--ink2);font-size:13px;font-weight:500}
+.etq-op button[aria-pressed="true"]{background:#FDEBE5;border-color:#F3B49F;color:#B4401F;font-weight:700}
 .row-actions{display:flex;gap:6px;flex:none}
 .empty{background:var(--card);border:1.5px dashed #CBD5E1;border-radius:16px;padding:40px;text-align:center;color:var(--muted)}
 table{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
@@ -310,6 +313,7 @@ function pintarRadar() {
         '<span class="chip" style="background:#FDEBE5;color:#B4401F">' + esc(r.medio) + '</span><span>' + esc(r.fecha) + '</span>' +
         (r.publicado === 'SI' ? '<span class="chip" style="background:#E3F6EE;color:#0E7A55">Publicado</span>' : '<span class="chip" style="background:#F1F5F9;color:#475569">Borrador</span>') +
         (tiene ? '<span class="chip" style="background:#E8F0FB;color:#1B5A99">Con resumen</span>' : '') +
+        String(r.etiquetas || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean).map(function (x) { return '<span class="chip" style="background:#F1F5F9;color:#475569;font-weight:600">#' + esc(x) + '</span>'; }).join('') +
         (r.destacado === 'SI' ? '<span class="chip" style="background:#FDF1D8;color:#8A5A00">En el carrusel</span>' : '') + '</div>' +
         '<div class="hint" style="margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Vox Liber: ' + esc(r.comentario) + '</div></div>' +
         '<div class="row-actions">' + (tiene && r.publicado === 'SI' && r.slug ? '<button class="btn btn-s btn-sm" data-link="' + esc(r.pagina === 'SI' ? S.cfg.sitio + 'r/' + encodeURIComponent(r.slug) + '/' : S.cfg.sitio + '?radar=' + encodeURIComponent(r.slug)) + '" title="Copiar el enlace para compartir">Copiar enlace</button>' : '') +
@@ -372,6 +376,9 @@ function abrirEditor(tipo, it) {
       '<label class="field">Título de la noticia<input name="titulo" required maxlength="220" value="' + esc(it.titulo) + '"></label>' +
       '<div class="grid2"><label class="field">Medio<input name="medio" maxlength="80" value="' + esc(it.medio) + '" placeholder="Por ejemplo: La Tercera"></label>' +
       '<label class="field">Fecha de la noticia<input type="date" name="fecha" value="' + esc(f) + '"></label></div>' +
+      '<label class="field">Etiquetas<input name="etiquetas" id="rdEtq" maxlength="200" value="' + esc(it.etiquetas) + '" placeholder="Por ejemplo: Política, Justicia, Gobierno de Kast">' +
+      '<span class="hint">Toca para agregar o quitar, o escribe las tuyas separadas por comas. Hasta 6. Sirven para filtrar el Radar en el sitio.</span>' +
+      '<div class="etq-op" id="rdEtqOp">' + ((S.cfg.radarEtiquetas || S.cfg.radarSecciones || []).slice(0, 16).map(function (e) { return '<button type="button" data-etq="' + esc(e) + '">' + esc(e) + '</button>'; }).join('')) + '</div></label>' +
       '<label class="field">Bajada del medio (opcional)<textarea name="bajada" maxlength="300" style="min-height:70px">' + esc(it.bajada) + '</textarea><span class="hint">El resumen que el propio medio publica para compartir la nota. No pegues párrafos del texto.</span></label>' +
       '<label class="field">Comentario de Vox Liber (obligatorio)<textarea name="comentario" id="rdCom" required minlength="20" maxlength="600" style="min-height:120px;font-family:\'Source Serif 4\',Georgia,serif;font-size:16px;line-height:1.55">' + esc(it.comentario) + '</textarea>' +
       '<span class="hint">Por qué vale la pena leerla, qué le falta o qué deja en evidencia. Una o dos frases: aparece en las tarjetas, el carrusel y el boletín. <span id="rdCuenta"></span></span></label>' +
@@ -415,6 +422,17 @@ function abrirEditor(tipo, it) {
     var rr = function () { var n = $('#rdRes').value.length; $('#rdResCuenta').textContent = n ? n.toLocaleString('es-CL') + ' de 6.000 caracteres.' : ''; };
     $('#rdRes').oninput = rr; rr();
     $('#rdTraer').onclick = function () { traerDatos(true); };
+    var etqInp = $('#rdEtq'), clave = function (x) { return x.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); };
+    var etqLista = function () { return etqInp.value.split(',').map(function (x) { return x.trim(); }).filter(Boolean); };
+    var etqPintar = function () { var ks = etqLista().map(clave); $$('#rdEtqOp button').forEach(function (b) { b.setAttribute('aria-pressed', ks.indexOf(clave(b.getAttribute('data-etq'))) > -1 ? 'true' : 'false'); }); };
+    $$('#rdEtqOp button').forEach(function (b) {
+      b.onclick = function () {
+        var e = b.getAttribute('data-etq'), l = etqLista(), i = l.map(clave).indexOf(clave(e));
+        if (i > -1) l.splice(i, 1); else if (l.length < 6) l.push(e); else { toast('Máximo 6 etiquetas por noticia.', true); return; }
+        etqInp.value = l.join(', '); etqPintar();
+      };
+    });
+    etqInp.oninput = etqPintar; etqPintar();
     var enl = $('#edBody input[name="enlace"]');
     enl.addEventListener('paste', function () { setTimeout(function () { if (!$('#edBody input[name="titulo"]').value.trim()) traerDatos(false); }, 50); });
     enl.focus();

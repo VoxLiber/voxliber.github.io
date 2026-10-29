@@ -301,6 +301,15 @@ html.leyendo,html.ruta{overflow:hidden}
 .rd-src b{display:block;font-family:var(--serif);font-size:17.5px;line-height:1.35;margin-top:4px}
 .rd-src span{display:block;font-size:13.5px;color:var(--muted);margin-top:3px}
 .rd-src a.btn-line{flex:none}
+.rd-etq{display:flex;flex-wrap:wrap;gap:6px}
+.rd-etq a{font-size:12.5px;font-weight:600;color:var(--rdInk);background:var(--rdSoft);padding:4px 10px;border-radius:12px}
+.rd-etq a:hover{text-decoration:underline;text-underline-offset:2px}
+.rd-filtro{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.rd-filtro button{height:38px;padding:0 15px;border-radius:19px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font-size:14px;font-weight:600}
+.rd-filtro button span{color:var(--muted);font-weight:500;margin-left:4px}
+.rd-filtro button[aria-pressed="true"]{background:var(--rd);border-color:var(--rd);color:#fff}
+.rd-filtro button[aria-pressed="true"] span{color:rgba(255,255,255,.8)}
+.lec-art .rd-etq{margin-top:18px}
 .btn-line{height:44px;padding:0 18px;border-radius:22px;border:1.5px solid var(--line2);color:var(--ink);font-size:15px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
 .btn-line:hover{background:var(--soft)}
 .cat-page .rd-grid{margin-top:32px}
@@ -730,12 +739,14 @@ $('#tiles').innerHTML=DATA.categorias.map(function(c){
 function iniciales(m){var p=String(m||'?').replace(/^(el|la|los|las|the)\s+/i,'').split(/[\s.\-]+/).filter(Boolean);return ((p[0]||'?').charAt(0)+(p[1]?p[1].charAt(0):'')).toUpperCase()}
 function colorMedio(m){var h=0;String(m||'').split('').forEach(function(c){h=(h*31+c.charCodeAt(0))%360});return 'hsl('+h+',48%,38%)'}
 function urlRadar(slug){return location.origin+location.pathname+'?radar='+encodeURIComponent(slug)}
+function chipsEtiquetas(l){l=l||[];if(!l.length)return '';
+  return '<div class="rd-etq">'+l.map(function(e){return '<a class="js-etq" data-etq="'+esc(e)+'" href="?cat=radar&etiqueta='+encodeURIComponent(e)+'">#'+esc(e)+'</a>'}).join('')+'</div>'}
 function tarjetaRadar(r,conBajada){
   var u=esc(r.enlace),interno=r.tieneResumen&&r.slug;
   var abrir=interno?'href="?radar='+encodeURIComponent(r.slug)+'" class="js-radar" data-slug="'+esc(r.slug)+'"':'href="'+u+'" target="_blank" rel="noopener"';
   return '<article class="rd">'+(r.imagen?'<a '+abrir+' tabindex="-1" aria-hidden="true"><span class="rd-img"><img src="'+esc(r.imagen)+'" alt="" loading="lazy" onerror="this.parentNode.parentNode.remove()"></span></a>':'')+'<div class="rd-top"><span class="rd-av" style="background:'+colorMedio(r.medio)+'" aria-hidden="true">'+esc(iniciales(r.medio))+'</span>'+
     '<span style="min-width:0;display:flex;flex-direction:column"><span class="rd-medio">'+esc(r.medio)+'</span><span>'+fechaLarga(r.fecha)+'</span></span></div>'+
-    '<h3><a '+abrir+'>'+esc(r.titulo)+'</a></h3>'+
+    '<h3><a '+abrir+'>'+esc(r.titulo)+'</a></h3>'+chipsEtiquetas(r.etiquetas)+
     (conBajada&&r.bajada&&!interno?'<p class="rd-baj">'+esc(r.bajada)+'</p>':'')+
     '<div class="rd-com"><b>Vox Liber comenta</b><p>'+esc(r.comentario)+'</p></div>'+
     (interno
@@ -1129,7 +1140,7 @@ function pintarCategoria(r){
 function pintarRadarLector(it){
   var url=it.compartir||urlRadar(it.slug),txt=encodeURIComponent(it.titulo+' | Radar Vox Liber'),eu=encodeURIComponent(url);
   var h='<article class="lec-art fade"><div class="lec-kick" style="color:var(--rdInk)">Radar Vox Liber · '+esc(it.medio)+'</div>'+
-    '<h1>'+esc(it.titulo)+'</h1><div class="lec-meta">Noticia de '+esc(it.medio)+(it.fecha?' del '+fechaLarga(it.fecha):'')+'. Resumen y comentario de Vox Liber.</div>'+
+    '<h1>'+esc(it.titulo)+'</h1><div class="lec-meta">Noticia de '+esc(it.medio)+(it.fecha?' del '+fechaLarga(it.fecha):'')+'. Resumen y comentario de Vox Liber.</div>'+chipsEtiquetas(it.etiquetas)+
     (it.imagen?'<figure class="lec-fig"><img src="'+esc(it.imagen)+'" alt="" onerror="this.parentNode.remove()"></figure>':'')+
     '<div class="lec-body">'+md(it.resumen)+'</div>'+
     '<div class="rd-com"><b>Vox Liber comenta</b><p>'+esc(it.comentario)+'</p></div>'+
@@ -1165,13 +1176,23 @@ function cargarRadarItem(slug){
 }
 function pintarRadarPagina(r){
   document.title='Radar Vox Liber · Vox Liber';
-  var n=r.items.length;
+  var sel=new URLSearchParams(location.search).get('etiqueta')||'',cuenta={},orden=[];
+  var k=function(x){return String(x).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')};
+  r.items.forEach(function(x){(x.etiquetas||[]).forEach(function(e){if(!cuenta[e]){cuenta[e]=0;orden.push(e)}cuenta[e]++})});
+  orden.sort(function(a,b){return cuenta[b]-cuenta[a]||a.localeCompare(b,'es')});
+  var items=sel?r.items.filter(function(x){return (x.etiquetas||[]).some(function(e){return k(e)===k(sel)})}):r.items;
+  var n=items.length;
+  var filtro=orden.length?'<div class="rd-filtro" role="group" aria-label="Filtrar por etiqueta"><button type="button" data-f=""'+(sel?'':' aria-pressed="true"')+'>Todas<span>'+r.items.length+'</span></button>'+
+    orden.map(function(e){return '<button type="button" data-f="'+esc(e)+'" aria-pressed="'+(k(e)===k(sel))+'">#'+esc(e)+'<span>'+cuenta[e]+'</span></button>'}).join('')+'</div>':'';
   $('#lecCont').innerHTML='<section class="cat-page fade"><div class="lec-kick" style="color:var(--rdInk)">'+n+(n===1?' noticia comentada':' noticias comentadas')+'</div>'+
-    '<h1>Radar Vox Liber</h1><p class="cat-desc">Noticias de otros medios, resumidas y comentadas por Vox Liber. Siempre con el enlace a la nota original.</p>'+
-    (n?'<div class="rd-grid">'+r.items.map(function(x){return tarjetaRadar(x,true)}).join('')+'</div>':'<p class="cat-desc" style="margin-top:32px">Todavía no hay noticias en el Radar. Vuelve pronto.</p>')+
+    '<h1>Radar Vox Liber</h1><p class="cat-desc">Noticias de otros medios, resumidas y comentadas por Vox Liber. Siempre con el enlace a la nota original.</p>'+filtro+
+    (n?'<div class="rd-grid">'+items.map(function(x){return tarjetaRadar(x,true)}).join('')+'</div>':'<p class="cat-desc" style="margin-top:32px">Todavía no hay noticias en el Radar. Vuelve pronto.</p>')+
     '<p class="rd-nota">Los títulos y bajadas pertenecen a cada medio. Los resúmenes y comentarios son de Vox Liber.</p>'+
     cajaSuscripcion(SUB_TEXTO.radar)+'</section>';
   activarSuscripcion($('#lecCont'));
+  $$('.rd-filtro button').forEach(function(b){b.onclick=function(){
+    var f=b.getAttribute('data-f');history.replaceState(history.state,'','?cat=radar'+(f?'&etiqueta='+encodeURIComponent(f):''));pintarRadarPagina(r);
+  }});
 }
 function cargarCategoria(id){
   mostrarCapa();lecActual=null;$('#lecCompartir').style.visibility='hidden';lector.scrollTop=0;$('#lecProg').style.width='0';
@@ -1194,8 +1215,9 @@ function volver(){if(pasos>0){pasos--;history.back()}else{history.replaceState({
 window.cerrarLector=volver;
 document.addEventListener('click',function(e){
   if(e.metaKey||e.ctrlKey||e.shiftKey||!e.target.closest)return;
-  var a=e.target.closest('a.js-leer'),c=e.target.closest('a.js-cat'),rr=e.target.closest('a.js-radar');
-  if(rr){e.preventDefault();navegar('?radar='+encodeURIComponent(rr.getAttribute('data-slug')))}
+  var a=e.target.closest('a.js-leer'),c=e.target.closest('a.js-cat'),rr=e.target.closest('a.js-radar'),et=e.target.closest('a.js-etq');
+  if(et){e.preventDefault();navegar('?cat=radar&etiqueta='+encodeURIComponent(et.getAttribute('data-etq')))}
+  else if(rr){e.preventDefault();navegar('?radar='+encodeURIComponent(rr.getAttribute('data-slug')))}
   else if(a){e.preventDefault();navegar('?leer='+encodeURIComponent(a.getAttribute('data-slug')))}
   else if(c){e.preventDefault();navegar('?cat='+encodeURIComponent(c.getAttribute('data-cat')))}
 });
