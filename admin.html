@@ -420,7 +420,7 @@ function abrirEditor(tipo, it) {
       '<label class="field">Fecha<input type="date" name="fecha" value="' + esc(f) + '"></label></div>' +
       '<label class="field">Título<input name="titulo" required value="' + esc(it.titulo) + '"></label>' +
       '<label class="field">Autor, artista o director<input name="autor" value="' + esc(it.autor) + '"><span class="hint">En actividades: quién la organiza.</span></label>' +
-      '<label class="field">Por qué lo recomiendas<textarea name="nota" maxlength="280">' + esc(it.nota) + '</textarea><span class="hint">Una o dos frases. Máximo 280 caracteres.</span></label>' +
+      '<label class="field">Por qué lo recomiendas<textarea name="nota" id="recNota" maxlength="700" style="min-height:150px">' + esc(it.nota) + '</textarea><span class="hint">Incluye el año y por qué vale la pena. En el sitio se ven las primeras líneas con «Leer más». <span id="recCuenta"></span></span></label>' +
       '<label class="field">Enlace (opcional)<input type="url" name="enlace" value="' + esc(it.enlace) + '" placeholder="https://"></label>' +
       bloqueImagen('imagen', 'Imagen', 'Portada del libro, carátula del disco o afiche. Proporción 3:4 (vertical), también para discos.', it.imagenUrl, '3 / 4', 1200, 1600);
   } else {
@@ -443,6 +443,7 @@ function abrirEditor(tipo, it) {
   h += '<label class="check"><input type="checkbox" name="publicado"' + (it.id ? (it.publicado === 'SI' ? ' checked' : '') : ' checked') + '> Publicado en el sitio</label>';
   $('#edBody').innerHTML = h;
   $('#editor').classList.remove('hidden');
+  if ($('#recNota')) { var rc = function () { var n = $('#recNota').value.length; $('#recCuenta').textContent = n + ' de 700 caracteres.'; }; $('#recNota').oninput = rc; rc(); }
   if (esRadar) {
     var cr = function () { var n = $('#rdCom').value.trim().length; $('#rdCuenta').textContent = n + ' de 600 caracteres' + (n < 20 ? ' (mínimo 20).' : '.'); $('#rdCuenta').style.color = n < 20 || n > 600 ? 'var(--bad)' : ''; };
     $('#rdCom').oninput = cr; cr();

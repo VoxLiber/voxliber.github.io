@@ -147,6 +147,8 @@ img{display:block}
 .chip{align-self:flex-start;font-size:12px;font-weight:700;padding:4px 10px;border-radius:10px}
 .rec h3{margin:0;font-family:var(--serif);font-size:18px;font-weight:600;line-height:1.25}
 .rec p{margin:0;font-size:13.5px;line-height:1.45;color:var(--muted)}
+.rec p.corto{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.rec .mas{align-self:flex-start;border:none;background:none;padding:2px 0;color:var(--blue);font-size:13.5px;font-weight:600}
 
 .box{border-radius:18px;padding:22px}
 .box-dark{background:var(--navy);color:#fff}
@@ -788,7 +790,10 @@ function renderRecs(){
   var seen={};var list=DATA.recomendados.filter(function(r){if(recTab==='Todo'){if(seen[r.tipo])return false;seen[r.tipo]=1;return true}return REC_STYLE[r.tipo].tab===recTab});
   $('#recs').innerHTML=list.map(function(r){var st=REC_STYLE[r.tipo];
     return '<article class="rec"><div class="rec-img" style="aspect-ratio:'+st.ratio+'">'+(r.imagen?'<img src="'+r.imagen+'" alt="'+esc(r.titulo)+'">':genCover(r))+'</div>'+
-    '<span class="chip" style="background:'+st.chip+';color:'+st.ink+'">'+r.tipo+'</span><h3>'+esc(r.titulo)+'</h3><p>'+esc(r.nota)+'</p></article>'}).join('');
+    '<span class="chip" style="background:'+st.chip+';color:'+st.ink+'">'+r.tipo+'</span><h3>'+esc(r.titulo)+'</h3><p class="corto">'+esc(r.nota)+'</p></article>'}).join('');
+  // Notas largas: se muestran 5 líneas y un botón para leer el resto
+  $$('#recs .rec p.corto').forEach(function(p){if(p.scrollHeight>p.clientHeight+2){var b=document.createElement('button');b.type='button';b.className='mas';b.textContent='Leer más';
+    b.onclick=function(){var abierto=p.classList.toggle('corto');b.textContent=abierto?'Leer más':'Leer menos'};p.after(b)}});
 }
 
 /* Comunidad en redes */
