@@ -109,6 +109,14 @@ th{background:var(--soft);font-size:12.5px;color:var(--muted)}
 .rds-mini:hover{outline:3px solid var(--celeste)}
 .rds-fila{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:18px;align-items:start}
 @media (max-width:640px){.rds-fila{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;min-width:0}
+.card h3{font-family:var(--serif);font-size:19px;margin:0 0 12px}
+.card table{border:none;border-radius:0}.card td,.card th{padding:9px 8px}
+.est-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:16px;margin-top:16px}
+@media (max-width:640px){.est-grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat b{font-size:28px}}
+.var{display:block;font-size:12.5px;font-weight:600;margin-top:6px;color:var(--muted)}.var.up{color:var(--ok)}.var.down{color:var(--bad)}
+.bar-row{margin-bottom:12px}.bar-top{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin-bottom:5px}.bar-top small{color:var(--muted);font-weight:500}
+.bar{height:9px;border-radius:5px;background:var(--soft);overflow:hidden}.bar i{display:block;height:100%;border-radius:5px}
 iframe.prev{width:100%;height:640px;border:1px solid var(--line);border-radius:14px;background:#fff}
 @media (max-width:640px){.row{flex-wrap:wrap}.row-actions{width:100%;justify-content:flex-end}h2{font-size:24px}}
 </style>
@@ -133,6 +141,7 @@ iframe.prev{width:100%;height:640px;border:1px solid var(--line);border-radius:1
       <div class="wordmark">vox <span>liber</span></div>
       <nav class="tabs" id="tabs" aria-label="Secciones del panel">
         <button data-tab="resumen" aria-current="true">Resumen</button>
+        <button data-tab="estadisticas">Estadísticas</button>
         <button data-tab="contenidos">Contenidos</button>
         <button data-tab="recomendados">Recomendados</button>
         <button data-tab="monitor">Monitor <span class="badge hidden" id="bMon" style="background:var(--celeste);color:var(--night)"></span></button>
@@ -189,7 +198,7 @@ iframe.prev{width:100%;height:640px;border:1px solid var(--line);border-radius:1
 
 <script>
 var S = { cfg: null, tab: 'resumen', datos: {}, filtro: 'todas', edit: null, archivos: {} };
-if (/^#(monitor|radar|contenidos|recomendados|columnas|suscriptores|boletin|ajustes)$/.test(location.hash)) S.tab = location.hash.slice(1); // admin.html#monitor abre esa pestaña
+if (/^#(estadisticas|monitor|radar|contenidos|recomendados|columnas|suscriptores|boletin|ajustes)$/.test(location.hash)) S.tab = location.hash.slice(1); // admin.html#monitor abre esa pestaña
 var COLORES = {}; var TIPO_COLOR = { 'Libro': ['#E8F0FB', '#1B5A99'], 'Disco': ['#F2ECFB', '#6A3FC1'], 'Película': ['#FDF1D8', '#8A5A00'], 'Actividad': ['#E0F5F2', '#0A7568'] };
 var ESTADO_COL = { recibida: ['#E8F0FB', '#1B5A99', 'Recibida'], aprobada: ['#E3F6EE', '#0E7A55', 'Aprobada'], rechazada: ['#FDECEC', '#C2312D', 'Rechazada'] };
 
@@ -233,6 +242,7 @@ function conToken(t) {
   $('#loginMsg').style.color = ''; $('#loginMsg').textContent = 'Verificando acceso de ' + p.email + '…';
   run('adminIniciar').then(function (cfg) {
     S.cfg = cfg; cfg.categorias.forEach(function (k) { COLORES[k.id] = k; });
+    try { localStorage.setItem('vl-admin', '1'); } catch (e) {} // este navegador no se cuenta en las estadísticas del sitio
     $('#cuenta').textContent = cfg.cuenta;
     $('#vLogin').classList.add('hidden'); $('#vApp').classList.remove('hidden');
     pintarBadge(); ir(S.tab || 'resumen');
@@ -267,7 +277,7 @@ function ir(tab) {
   S.tab = tab; S.filtro = 'todas';
   $$('#tabs button').forEach(function (b) { b.setAttribute('aria-current', b.getAttribute('data-tab') === tab ? 'true' : 'false'); });
   var v = $('#vista'); v.innerHTML = '<p class="sub">Cargando…</p>';
-  ({ resumen: vResumen, contenidos: vContenidos, recomendados: vRecomendados, monitor: vMonitor, radar: vRadar, columnas: vColumnas, suscriptores: vSuscriptores, boletin: vBoletin, ajustes: vAjustes })[tab]();
+  ({ resumen: vResumen, estadisticas: vEstadisticas, contenidos: vContenidos, recomendados: vRecomendados, monitor: vMonitor, radar: vRadar, columnas: vColumnas, suscriptores: vSuscriptores, boletin: vBoletin, ajustes: vAjustes })[tab]();
 }
 
 /* ===== Resumen ===== */
@@ -563,6 +573,87 @@ function comprimir(file, maxW, maxH) {
     img.onerror = function () { ko(new Error('El archivo no es una imagen válida.')); };
     img.src = url;
   });
+}
+
+/* ===== Estadísticas ===== */
+var EST = { dias: 30 };
+function vEstadisticas() {
+  run('adminEstadisticas', EST.dias).then(function (d) { S.datos.estadisticas = d; pintarEstadisticas(); }).catch(function (e) { toast(e.message, true); });
+}
+function numCL(n) { return Number(n || 0).toLocaleString('es-CL'); }
+function variacion(a, b) {
+  if (b == null) return '';
+  if (!b) return a ? '<span class="var up">nuevo</span>' : '';
+  var p = Math.round((a - b) / b * 100);
+  return '<span class="var ' + (p > 0 ? 'up' : p < 0 ? 'down' : '') + '">' + (p > 0 ? '+' : '') + p + '% vs. período anterior</span>';
+}
+function graficoBarras(serie, porHora) {
+  var W = 1000, H = 230, pb = 26, pt = 12, n = serie.length, max = Math.max.apply(null, serie.map(function (s) { return s.vistas; }).concat([1]));
+  var paso = W / n, ancho = Math.max(2, paso * 0.7), y = function (v) { return pt + (H - pb - pt) * (1 - v / max); };
+  var barras = serie.map(function (s, i) {
+    var h = (H - pb - pt) * s.vistas / max;
+    return '<rect x="' + (i * paso + (paso - ancho) / 2).toFixed(1) + '" y="' + (H - pb - h).toFixed(1) + '" width="' + ancho.toFixed(1) + '" height="' + Math.max(0, h).toFixed(1) + '" rx="2" fill="var(--blue)"><title>' +
+      esc(s.etiqueta + ': ' + numCL(s.vistas) + ' páginas vistas' + (s.visitantes != null ? ', ' + numCL(s.visitantes) + ' visitantes' : '')) + '</title></rect>';
+  }).join('');
+  var linea = porHora ? '' : '<polyline fill="none" stroke="var(--celeste)" stroke-width="3" stroke-linejoin="round" points="' + serie.map(function (s, i) { return (i * paso + paso / 2).toFixed(1) + ',' + y(s.visitantes).toFixed(1); }).join(' ') + '"/>';
+  var marcas = [0, Math.floor((n - 1) / 2), n - 1].filter(function (v, i, a) { return a.indexOf(v) === i; }).map(function (i) {
+    var t = porHora ? serie[i].etiqueta : serie[i].etiqueta.slice(8) + '-' + serie[i].etiqueta.slice(5, 7);
+    return '<text x="' + (i * paso + paso / 2).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="13" fill="var(--muted)">' + t + '</text>';
+  }).join('');
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block" role="img" aria-label="Páginas vistas por ' + (porHora ? 'hora' : 'día') + '">' +
+    '<line x1="0" x2="' + W + '" y1="' + (H - pb) + '" y2="' + (H - pb) + '" stroke="var(--line)"/>' +
+    '<text x="4" y="' + (pt + 12) + '" font-size="13" fill="var(--muted)">' + numCL(max) + '</text>' + barras + linea + marcas + '</svg>';
+}
+function barraFila(nombre, valor, total, color) {
+  var p = total ? Math.round(valor / total * 100) : 0;
+  return '<div class="bar-row"><div class="bar-top"><span>' + nombre + '</span><b>' + numCL(valor) + ' <small>' + p + '%</small></b></div><div class="bar"><i style="width:' + p + '%;background:' + (color || 'var(--blue)') + '"></i></div></div>';
+}
+function tablaTop(titulo, lista, vacio) {
+  var enlace = function (p) {
+    var u = S.cfg.sitio + (p.tipo === 'contenido' ? '?leer=' : p.tipo === 'radar' ? '?radar=' : p.tipo === 'categoria' ? '?cat=' : '') + encodeURIComponent(p.id || '');
+    return '<a href="' + esc(p.tipo === 'portada' ? S.cfg.sitio : u) + '" target="_blank" rel="noopener">' + esc(p.titulo) + '</a>' + (p.existe ? '' : ' <span class="hint">(ya no existe)</span>');
+  };
+  return '<div class="card"><h3>' + titulo + '</h3>' + (lista.length ?
+    '<div class="tablewrap"><table><thead><tr><th style="width:28px">#</th><th>Página</th><th style="text-align:right">Vistas</th><th style="text-align:right">Visitantes</th></tr></thead><tbody>' +
+    lista.map(function (p, i) {
+      var k = COLORES[p.cat];
+      return '<tr><td>' + (i + 1) + '</td><td>' + enlace(p) + (k ? ' <span class="chip" style="background:' + k.color + ';color:' + k.tinta + '">' + esc(k.corto) + '</span>' : '') + (p.medio ? ' <span class="hint">' + esc(p.medio) + '</span>' : '') +
+        '</td><td style="text-align:right">' + numCL(p.vistas) + '</td><td style="text-align:right">' + numCL(p.visitantes) + '</td></tr>';
+    }).join('') + '</tbody></table></div>' : '<p class="hint" style="margin:0">' + vacio + '</p>') + '</div>';
+}
+function pintarEstadisticas() {
+  var d = S.datos.estadisticas, t = d.total, a = d.anterior;
+  var periodo = d.dias === 1 ? 'hoy' : 'los últimos ' + d.dias + ' días';
+  var h = '<div class="head"><div><h2>Estadísticas</h2><p class="sub">Visitas a Vox Liber en ' + periodo + '. Sin cookies ni datos personales. El navegador donde abres este panel no se cuenta.' +
+    (d.inicio ? ' Registro desde el ' + esc(d.inicio) + '.' : '') + '</p></div></div>' +
+    '<div class="filters" id="estDias">' + [[1, 'Hoy'], [7, '7 días'], [30, '30 días'], [90, '90 días']].map(function (x) { return '<button data-d="' + x[0] + '" aria-pressed="' + (EST.dias === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>';
+  if (!t.vistas) {
+    h += '<div class="empty">Aún no hay visitas registradas en este período. El conteo empieza cuando el nuevo index.html está publicado en el sitio' + (d.inicio ? '' : ' y alguien lo abre') + '.</div>';
+  } else {
+    h += '<div class="stats">' +
+      '<div class="stat"><b>' + numCL(t.vistas) + '</b><span>páginas vistas</span>' + variacion(t.vistas, a && a.vistas) + '</div>' +
+      '<div class="stat"><b>' + numCL(t.visitas) + '</b><span>visitas</span>' + variacion(t.visitas, a && a.visitas) + '</div>' +
+      '<div class="stat"><b>' + numCL(t.visitantes) + '</b><span>visitantes únicos</span>' + variacion(t.visitantes, a && a.visitantes) + '</div>' +
+      '<div class="stat"><b>' + (t.visitas ? (t.vistas / t.visitas).toFixed(1).replace('.', ',') : '0') + '</b><span>páginas por visita</span></div>' +
+      '<div class="stat"><b>' + numCL(t.suscripciones) + '</b><span>nuevas suscripciones al boletín</span></div></div>' +
+      '<div class="card" style="margin-top:16px"><h3>' + (d.dias === 1 ? 'Páginas vistas por hora' : 'Páginas vistas por día') + '</h3>' +
+      (d.dias === 1 ? '' : '<p class="hint" style="margin:-6px 0 10px"><span style="color:var(--blue)">■</span> páginas vistas &nbsp; <span style="color:var(--celeste)">━</span> visitantes únicos. Pasa el cursor por una barra para ver el detalle.</p>') +
+      graficoBarras(d.serie, d.dias === 1) + '</div>' +
+      '<div class="est-grid">' +
+      tablaTop('Lo más leído', d.contenidos, 'Nadie ha abierto una lectura en este período.') +
+      tablaTop('Radar más leído', d.radar, 'Nadie ha abierto una noticia del Radar en este período.') +
+      '<div class="card"><h3>De dónde llegan</h3><p class="hint" style="margin:-6px 0 12px">Por visita. «Directo» incluye a quienes escriben la dirección y la mayoría de los enlaces abiertos desde WhatsApp o desde correos, que no dicen de dónde vienen.</p>' +
+      d.origenes.map(function (o) { return barraFila(esc(o.origen), o.visitas, t.visitas); }).join('') + '</div>' +
+      '<div class="card"><h3>Celular o computador</h3>' + barraFila('Celular', d.dispositivos.movil, t.visitas, 'var(--celeste)') + barraFila('Computador', d.dispositivos.escritorio, t.visitas, 'var(--navy)') +
+      (d.dias > 1 ? '<h3 style="margin-top:22px">A qué hora leen</h3>' + graficoBarras(d.horas.map(function (n, i) { return { etiqueta: i + ':00', vistas: n }; }), true) : '') + '</div>' +
+      tablaTop('Portada y secciones', d.secciones, 'Sin visitas a secciones en este período.') +
+      '<div class="card"><h3>Mes a mes</h3>' + (d.meses.length ? '<div class="tablewrap"><table><thead><tr><th>Mes</th><th style="text-align:right">Páginas vistas</th><th style="text-align:right">Visitas</th><th style="text-align:right">Visitantes</th></tr></thead><tbody>' +
+        d.meses.map(function (m) { return '<tr><td>' + esc(m.mes) + '</td><td style="text-align:right">' + numCL(m.vistas) + '</td><td style="text-align:right">' + numCL(m.visitas) + '</td><td style="text-align:right">' + numCL(m.visitantes) + '</td></tr>'; }).join('') +
+        '</tbody></table></div>' : '<p class="hint" style="margin:0">El resumen mensual se arma cada madrugada. Aparecerá aquí desde mañana.</p>') + '</div>' +
+      '</div>';
+  }
+  $('#vista').innerHTML = h;
+  $$('#estDias button').forEach(function (b) { b.onclick = function () { EST.dias = Number(b.getAttribute('data-d')); $('#vista').innerHTML = '<p class="sub">Cargando…</p>'; vEstadisticas(); }; });
 }
 
 /* ===== Monitor de medios ===== */
