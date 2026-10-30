@@ -135,6 +135,7 @@ iframe.prev{width:100%;height:640px;border:1px solid var(--line);border-radius:1
         <button data-tab="resumen" aria-current="true">Resumen</button>
         <button data-tab="contenidos">Contenidos</button>
         <button data-tab="recomendados">Recomendados</button>
+        <button data-tab="monitor">Monitor <span class="badge hidden" id="bMon" style="background:var(--celeste);color:var(--night)"></span></button>
         <button data-tab="radar">Radar</button>
         <button data-tab="columnas">Columnas <span class="badge hidden" id="bCol"></span></button>
         <button data-tab="suscriptores">Suscriptores</button>
@@ -155,6 +156,15 @@ iframe.prev{width:100%;height:640px;border:1px solid var(--line);border-radius:1
     <div class="drawer-body" id="edBody"></div>
     <div class="drawer-foot"><button type="button" class="btn btn-s" id="edCancelar">Cancelar</button><button type="submit" class="btn btn-p" id="edGuardar">Guardar</button></div>
   </form>
+</div>
+
+<!-- MONITOR: FUENTES Y TEMAS -->
+<div class="drawer-bg hidden" id="monCfg" role="dialog" aria-modal="true" aria-labelledby="mcTit">
+  <div class="drawer" style="max-width:760px">
+    <div class="drawer-head"><h3 id="mcTit">Fuentes y temas del Monitor</h3><button type="button" class="btn btn-s btn-sm" id="mcCerrar">Cerrar</button></div>
+    <div class="drawer-body" id="mcBody"></div>
+    <div class="drawer-foot"><button type="button" class="btn btn-s" id="mcCancelar">Cancelar</button><button type="button" class="btn btn-p" id="mcGuardar">Guardar cambios</button></div>
+  </div>
 </div>
 
 <!-- IMÁGENES PARA REDES -->
@@ -179,6 +189,7 @@ iframe.prev{width:100%;height:640px;border:1px solid var(--line);border-radius:1
 
 <script>
 var S = { cfg: null, tab: 'resumen', datos: {}, filtro: 'todas', edit: null, archivos: {} };
+if (/^#(monitor|radar|contenidos|recomendados|columnas|suscriptores|boletin|ajustes)$/.test(location.hash)) S.tab = location.hash.slice(1); // admin.html#monitor abre esa pestaña
 var COLORES = {}; var TIPO_COLOR = { 'Libro': ['#E8F0FB', '#1B5A99'], 'Disco': ['#F2ECFB', '#6A3FC1'], 'Película': ['#FDF1D8', '#8A5A00'], 'Actividad': ['#E0F5F2', '#0A7568'] };
 var ESTADO_COL = { recibida: ['#E8F0FB', '#1B5A99', 'Recibida'], aprobada: ['#E3F6EE', '#0E7A55', 'Aprobada'], rechazada: ['#FDECEC', '#C2312D', 'Rechazada'] };
 
@@ -245,7 +256,10 @@ $('#salir').onclick = function () {
 };
 iniciarGoogle();
 
-function pintarBadge() { var n = S.cfg.resumen.columnasNuevas; var b = $('#bCol'); b.textContent = n; b.classList.toggle('hidden', !n); }
+function pintarBadge() {
+  var n = S.cfg.resumen.columnasNuevas; var b = $('#bCol'); b.textContent = n; b.classList.toggle('hidden', !n);
+  var m = S.cfg.resumen.monitor || 0, bm = $('#bMon'); bm.textContent = m > 99 ? '99+' : m; bm.classList.toggle('hidden', !m);
+}
 
 /* ===== Navegación ===== */
 $$('#tabs button').forEach(function (b) { b.onclick = function () { ir(b.getAttribute('data-tab')); }; });
@@ -253,7 +267,7 @@ function ir(tab) {
   S.tab = tab; S.filtro = 'todas';
   $$('#tabs button').forEach(function (b) { b.setAttribute('aria-current', b.getAttribute('data-tab') === tab ? 'true' : 'false'); });
   var v = $('#vista'); v.innerHTML = '<p class="sub">Cargando…</p>';
-  ({ resumen: vResumen, contenidos: vContenidos, recomendados: vRecomendados, radar: vRadar, columnas: vColumnas, suscriptores: vSuscriptores, boletin: vBoletin, ajustes: vAjustes })[tab]();
+  ({ resumen: vResumen, contenidos: vContenidos, recomendados: vRecomendados, monitor: vMonitor, radar: vRadar, columnas: vColumnas, suscriptores: vSuscriptores, boletin: vBoletin, ajustes: vAjustes })[tab]();
 }
 
 /* ===== Resumen ===== */
@@ -263,7 +277,7 @@ function vResumen() {
     $('#vista').innerHTML = '<div class="head"><div><h2>Resumen</h2><p class="sub">Estado actual de Vox Liber.</p></div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-s" href="' + esc(cfg.sitio) + '" target="_blank">Ver el sitio</a><a class="btn btn-s" href="' + esc(cfg.planilla) + '" target="_blank">Abrir la planilla</a></div></div>' +
       '<div class="stats">' +
-      stat(r.contenidos, 'contenidos') + stat(r.recomendados, 'recomendados') + stat(r.radar || 0, 'noticias en el Radar') + stat(r.activos, 'suscriptores activos') +
+      stat(r.contenidos, 'contenidos') + stat(r.recomendados, 'recomendados') + stat(r.radar || 0, 'noticias en el Radar') + stat(r.monitor || 0, 'titulares por revisar en el Monitor') + stat(r.activos, 'suscriptores activos') +
       stat(r.pendientes, 'suscripciones por confirmar') + stat(r.columnasNuevas, 'columnas por revisar') + stat(r.cuotaCorreo, 'correos disponibles hoy') +
       '</div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px"><button class="btn btn-p" id="qNuevo">Nuevo contenido</button><button class="btn btn-s" id="qRec">Nueva recomendación</button><button class="btn btn-s" id="qRadar">Nueva noticia del Radar</button></div>';
     $('#qNuevo').onclick = function () { ir('contenidos'); abrirEditor('contenidos'); };
@@ -499,7 +513,7 @@ function bloqueImagen(k, titulo, ayuda, url, ratio, w, h) {
 
 function cerrarEditor() { $('#editor').classList.add('hidden'); S.edit = null; S.archivos = {}; }
 $('#edCerrar').onclick = cerrarEditor; $('#edCancelar').onclick = cerrarEditor;
-document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { if (!$('#redes').classList.contains('hidden')) cerrarRedes(); else if (S.edit) cerrarEditor(); } });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { if (!$('#redes').classList.contains('hidden')) cerrarRedes(); else if (S.edit) cerrarEditor(); else if (!$('#monCfg').classList.contains('hidden')) cerrarMonCfg(); } });
 
 $('#edForm').addEventListener('submit', function (e) {
   e.preventDefault();
@@ -517,8 +531,9 @@ $('#edForm').addEventListener('submit', function (e) {
   if (A.imagen) d.imagenNueva = A.imagen; if (A.portada) d.portadaNueva = A.portada; if (A.pdf) d.pdfNuevo = A.pdf;
   if (A.quitar_imagen) d.quitarImagen = true; if (A.quitar_portada) d.quitarPortada = true; if (A.quitar_pdf) d.quitarPdf = true;
   var btn = $('#edGuardar'); btn.disabled = true; btn.textContent = (A.pdf || A.imagen || A.portada) ? 'Subiendo archivos…' : 'Guardando…';
-  var tipo = S.edit.tipo;
-  run('adminGuardar', tipo, d).then(function (r) { cerrarEditor(); if (r && r._aviso) toast(r._aviso, true); else toast('Guardado. El sitio se actualiza en unos segundos.'); ir(tipo); })
+  var tipo = S.edit.tipo, volver = S.edit.volver || tipo;
+  if (S.edit.monitorIds) d.monitorId = S.edit.monitorIds; // viene del Monitor: se marca como llevada al Radar
+  run('adminGuardar', tipo, d).then(function (r) { cerrarEditor(); if (r && r._aviso) toast(r._aviso, true); else toast('Guardado. El sitio se actualiza en unos segundos.'); ir(volver); })
     .catch(function (err) { toast(err.message, true); })
     .then(function () { btn.disabled = false; btn.textContent = 'Guardar'; });
 });
@@ -549,6 +564,177 @@ function comprimir(file, maxW, maxH) {
     img.src = url;
   });
 }
+
+/* ===== Monitor de medios ===== */
+var MON = { estado: 'nueva', seccion: 'todas', medio: '', origen: '', q: '', orden: 'relevancia', ver: 60 };
+var SEC_COLOR = { 'Política': ['#E8F0FB', '#1B5A99'], 'Economía y negocios': ['#E3F6EE', '#0E7A55'], 'Tecnología': ['#F2ECFB', '#6A3FC1'], 'Internacional': ['#E0F5F2', '#0A7568'], 'Cultura y espectáculos': ['#FDF1D8', '#8A5A00'], 'Deportes': ['#FDECEC', '#C2312D'] };
+function normTxt(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+function haceCuanto(t) {
+  var m = Math.round((Date.now() - t) / 60000); if (m < 60) return 'hace ' + Math.max(1, m) + ' min';
+  var h = Math.round(m / 60); if (h < 24) return 'hace ' + h + ' h';
+  var d = Math.round(h / 24); return 'hace ' + d + (d === 1 ? ' día' : ' días');
+}
+function fechaIso(t) { var d = new Date(t); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+function vMonitor() {
+  run('adminMonitor').then(function (d) { S.datos.monitor = d; MON.ver = 60; pintarMonitor(); }).catch(function (e) { toast(e.message, true); });
+}
+function pintarMonitor() {
+  var D = S.datos.monitor;
+  var cab = '<div class="head"><div><h2>Monitor de medios</h2><p class="sub" id="monSub"></p></div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-s" id="monCfgBtn">Fuentes y temas</button><button class="btn btn-p" id="monEscanear">Revisar ahora</button></div></div>';
+  if (!D.instalado) {
+    $('#vista').innerHTML = cab + '<div class="empty">El Monitor aún no está instalado. En Apps Script abre <b>Codigo.gs</b>, elige <b>instalarMonitor</b> en el menú de funciones y toca <b>Ejecutar</b>. Después vuelve a esta pestaña.</div>';
+    enlazarCabMonitor(); return;
+  }
+  var activas = D.fuentes.filter(function (f) { return f.activa; });
+  var cuenta = { nueva: 0, radar: 0, descartada: 0 }, grupos = {};
+  D.items.forEach(function (x) { if (!grupos[x.estado + x.grupo]) { grupos[x.estado + x.grupo] = 1; cuenta[x.estado] = (cuenta[x.estado] || 0) + 1; } });
+  var conError = activas.filter(function (f) { return /^Error/.test(f.resultado); });
+  var medios = activas.map(function (f) { return f.nombre; }).sort(function (a, b) { return a.localeCompare(b, 'es'); });
+  $('#vista').innerHTML = cab +
+    (conError.length ? '<div class="upload" style="background:#FFF7E6;border-color:#F5D28A;margin-bottom:16px;font-size:14px"><span><b>' + conError.length + (conError.length === 1 ? ' medio no se pudo leer' : ' medios no se pudieron leer') + ' en la última revisión:</b> ' + esc(conError.map(function (f) { return f.nombre; }).join(', ')) + '. Revisa su dirección en «Fuentes y temas» con el botón «Probar».</span></div>' : '') +
+    '<div class="filters" id="monEst">' + [['nueva', 'Por revisar'], ['radar', 'En el Radar'], ['descartada', 'Descartadas']].map(function (x) {
+      return '<button data-e="' + x[0] + '" aria-pressed="' + (MON.estado === x[0]) + '">' + x[1] + ' (' + (cuenta[x[0]] || 0) + ')</button>'; }).join('') + '</div>' +
+    '<div class="filters" id="monSec">' + [['todas', 'Todas las secciones']].concat(D.secciones.map(function (s) { return [s, s]; })).concat([['otras', 'Sin sección']]).map(function (x) {
+      return '<button data-s="' + esc(x[0]) + '" aria-pressed="' + (MON.seccion === x[0]) + '">' + esc(x[1]) + '</button>'; }).join('') + '</div>' +
+    '<div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-bottom:16px">' +
+    '<label class="field">Buscar<input id="monQ" type="search" value="' + esc(MON.q) + '" placeholder="Palabra del titular"></label>' +
+    '<label class="field">Medio<select id="monMedio"><option value="">Todos</option>' + medios.map(function (m) { return '<option' + (MON.medio === m ? ' selected' : '') + '>' + esc(m) + '</option>'; }).join('') + '</select></label>' +
+    '<label class="field">Origen<select id="monOrigen"><option value="">Chile e internacionales</option><option value="Chile"' + (MON.origen === 'Chile' ? ' selected' : '') + '>Medios chilenos</option><option value="Internacional"' + (MON.origen === 'Internacional' ? ' selected' : '') + '>Medios internacionales</option></select></label>' +
+    '<label class="field">Orden<select id="monOrden"><option value="relevancia">Más relevantes</option><option value="recientes"' + (MON.orden === 'recientes' ? ' selected' : '') + '>Más recientes</option></select></label></div>' +
+    '<div id="monLista"></div>';
+  $('#monSub').textContent = 'Titulares de ' + activas.length + ' medios en los últimos ' + D.dias + ' días, ordenados por relevancia para Vox Liber: temas de Vox Liber, cuántos medios cubren la noticia y qué tan reciente es. Se revisan solos cada ' + D.cadaHoras + ' horas' + (D.ultimo ? '; última revisión ' + haceCuanto(D.ultimo) + '.' : '.');
+  enlazarCabMonitor();
+  $$('#monEst button').forEach(function (b) { b.onclick = function () { MON.estado = b.getAttribute('data-e'); MON.ver = 60; pintarMonitor(); }; });
+  $$('#monSec button').forEach(function (b) { b.onclick = function () { MON.seccion = b.getAttribute('data-s'); MON.ver = 60; pintarMonitor(); }; });
+  $('#monQ').oninput = function () { MON.q = this.value; MON.ver = 60; pintarListaMonitor(); };
+  $('#monMedio').onchange = function () { MON.medio = this.value; MON.ver = 60; pintarListaMonitor(); };
+  $('#monOrigen').onchange = function () { MON.origen = this.value; MON.ver = 60; pintarListaMonitor(); };
+  $('#monOrden').onchange = function () { MON.orden = this.value; pintarListaMonitor(); };
+  pintarListaMonitor();
+}
+function enlazarCabMonitor() {
+  $('#monCfgBtn').onclick = abrirMonCfg;
+  $('#monEscanear').onclick = function () {
+    var b = this; b.disabled = true; b.textContent = 'Revisando medios…';
+    run('adminMonitorEscanear').then(function (r) { toast(r.texto); vMonitor(); }).catch(function (e) { toast(e.message, true); b.disabled = false; b.textContent = 'Revisar ahora'; });
+  };
+}
+/* Muestra una fila por noticia: si varios medios la cubren, aparece la versión mejor puntuada y las otras como «También en». */
+function pintarListaMonitor() {
+  var D = S.datos.monitor, q = normTxt(MON.q).trim();
+  var l = D.items.filter(function (x) {
+    return x.estado === MON.estado && (MON.seccion === 'todas' || (MON.seccion === 'otras' ? !x.seccion : x.seccion === MON.seccion)) &&
+      (!MON.medio || x.medio === MON.medio) && (!MON.origen || x.origen === MON.origen) && (!q || normTxt(x.titulo + ' ' + x.bajada).indexOf(q) > -1);
+  });
+  if (MON.orden === 'recientes') l = l.slice().sort(function (a, b) { return b.t - a.t; });
+  var porGrupo = {}, filas = [];
+  D.items.forEach(function (x) { if (x.estado === MON.estado) (porGrupo[x.grupo] = porGrupo[x.grupo] || []).push(x); });
+  var vistos = {};
+  l.forEach(function (x) { if (!vistos[x.grupo]) { vistos[x.grupo] = 1; filas.push(x); } });
+  var visibles = filas.slice(0, MON.ver);
+  var vacio = { nueva: 'No hay titulares por revisar con estos filtros.', radar: 'Todavía no llevas noticias del Monitor al Radar.', descartada: 'No hay titulares descartados.' }[MON.estado];
+  $('#monLista').innerHTML = !visibles.length ? '<div class="empty">' + vacio + '</div>' :
+    '<div class="list">' + visibles.map(function (x) {
+      var c = SEC_COLOR[x.seccion] || ['#F1F5F9', '#475569'];
+      var otros = (porGrupo[x.grupo] || []).filter(function (y) { return y.id !== x.id; });
+      return '<div class="row" style="align-items:flex-start"><div class="thumb" style="width:48px;height:48px;border-radius:24px;background:' + colorMedio(x.medio) + ';color:#fff;font-weight:700;font-size:15px">' + esc(iniciales(x.medio)) + '</div>' +
+        '<div class="row-main"><a class="row-title" style="display:block;color:var(--ink);text-decoration:none" href="' + esc(x.enlace) + '" target="_blank" rel="noopener">' + esc(x.titulo) + '</a>' +
+        '<div class="row-meta"><span class="chip" style="background:#FDEBE5;color:#B4401F">' + esc(x.medio) + '</span>' +
+        (x.seccion ? '<span class="chip" style="background:' + c[0] + ';color:' + c[1] + '">' + esc(x.seccion) + '</span>' : '') +
+        '<span>' + haceCuanto(x.t) + '</span>' +
+        (x.cobertura > 1 ? '<span class="chip" style="background:#FDF1D8;color:#8A5A00" title="' + esc(x.otros.join(', ')) + '">En ' + x.cobertura + ' medios</span>' : '') +
+        x.temas.map(function (t) { return '<span class="chip" style="background:#E8F0FB;color:#1B5A99;font-weight:600">' + esc(t) + '</span>'; }).join('') +
+        '<span title="Temas de Vox Liber: +3 en el título, +1 en la bajada. +2 por cada otro medio que la cubre. +2 si tiene menos de 6 horas, +1 si menos de 24.">' + x.puntos + ' pts</span></div>' +
+        (x.bajada ? '<div class="hint" style="margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">' + esc(x.bajada) + '</div>' : '') +
+        (otros.length ? '<div class="hint" style="margin-top:6px">También en: ' + otros.map(function (y) { return '<a href="' + esc(y.enlace) + '" target="_blank" rel="noopener">' + esc(y.medio) + '</a>'; }).join(', ') + '</div>' : '') +
+        '</div><div class="row-actions">' +
+        (MON.estado === 'nueva' ? '<button class="btn btn-p btn-sm" data-llevar="' + esc(x.id) + '">Llevar al Radar</button><button class="btn btn-s btn-sm" data-desc="' + esc(x.id) + '">Descartar</button>' :
+         MON.estado === 'descartada' ? '<button class="btn btn-s btn-sm" data-recup="' + esc(x.id) + '">Recuperar</button>' :
+         '<button class="btn btn-s btn-sm" data-irradar="1">Ver en el Radar</button>') + '</div></div>';
+    }).join('') + '</div>' +
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:16px">' +
+    (filas.length > visibles.length ? '<button class="btn btn-s" id="monMas">Ver más (' + (filas.length - visibles.length) + ')</button>' : '<span></span>') +
+    (MON.estado === 'nueva' ? '<button class="btn btn-d btn-sm" id="monDescTodas">Descartar las ' + visibles.length + ' que se ven</button>' : '') + '</div>';
+  var buscar = function (id) { return D.items.filter(function (y) { return y.id === id; })[0]; };
+  var idsGrupo = function (x) { return (porGrupo[x.grupo] || [x]).map(function (y) { return y.id; }); };
+  var cambiar = function (ids, estado, aviso) {
+    return run('adminMonitorEstado', ids, estado).then(function () {
+      D.items.forEach(function (y) { if (ids.indexOf(y.id) > -1) y.estado = estado; });
+      toast(aviso); pintarMonitor();
+    }).catch(function (e) { toast(e.message, true); });
+  };
+  $$('[data-llevar]').forEach(function (b) { b.onclick = function () { llevarAlRadar(buscar(b.getAttribute('data-llevar')), idsGrupo(buscar(b.getAttribute('data-llevar')))); }; });
+  $$('[data-desc]').forEach(function (b) { b.onclick = function () { b.disabled = true; var x = buscar(b.getAttribute('data-desc')); cambiar(idsGrupo(x), 'descartada', 'Descartada.'); }; });
+  $$('[data-recup]').forEach(function (b) { b.onclick = function () { b.disabled = true; var x = buscar(b.getAttribute('data-recup')); cambiar(idsGrupo(x), 'nueva', 'Vuelve a «Por revisar».'); }; });
+  $$('[data-irradar]').forEach(function (b) { b.onclick = function () { ir('radar'); }; });
+  if ($('#monMas')) $('#monMas').onclick = function () { MON.ver += 60; pintarListaMonitor(); };
+  if ($('#monDescTodas')) $('#monDescTodas').onclick = function () {
+    if (!confirm('¿Descartar los ' + visibles.length + ' titulares que se ven en la lista?')) return;
+    var ids = []; visibles.forEach(function (x) { ids = ids.concat(idsGrupo(x)); });
+    this.disabled = true; cambiar(ids, 'descartada', visibles.length + ' titulares descartados.');
+  };
+}
+function llevarAlRadar(x, ids) {
+  abrirEditor('radar', { enlace: x.enlace, titulo: x.titulo, medio: x.medio, fecha: fechaIso(x.t), bajada: x.bajada, etiquetas: x.seccion || '' });
+  S.edit.monitorIds = ids; S.edit.volver = 'monitor';
+  $('#edTitulo').textContent = 'Del Monitor al Radar';
+  var est = $('#rdEstado'); est.textContent = 'Datos tomados del feed de ' + x.medio + '. Si quieres, toca «Traer datos» para leerlos desde la página del medio. Después escribe el comentario de Vox Liber.'; est.style.color = 'var(--ok)';
+  $('#rdCom').focus();
+}
+
+/* Fuentes y temas */
+function abrirMonCfg() {
+  var D = S.datos.monitor || {}, secs = D.secciones || (S.cfg && S.cfg.radarSecciones) || [];
+  var tarjeta = function (f) {
+    f = f || { id: '', nombre: '', url: '', seccion: '', origen: 'Chile', activa: true };
+    return '<div class="upload mc-f" data-id="' + esc(f.id) + '" style="gap:10px">' +
+      '<div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))"><label class="field">Medio<input class="mc-nombre" maxlength="60" value="' + esc(f.nombre) + '" placeholder="Por ejemplo: Emol"></label>' +
+      '<label class="field">Origen<select class="mc-origen"><option' + (f.origen !== 'Internacional' ? ' selected' : '') + '>Chile</option><option' + (f.origen === 'Internacional' ? ' selected' : '') + '>Internacional</option></select></label>' +
+      '<label class="field">Sección<select class="mc-seccion"><option value="">Detectar sola</option>' + secs.map(function (s) { return '<option' + (f.seccion === s ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</select></label></div>' +
+      '<label class="field">Dirección del feed (RSS)<div style="display:flex;gap:8px"><input class="mc-url" type="url" value="' + esc(f.url) + '" placeholder="https://" style="flex:1;min-width:0"><button type="button" class="btn btn-s btn-sm mc-probar" style="height:44px;flex:none">Probar</button></div></label>' +
+      '<div class="hint mc-res">' + (f.resultado ? esc((f.ultimaLectura ? f.ultimaLectura + ' · ' : '') + f.resultado) : (f.id ? 'Aún sin revisar.' : 'Nueva fuente: toca «Probar» antes de guardar.')) + '</div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:center"><label class="check" style="padding:0"><input type="checkbox" class="mc-activa"' + (f.activa ? ' checked' : '') + '> Activa</label>' +
+      '<button type="button" class="btn btn-d btn-sm mc-quitar">Quitar</button></div></div>';
+  };
+  $('#mcBody').innerHTML =
+    '<p class="sub" style="margin:0">Los medios que revisa el Monitor. Desactiva uno para pausarlo sin perder su dirección. Si un medio cambia su feed, pega la nueva dirección y toca «Probar». Máximo 20.</p>' +
+    '<div id="mcLista" style="display:flex;flex-direction:column;gap:12px">' + (D.fuentes || []).map(tarjeta).join('') + '</div>' +
+    '<div><button type="button" class="btn btn-s btn-sm" id="mcAgregar">Agregar medio</button></div>' +
+    '<label class="field">Temas de Vox Liber<textarea id="mcTemas" style="min-height:220px;font-size:14px;line-height:1.5">' + esc(D.temas || '') + '</textarea>' +
+    '<span class="hint">Un tema por línea, con el formato <b>Nombre: palabra, palabra</b>. Un asterisco al final busca el comienzo de la palabra: <b>educa*</b> encuentra educación y educativo. No importan las tildes ni las mayúsculas. Un tema en el título suma 3 puntos; en la bajada, 1.</span></label>' +
+    '<label class="check"><input type="checkbox" id="mcCorreo"' + (D.correo ? ' checked' : '') + '> Enviarme cada día a las ' + (D.correoHora || 8) + ':00 un correo con las ' + (D.enCorreo || 12) + ' noticias más relevantes de las últimas 24 horas</label>';
+  var enlazar = function (el) {
+    el.querySelector('.mc-quitar').onclick = function () { el.remove(); };
+    el.querySelector('.mc-probar').onclick = function () {
+      var b = this, res = el.querySelector('.mc-res'), u = el.querySelector('.mc-url').value.trim();
+      b.disabled = true; b.textContent = 'Probando…'; res.style.color = ''; res.textContent = 'Leyendo el feed…';
+      run('adminMonitorProbar', u).then(function (r) { res.textContent = r.texto; res.style.color = r.ok ? 'var(--ok)' : 'var(--bad)'; })
+        .catch(function (e) { res.textContent = e.message; res.style.color = 'var(--bad)'; })
+        .then(function () { b.disabled = false; b.textContent = 'Probar'; });
+    };
+  };
+  $$('#mcLista .mc-f').forEach(enlazar);
+  $('#mcAgregar').onclick = function () {
+    if ($$('#mcLista .mc-f').length >= 20) { toast('Máximo 20 medios.', true); return; }
+    var w = document.createElement('div'); w.innerHTML = tarjeta(null); var el = w.firstChild;
+    $('#mcLista').appendChild(el); enlazar(el); el.querySelector('.mc-nombre').focus();
+  };
+  $('#monCfg').classList.remove('hidden');
+}
+function cerrarMonCfg() { $('#monCfg').classList.add('hidden'); }
+$('#mcCerrar').onclick = cerrarMonCfg; $('#mcCancelar').onclick = cerrarMonCfg;
+$('#mcGuardar').onclick = function () {
+  var lista = $$('#mcLista .mc-f').map(function (el) {
+    return { id: el.getAttribute('data-id'), nombre: el.querySelector('.mc-nombre').value.trim(), url: el.querySelector('.mc-url').value.trim(),
+      origen: el.querySelector('.mc-origen').value, seccion: el.querySelector('.mc-seccion').value, activa: el.querySelector('.mc-activa').checked };
+  });
+  var b = this; b.disabled = true; b.textContent = 'Guardando…';
+  run('adminMonitorFuentes', lista).then(function () { return run('adminMonitorAjustes', { temas: $('#mcTemas').value, correo: $('#mcCorreo').checked }); })
+    .then(function () { cerrarMonCfg(); toast('Cambios guardados. Toca «Revisar ahora» para leer los medios con la nueva configuración.'); vMonitor(); })
+    .catch(function (e) { toast(e.message, true); })
+    .then(function () { b.disabled = false; b.textContent = 'Guardar cambios'; });
+};
 
 /* ===== Columnas ===== */
 function vColumnas() {
