@@ -698,7 +698,9 @@ function tituloAuto() {
 function refrescarTitulo() { if (!SEL.manual) { SEL.titulo = tituloAuto(); if ($('#selTitulo')) $('#selTitulo').value = SEL.titulo; } }
 
 /* Mensaje para WhatsApp, distinto según el formato. Un solo enlace al final. */
-function mensajeSel(s) {
+var PIE_SUSCRIPCION = '\n\nRecibe Vox Liber en tu correo o en WhatsApp: www.voxliber.cl/suscribete';
+function mensajeSel(s) { return mensajeSelBase(s) + PIE_SUSCRIPCION; }
+function mensajeSelBase(s) {
   var cs = s.items.map(candSel).filter(Boolean), url = s.compartir, f = s.formato || 'seleccion';
   if (f === 'urgente') {
     var u = cs[0] || {};
@@ -1126,17 +1128,53 @@ function vSuscriptores() {
     var act = l.filter(function (s) { return s.estado === 'activo'; }).length;
     var pen = l.filter(function (s) { return s.estado === 'pendiente'; }).length;
     var baj = l.filter(function (s) { return s.estado === 'baja'; }).length;
-    $('#vista').innerHTML = '<div class="head"><div><h2>Suscriptores</h2><p class="sub">Solo reciben el boletín quienes confirmaron su correo.</p></div><button class="btn btn-s" id="csv">Descargar CSV</button></div>' +
+    $('#vista').innerHTML = '<div class="head"><div><h2>Suscriptores</h2><p class="sub">Solo reciben el boletín quienes confirmaron su correo. Más abajo, quienes lo reciben por WhatsApp.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-s" id="csv">Descargar CSV</button><button class="btn btn-s" id="copSus">Copiar enlace de suscripción</button></div></div>' +
       '<div class="stats" style="margin-bottom:20px">' + stat(act, 'activos') + stat(pen, 'por confirmar') + stat(baj, 'dados de baja') + '</div>' +
       (l.length ? '<div class="tablewrap"><table><thead><tr><th>Correo</th><th>Nombre</th><th>Estado</th><th>Alta</th><th>Último boletín</th></tr></thead><tbody>' +
         l.map(function (s) { return '<tr><td>' + esc(s.email) + '</td><td>' + esc(s.nombre) + '</td><td>' + esc(s.estado) + '</td><td>' + esc(s.alta) + '</td><td>' + esc(s.ultimoBoletin) + '</td></tr>'; }).join('') +
-        '</tbody></table></div>' : '<div class="empty">Aún no hay suscriptores.</div>');
+        '</tbody></table></div>' : '<div class="empty">Aún no hay suscriptores.</div>') + '<div id="waAdm"></div>';
+    cargarWhatsAppAdm();
+    $('#copSus').onclick = function () { copiar('https://www.voxliber.cl/suscribete/', 'Enlace copiado: www.voxliber.cl/suscribete'); };
     $('#csv').onclick = function () {
       var csv = 'correo,nombre,estado,alta,ultimo_boletin\n' + l.map(function (s) { return [s.email, s.nombre, s.estado, s.alta, s.ultimoBoletin].map(function (v) { return '"' + String(v || '').replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
       var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv' })); a.download = 'suscriptores_voxliber.csv'; a.click();
     };
   }).catch(function (e) { toast(e.message, true); });
 }
+
+/* ===== Suscriptores por WhatsApp ===== */
+function saludoWA(w, numero) {
+  return 'Hola' + (w.nombre ? ' ' + w.nombre.split(' ')[0] : '') + ', gracias por suscribirte a Vox Liber. Guarda este número como «Vox Liber» en tus contactos para recibir nuestras selecciones y lecturas. Si en algún momento no quieres recibir más mensajes, responde BAJA.';
+}
+function pintarWhatsAppAdm(d) {
+  var act = d.lista.filter(function (w) { return w.estado === 'activo'; }), nuevos = act.filter(function (w) { return !w.saludado; });
+  var cont = $('#waAdm'); if (!cont) return;
+  cont.innerHTML = '<div class="head" style="margin-top:36px"><div><h2 style="font-size:24px">WhatsApp</h2><p class="sub">Personas que pidieron recibir Vox Liber por WhatsApp, con su autorización. Los envíos salen desde ' + esc(d.numero) + ': ' +
+    'para una lista de difusión, cada persona debe tener guardado ese número.</p></div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-s" id="waCopiar"' + (act.length ? '' : ' disabled') + '>Copiar números</button><button class="btn btn-s" id="waVcf"' + (act.length ? '' : ' disabled') + '>Descargar contactos</button></div></div>' +
+    '<div class="stats" style="margin-bottom:16px">' + stat(act.length, 'activos por WhatsApp') + stat(nuevos.length, 'por saludar') + stat(d.lista.length - act.length, 'dados de baja') + '</div>' +
+    (d.lista.length ? '<div class="tablewrap"><table><thead><tr><th>Celular</th><th>Nombre</th><th>Alta</th><th>Estado</th><th></th></tr></thead><tbody>' +
+      d.lista.map(function (w, i) {
+        var activo = w.estado === 'activo';
+        return '<tr><td>' + esc(w.telefono) + '</td><td>' + esc(w.nombre) + '</td><td>' + esc(w.alta) + '</td><td>' + (activo ? (w.saludado ? 'Activo · saludado' : '<b style="color:#0E7A55">Nuevo</b>') : 'Baja ' + esc(w.baja)) + '</td>' +
+          '<td style="white-space:nowrap;text-align:right">' + (activo ? '<button class="btn btn-sm" style="background:#1FA855;color:#fff" data-wasal="' + i + '">' + (w.saludado ? 'Escribir' : 'Saludar') + '</button> <button class="btn btn-d btn-sm" data-wabaja="' + i + '">Dar de baja</button>'
+            : '<button class="btn btn-s btn-sm" data-waalta="' + i + '">Reactivar</button>') + '</td></tr>';
+      }).join('') + '</tbody></table></div>' : '<div class="empty">Aún nadie se suscribe por WhatsApp. El formulario está en la portada y en www.voxliber.cl/suscribete.</div>');
+  var cambiar = function (w, accion, aviso) { return run('adminWhatsAppEstado', w.telefono, accion).then(function () { if (aviso) toast(aviso); return cargarWhatsAppAdm(); }).catch(function (e) { toast(e.message, true); }); };
+  $$('[data-wasal]').forEach(function (b) { b.onclick = function () {
+    var w = d.lista[+b.getAttribute('data-wasal')];
+    window.open('https://wa.me/' + w.telefono.replace(/\D/g, '') + '?text=' + encodeURIComponent(saludoWA(w, d.numero)), '_blank', 'noopener');
+    if (!w.saludado) cambiar(w, 'saludado');
+  }; });
+  $$('[data-wabaja]').forEach(function (b) { b.onclick = function () { var w = d.lista[+b.getAttribute('data-wabaja')]; if (confirm('¿Dar de baja ' + w.telefono + '? Recuerda sacarlo también de la lista de difusión en tu celular.')) cambiar(w, 'baja', 'Dado de baja.'); }; });
+  $$('[data-waalta]').forEach(function (b) { b.onclick = function () { cambiar(d.lista[+b.getAttribute('data-waalta')], 'activo', 'Reactivado.'); }; });
+  if ($('#waCopiar')) $('#waCopiar').onclick = function () { copiar(act.map(function (w) { return w.telefono; }).join('\n'), act.length + ' números copiados.'); };
+  if ($('#waVcf')) $('#waVcf').onclick = function () {
+    var vcf = act.map(function (w) { return 'BEGIN:VCARD\r\nVERSION:3.0\r\nFN:' + (w.nombre || 'Suscriptor') + ' (Vox Liber)\r\nN:' + (w.nombre || 'Suscriptor') + ' (Vox Liber);;;;\r\nTEL;TYPE=CELL:' + w.telefono + '\r\nNOTE:Suscriptor de Vox Liber por WhatsApp\r\nEND:VCARD'; }).join('\r\n');
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([vcf], { type: 'text/vcard' })); a.download = 'suscriptores_whatsapp_voxliber.vcf'; a.click();
+  };
+}
+function cargarWhatsAppAdm() { return run('adminWhatsApp').then(pintarWhatsAppAdm).catch(function (e) { toast(e.message, true); }); }
 
 /* ===== Boletín ===== */
 function vBoletin() {
