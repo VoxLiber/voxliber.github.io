@@ -130,6 +130,29 @@ img{display:block}
 .tile-name{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700}
 .tile-title{font-family:var(--serif);font-size:21px;font-weight:600;line-height:1.22}
 .tile-more{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:600;opacity:.88}
+.ul{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;margin-top:22px;align-items:start}
+.ul-hero{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;transition:transform .15s,box-shadow .15s}
+.ul-hero:hover,.ul-it:hover{transform:translateY(-2px);box-shadow:0 18px 30px -20px rgba(15,23,42,.55)}
+.ul-img{position:relative;display:block;aspect-ratio:16/9;background:var(--c);overflow:hidden}
+.ul-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ul-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.85)}
+.ul-b{padding:20px 24px 22px;display:flex;flex-direction:column;gap:9px;border-top:6px solid var(--c)}
+.ul-k{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ck)}
+.ul-k svg{width:16px;height:16px}
+.ul-hero h3{margin:0;font-family:var(--serif);font-size:30px;line-height:1.15;font-weight:700}
+.ul-hero p{margin:0;font-size:16px;line-height:1.55;color:var(--ink2)}
+.ul-pie{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;margin-top:4px;font-size:14.5px;font-weight:600}
+.ul-pie .ul-go{color:var(--blue);display:inline-flex;align-items:center;gap:6px}
+.ul-pie .ul-cat{color:var(--muted);font-weight:500}
+.ul-list{display:flex;flex-direction:column;gap:12px}
+.ul-it{display:grid;grid-template-columns:120px minmax(0,1fr);background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-height:96px;transition:transform .15s,box-shadow .15s}
+.ul-it .ul-img{aspect-ratio:auto;height:100%;min-height:96px}
+.ul-it .ul-b{border-top:none;border-left:5px solid var(--c);padding:11px 14px;gap:4px;justify-content:center}
+.ul-it .ul-k{font-size:11px}
+.ul-it h4{margin:0;font-family:var(--serif);font-size:17px;line-height:1.25;font-weight:700;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ul-it .ul-pie{font-size:13px;margin-top:2px}
+.ul-it.vacio h4{color:var(--muted);font-weight:600}
+@media (max-width:860px){.ul{grid-template-columns:minmax(0,1fr)}.ul-hero h3{font-size:23px}.ul-hero p{font-size:15px}.ul-b{padding:16px 18px}.ul-it{grid-template-columns:104px minmax(0,1fr)}}
 
 .rec-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
 .seg{display:flex;flex-wrap:wrap;gap:6px;padding:5px;border-radius:26px;background:var(--soft)}
@@ -504,7 +527,7 @@ html.leyendo,html.ruta{overflow:hidden}
   <main class="main">
     <section id="ultimo" aria-labelledby="t-ultimo">
       <h2 class="h2" id="t-ultimo">Lo último de cada categoría</h2>
-      <div class="tiles" id="tiles"></div>
+      <div class="ul" id="tiles"></div>
     </section>
 
     <section id="radar" aria-labelledby="t-radar" hidden>
@@ -789,13 +812,36 @@ $('#inicio').addEventListener('mouseenter',function(){clearInterval(timer)});
 $('#inicio').addEventListener('mouseleave',restart);
 
 /* Lo último de cada categoría */
+/* «Lo último de cada categoría»: la última columna en grande y las demás categorías en una lista al lado,
+   en orden fijo. Las categorías sin contenido muestran «Muy pronto». */
 function renderTiles(){
-$('#tiles').innerHTML=DATA.categorias.map(function(c){
-  var enlace=DATA.real?' class="tile js-cat" data-cat="'+c.id+'" href="?cat='+c.id+'"':c.slug?' class="tile js-leer" data-slug="'+esc(c.slug)+'" href="?leer='+encodeURIComponent(c.slug)+'"':' class="tile" href="'+(c.url||'#ultimo')+'"'+(c.url&&c.url.indexOf('http')===0?' target="_blank" rel="noopener"':'');
-  return '<a'+enlace+' style="background:'+c.color+';color:'+c.tinta+'">'+(c.img?'<img class="tile-ph" src="'+c.img+'" alt="" loading="lazy" onerror="this.remove()">':'')+
-  '<span class="tile-name">'+ico(I[c.icono])+esc(c.corto)+'</span>'+
-  '<span class="tile-title">'+esc(c.ultimo)+'</span>'+
-  '<span class="tile-more">'+esc(c.mas)+ico('M5 12h14M13 6l6 6-6 6',18,2.2)+'</span></a>'}).join('');
+  var UL_ACCION={investigacion:'Leer el informe',columnas:'Leer la columna',youtube:'Ver el video',radio:'Escuchar',revista:'Leer la revista',papers:'Leer'};
+  // Orden fijo: la primera va en grande y las demás en la lista, en este orden.
+  var ORDEN=['columnas','investigacion','revista','papers','radio','youtube'];
+  var pos=function(c){var i=ORDEN.indexOf(c.id);return i<0?99:i};
+  var cats=DATA.categorias.slice().sort(function(a,b){return pos(a)-pos(b)});
+  var COL={investigacion:'#1B5A99',columnas:'#0E9F8E',youtube:'#E62117',radio:'#6A3FC1',revista:'#3B8FE0',papers:'#0B76AE'};
+  var color=function(c){return COL[c.id]||c.color||'#1B5A99'};
+  var abrir=function(c){
+    if(c.ultimo==='Muy pronto')return 'href="?cat='+c.id+'" class="js-cat" data-cat="'+c.id+'"';
+    if(c.slug)return 'href="?leer='+encodeURIComponent(c.slug)+'" class="js-leer" data-slug="'+esc(c.slug)+'"';
+    return 'href="'+esc(c.url||'#ultimo')+'"'+(c.url&&c.url.indexOf('http')===0?' target="_blank" rel="noopener"':'');
+  };
+  var img=function(c,tam){return '<span class="ul-img">'+'<span class="ul-ph">'+ico(I[c.icono]||I.inv,tam,1.5)+'</span>'+(c.img?'<img src="'+esc(c.img)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'</span>'};
+  var estilo=function(c){var k=color(c);return 'style="--c:'+k+';--ck:'+k+'"'};
+  var catLink=function(c,txt){return '<a class="ul-cat js-cat" data-cat="'+c.id+'" href="?cat='+c.id+'">'+esc(txt)+'</a>'};
+  var h=cats[0],resto=cats.slice(1);
+  var hero=h?'<article class="ul-hero" '+estilo(h)+'><a '+abrir(h)+' tabindex="-1" aria-hidden="true">'+img(h,56)+'</a>'+
+    '<div class="ul-b"><span class="ul-k">'+ico(I[h.icono]||I.inv,16,2)+esc(h.corto)+'</span>'+
+    '<h3><a '+abrir(h)+'>'+esc(h.ultimo)+'</a></h3>'+(h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+
+    '<div class="ul-pie"><a class="ul-go" '+abrir(h).replace('class="','class="ul-go ')+'>'+(UL_ACCION[h.id]||'Ver')+ico('M5 12h14M13 6l6 6-6 6',15,2.2)+'</a>'+catLink(h,h.mas)+'</div></div></article>':'';
+  var lista=resto.map(function(c){
+    var vacio=c.ultimo==='Muy pronto';
+    return '<article class="ul-it'+(vacio?' vacio':'')+'" '+estilo(c)+'><a '+abrir(c)+' tabindex="-1" aria-hidden="true" style="display:block">'+img(c,30)+'</a>'+
+      '<div class="ul-b"><span class="ul-k">'+esc(c.corto)+'</span><h4><a '+abrir(c)+'>'+esc(c.ultimo)+'</a></h4>'+
+      '<div class="ul-pie">'+(vacio?'<span class="ul-cat">Próximamente</span>':'<a class="ul-go" '+abrir(c).replace('class="','class="ul-go ')+'>'+(UL_ACCION[c.id]||'Ver')+ico('M5 12h14M13 6l6 6-6 6',13,2.2)+'</a>'+catLink(c,'Ver todo'))+'</div></div></article>';
+  }).join('');
+  $('#tiles').innerHTML=hero+'<div class="ul-list">'+lista+'</div>';
 }
 
 /* Radar Vox Liber */
@@ -977,7 +1023,8 @@ function aplicarContenido(d){
   DATA.categorias=d.categorias.map(function(c){
     var u=c.ultimo;
     return {slug:u?u.slug:'',id:c.id,nombre:c.nombre,corto:c.corto,desc:c.desc,color:c.color,tinta:c.tinta,icono:c.icono,
-      img:u&&(imagenDe(u)||u.portada)||'',ultimo:u?u.titulo:'Muy pronto',mas:u?c.mas:'Próximamente',url:u?(u.pdf||u.enlace||''):''};
+      img:u&&(imagenDe(u)||u.portada)||'',ultimo:u?u.titulo:'Muy pronto',mas:u?c.mas:'Próximamente',url:u?(u.pdf||u.enlace||''):'',
+      fecha:u?u.fecha:'',bajada:u?(u.bajada||''):''};
   });
   DATA.recomendados=d.recomendados.map(function(r){return {tipo:r.tipo,titulo:r.titulo,autor:r.autor,nota:r.nota,imagen:r.imagen}});
   DATA.radar=d.radar||[];
