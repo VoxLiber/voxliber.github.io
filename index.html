@@ -363,6 +363,9 @@ html.leyendo,html.ruta{overflow:hidden}
 .lec-fig img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;background:var(--soft)}
 .lec-embed{position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000;margin-top:32px}
 .lec-embed.sp{aspect-ratio:auto;height:232px;background:transparent}
+.lec-embed.sp-alto{height:452px}
+.lec-ext{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.lec-ext a{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 20px;border-radius:24px;font-size:15px;font-weight:600;color:#fff}
 .lec-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 /* Escuchar la lectura */
 .tts-btn{margin-top:20px;display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 18px 0 7px;border-radius:23px;border:1.5px solid var(--line2);background:var(--card);color:var(--ink);font-size:15px;font-weight:600;cursor:pointer}
@@ -1289,8 +1292,9 @@ function embed(url){
   if(!url)return '';var m;
   if((m=url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|live\/|embed\/)|youtu\.be\/)([\w-]{11})/)))
     return '<div class="lec-embed"><iframe src="https://www.youtube-nocookie.com/embed/'+m[1]+'" title="Video" allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
-  if((m=url.match(/open\.spotify\.com\/(episode|show)\/([\w]+)/)))
-    return '<div class="lec-embed sp"><iframe src="https://open.spotify.com/embed/'+m[1]+'/'+m[2]+'" title="Spotify" allow="encrypted-media" loading="lazy"></iframe></div>';
+  // Spotify: episodios, podcasts, discos, canciones, listas y artistas (también los enlaces con /intl-es/).
+  if((m=url.match(/open\.spotify\.com\/(?:intl-[\w-]+\/)?(episode|show|album|track|playlist|artist)\/([\w]+)/)))
+    return '<div class="lec-embed sp'+(/album|playlist|artist/.test(m[1])?' sp-alto':'')+'"><iframe src="https://open.spotify.com/embed/'+m[1]+'/'+m[2]+'" title="Spotify" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>';
   return '';
 }
 function medio(url){try{return new URL(url).hostname.replace(/^www\./,'')}catch(e){return ''}}
@@ -1303,6 +1307,10 @@ function pintarLector(it,cat){
     '<h1>'+esc(it.titulo)+'</h1>'+(it.fecha?'<div class="lec-meta">'+fechaLarga(it.fecha)+'</div>':'')+
     (it.bajada?'<p class="lec-bajada">'+esc(it.bajada)+'</p>':'')+(it.texto?botonEscuchar():'')+
     (emb||(it.imagen?'<figure class="lec-fig"><img src="'+esc(it.imagen)+'" alt="" onerror="this.parentNode.remove()"></figure>':''))+
+    (function(){var e=String(it.enlace||'');   // botón directo a Spotify o YouTube, aunque el reproductor ya esté arriba
+      if(/spotify\.(com|link)/.test(e))return '<div class="lec-ext"><a href="'+esc(e)+'" target="_blank" rel="noopener" style="background:#1DB954;color:#0B1B33">'+(SVG.spotify||'')+'Escuchar en Spotify</a></div>';
+      if(ytId(e))return '<div class="lec-ext"><a href="'+esc(e)+'" target="_blank" rel="noopener" style="background:#E62117">'+ico('M8 5.5v13l11-6.5z',16,2.2)+'Ver en YouTube</a></div>';
+      return ''})()+
     (it.texto?'<div class="lec-body">'+md(it.texto)+'</div>':'<div class="lec-body"><p style="color:var(--muted)">Este contenido no tiene texto para leer aquí.'+(it.pdf?' Descárgalo en PDF con el botón de abajo.':'')+'</p></div>')+
     (it.pdf?'<div class="lec-pdf"><a class="btn btn-blue" href="'+esc(it.pdf)+'" target="_blank" rel="noopener">'+ico('M12 3v12M7 10l5 5 5-5M4 21h16',18,2)+'Descargar el documento (PDF)</a></div>':'')+
     (function(){var ext=it.enlace&&!emb,origen=it.medio||(ext?medio(it.enlace):'');if(!origen)return '';
