@@ -848,7 +848,8 @@ function renderRecs(){
   var tabs=['Todo','Libros','Discos','Películas','Actividades'];
   $('#recTabs').innerHTML=tabs.map(function(t){return '<button type="button" role="tab" aria-selected="'+(t===recTab)+'" data-tab="'+t+'">'+t+'</button>'}).join('');
   $$('#recTabs button').forEach(function(b){b.onclick=function(){recTab=b.getAttribute('data-tab');renderRecs()}});
-  var seen={};var list=DATA.recomendados.filter(function(r){if(recTab==='Todo'){if(seen[r.tipo])return false;seen[r.tipo]=1;return true}return REC_STYLE[r.tipo].tab===recTab});
+  // «Todo» muestra las 8 recomendaciones más recientes, de cualquier tipo; cada pestaña muestra todas las de su tipo.
+  var list=recTab==='Todo'?DATA.recomendados.slice(0,8):DATA.recomendados.filter(function(r){return REC_STYLE[r.tipo]&&REC_STYLE[r.tipo].tab===recTab});
   $('#recs').innerHTML=list.map(function(r){var st=REC_STYLE[r.tipo];
     return '<article class="rec"><div class="rec-img" style="aspect-ratio:'+st.ratio+'">'+(r.imagen?'<img src="'+r.imagen+'" alt="'+esc(r.titulo)+'">':genCover(r))+'</div>'+
     '<span class="chip" style="background:'+st.chip+';color:'+st.ink+'">'+r.tipo+'</span><h3>'+esc(r.titulo)+'</h3><p class="corto">'+esc(r.nota)+'</p></article>'}).join('');
