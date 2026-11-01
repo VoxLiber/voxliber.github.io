@@ -153,6 +153,99 @@ img{display:block}
 .ul-it .ul-pie{font-size:13px;margin-top:2px}
 .ul-it.vacio h4{color:var(--muted);font-weight:600}
 @media (max-width:860px){.ul{grid-template-columns:minmax(0,1fr)}.ul-hero h3{font-size:23px}.ul-hero p{font-size:15px}.ul-b{padding:16px 18px}.ul-it{grid-template-columns:104px minmax(0,1fr)}}
+/* Una sección por categoría, cada una con su propia disposición */
+.cs{margin-top:30px;--c:#1B5A99;--ck:#1B5A99}
+.cs:first-child{margin-top:20px}
+.cs .ul{margin-top:0}
+.cs-hd{display:flex;align-items:center;gap:11px;margin-bottom:16px}
+.cs-hd .cs-ic{width:34px;height:34px;border-radius:50%;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.cs-hd h3{margin:0;font-size:21px;font-weight:700;color:var(--ink);white-space:nowrap}
+.cs-hd .cs-ln{flex:1;height:2px;background:var(--c);opacity:.2;min-width:12px}
+.cs-hd a.cs-mas{font-size:14px;font-weight:600;color:var(--ck);white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.cs-fe{font-size:12.5px;font-weight:600;color:var(--muted);letter-spacing:.02em}
+.cs-panel{background:var(--soft);border-radius:22px;padding:22px 22px 24px}
+.cs-osc{border-radius:22px;padding:22px 22px 24px;color:#fff}
+.cs-osc .cs-hd h3{color:#fff}.cs-osc .cs-hd .cs-ln{background:#fff;opacity:.15}.cs-osc .cs-fe{color:rgba(255,255,255,.62)}
+.cs-radio{background:linear-gradient(135deg,#231737,#2E1B4E)}
+.cs-yt{background:#121212}
+.cs-vacio .cs-nada{border:2px dashed var(--line);border-radius:16px;padding:16px 20px;color:var(--muted);font-size:15px}
+.cs-vacio .cs-nada b{color:var(--ck)}
+.ul.solo{grid-template-columns:minmax(0,1fr)}
+.ul.solo .ul-hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+.ul.solo .ul-hero>a .ul-img{height:100%;aspect-ratio:auto;min-height:250px}
+.ul.solo .ul-b{border-top:none;border-left:6px solid var(--c);justify-content:center}
+.ul-it .cs-fe{font-size:12px}
+/* Informe Especial: banda ancha y tarjetas */
+.ie-top{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:box-shadow .15s}
+.ie-top:hover,.ie-card:hover{box-shadow:0 18px 30px -20px rgba(15,23,42,.55)}
+.ie-top>a .ul-img{height:100%;aspect-ratio:auto;min-height:270px}
+.ie-b{padding:24px 26px;display:flex;flex-direction:column;justify-content:center;gap:10px;border-left:6px solid var(--c)}
+.ie-b h3{margin:0;font-family:var(--serif);font-size:28px;line-height:1.18;font-weight:700}
+.ie-b p{margin:0;font-size:15.5px;line-height:1.55;color:var(--ink2)}
+.ie-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+.ie-card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:box-shadow .15s}
+.ie-card .ul-img{aspect-ratio:16/9}
+.ie-card div{padding:11px 14px 14px;display:flex;flex-direction:column;gap:4px}
+.ie-card h4{margin:0;font-family:var(--serif);font-size:16.5px;line-height:1.28;font-weight:700;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+/* Revista: estante de portadas */
+.rv{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;align-items:center}
+.rv-cov{position:relative;display:block;aspect-ratio:3/4;border-radius:6px;overflow:hidden;background:var(--c);box-shadow:10px 12px 24px -8px rgba(15,23,42,.5);transition:transform .15s}
+.rv-cov:hover,.rv-mini a:hover .rv-cov{transform:translateY(-3px) rotate(-.6deg)}
+.rv-cov img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rv-b{display:flex;flex-direction:column;gap:10px}
+.rv-b h3{margin:0;font-family:var(--serif);font-size:29px;line-height:1.16;font-weight:700}
+.rv-b p{margin:0;font-size:15.5px;line-height:1.55;color:var(--ink2);max-width:560px}
+.rv-mini{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px;align-items:flex-end}
+.rv-mini a{display:flex;flex-direction:column;gap:6px;width:88px;font-size:12px;font-weight:600;color:var(--muted)}
+.rv-mini .rv-cov{box-shadow:5px 6px 14px -6px rgba(15,23,42,.5)}
+.rv-mini span.t{font-size:12px;color:var(--muted)}
+/* Papers: índice académico */
+.pp-top{display:block;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:14px;padding:18px 22px}
+.pp-top h3{margin:6px 0 6px;font-family:var(--serif);font-size:23px;line-height:1.22;font-weight:700}
+.pp-top p{margin:0;font-size:15px;line-height:1.55;color:var(--ink2)}
+.pp-aut{font-size:14px;color:var(--muted);margin-top:6px}
+.pp-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 34px;margin-top:8px}
+.pp-it{display:block;padding:13px 0;border-bottom:1px solid var(--line)}
+.pp-it h4{margin:3px 0 0;font-family:var(--serif);font-size:16.5px;line-height:1.3;font-weight:700}
+.pp-it:hover h4,.pp-top:hover h3{color:var(--ck)}
+/* Radio: banda oscura con episodios */
+.ra{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:34px;align-items:center}
+.ra-main{display:flex;gap:20px;align-items:center;color:#fff}
+.ra-play{width:92px;height:92px;border-radius:50%;background:var(--c);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 0 0 8px rgba(106,63,193,.25);transition:transform .15s}
+.ra-main:hover .ra-play{transform:scale(1.06)}
+.ra-main h3{margin:4px 0 6px;font-family:var(--serif);font-size:25px;line-height:1.2;font-weight:700;color:#fff}
+.ra-main p{margin:0;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,.72);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ra-ep{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid rgba(255,255,255,.12);color:#fff;font-size:15px}
+.ra-ep:last-child{border-bottom:none}
+.ra-ep .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ra-ep svg{color:#C9B4FF;flex:none}
+.ra-ep:hover .t{text-decoration:underline}
+/* YouTube: sala de video */
+.yt{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:18px}
+.yt-main{position:relative;display:block;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#2a2a2a}
+.yt-main img,.yt-th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.yt-main:after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,0) 55%)}
+.yt-btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:72px;height:50px;border-radius:14px;background:#E62117;display:flex;align-items:center;justify-content:center;color:#fff;z-index:1;transition:transform .15s}
+.yt-main:hover .yt-btn{transform:translate(-50%,-50%) scale(1.08)}
+.yt-cap{position:absolute;left:20px;right:20px;bottom:16px;z-index:1;color:#fff}
+.yt-cap h3{margin:4px 0 0;font-family:var(--serif);font-size:25px;line-height:1.2;font-weight:700;color:#fff}
+.yt-side{display:flex;flex-direction:column;gap:12px}
+.yt-it{display:grid;grid-template-columns:132px minmax(0,1fr);gap:12px;align-items:center;color:#fff}
+.yt-th{position:relative;display:block;aspect-ratio:16/9;border-radius:9px;overflow:hidden;background:#2a2a2a}
+.yt-th:after{content:"";position:absolute;right:6px;bottom:6px;width:22px;height:16px;border-radius:5px;background:#E62117}
+.yt-it h4{margin:0;font-size:14.5px;line-height:1.3;font-weight:600;color:#fff;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.yt-it:hover h4{text-decoration:underline}
+@media (max-width:860px){
+  .cs-panel,.cs-osc{padding:16px 14px 18px;border-radius:18px}
+  .cs-hd h3{font-size:18px;white-space:normal}.cs-hd{gap:9px}.cs-hd .cs-ic{width:30px;height:30px}
+  .ul.solo .ul-hero{display:flex}.ul.solo .ul-hero>a .ul-img{min-height:0;aspect-ratio:16/9}.ul.solo .ul-b{border-left:none;border-top:6px solid var(--c)}
+  .ie-top{grid-template-columns:minmax(0,1fr)}.ie-top>a .ul-img{min-height:0;aspect-ratio:16/9}.ie-b{border-left:none;border-top:6px solid var(--c);padding:16px 18px}.ie-b h3{font-size:22px}
+  .ie-row{grid-template-columns:minmax(0,1fr);gap:10px}.ie-card{flex-direction:row}.ie-card>a{flex:0 0 116px}.ie-card .ul-img{height:100%;aspect-ratio:auto;min-height:84px}
+  .rv{grid-template-columns:118px minmax(0,1fr);gap:16px;align-items:start}.rv-b h3{font-size:20px}.rv-b p{font-size:14px}.rv-mini{grid-column:1/-1;gap:12px}.rv-mini a{width:72px}
+  .pp-list{grid-template-columns:minmax(0,1fr)}.pp-top h3{font-size:20px}
+  .ra{grid-template-columns:minmax(0,1fr);gap:16px}.ra-play{width:64px;height:64px}.ra-main h3{font-size:20px}
+  .yt{grid-template-columns:minmax(0,1fr)}.yt-cap{left:14px;right:14px;bottom:10px}.yt-cap h3{font-size:17px}.yt-btn{width:56px;height:40px;top:38%}.yt-it{grid-template-columns:120px minmax(0,1fr)}
+}
 
 .rec-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
 .seg{display:flex;flex-wrap:wrap;gap:6px;padding:5px;border-radius:26px;background:var(--soft)}
@@ -527,7 +620,7 @@ html.leyendo,html.ruta{overflow:hidden}
   <main class="main">
     <section id="ultimo" aria-labelledby="t-ultimo">
       <h2 class="h2" id="t-ultimo">Lo último de cada categoría</h2>
-      <div class="ul" id="tiles"></div>
+      <div id="tiles"></div>
     </section>
 
     <section id="radar" aria-labelledby="t-radar" hidden>
@@ -811,37 +904,113 @@ $('#inicio').addEventListener('touchend',function(e){if(tx===null)return;var d=e
 $('#inicio').addEventListener('mouseenter',function(){clearInterval(timer)});
 $('#inicio').addEventListener('mouseleave',restart);
 
-/* Lo último de cada categoría */
-/* «Lo último de cada categoría»: la última columna en grande y las demás categorías en una lista al lado,
-   en orden fijo. Las categorías sin contenido muestran «Muy pronto». */
+/* «Lo último de cada categoría»: una sección por categoría, en orden fijo, y cada una con su propia disposición:
+   Columnas (portada clásica), Informe Especial (banda ancha y tarjetas), Revista (estante de portadas),
+   Papers (índice académico), Radio (banda oscura con episodios) y YouTube (sala de video). */
 function renderTiles(){
-  var UL_ACCION={investigacion:'Leer el informe',columnas:'Leer la columna',youtube:'Ver el video',radio:'Escuchar',revista:'Leer la revista',papers:'Leer'};
-  // Orden fijo: la primera va en grande y las demás en la lista, en este orden.
+  // Todo se define aquí dentro: esta función corre antes de que se carguen otras constantes del archivo.
   var ORDEN=['columnas','investigacion','revista','papers','radio','youtube'];
+  var COL={investigacion:'#1B5A99',columnas:'#0E9F8E',youtube:'#E62117',radio:'#6A3FC1',revista:'#3B8FE0',papers:'#0B76AE'};
+  var TINTA={radio:'#C9B4FF',youtube:'#FF7A70'};
+  var ACCION={investigacion:'Leer el informe',columnas:'Leer la columna',youtube:'Ver el video',radio:'Escuchar',revista:'Leer la revista',papers:'Leer el paper'};
+  var MAS={investigacion:'Ver todos',columnas:'Ver todas',youtube:'Ver todos',radio:'Ver todos',revista:'Ver todos',papers:'Ver todos'};
+  var MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  var MESL=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  var fecha=function(f){var p=String(f||'').split('-');return p.length<3?'':(+p[2])+' '+MES[(+p[1])-1]+' '+p[0]};
+  var mesAno=function(f){var p=String(f||'').split('-');return p.length<2?'':MESL[(+p[1])-1]+' '+p[0]};
+  var ano=function(f){return String(f||'').slice(0,4)};
+  var flecha=function(t){return ico('M5 12h14M13 6l6 6-6 6',t||15,2.2)};
+  var PLAY='M8 5.5v13l11-6.5z';
   var pos=function(c){var i=ORDEN.indexOf(c.id);return i<0?99:i};
   var cats=DATA.categorias.slice().sort(function(a,b){return pos(a)-pos(b)});
-  var COL={investigacion:'#1B5A99',columnas:'#0E9F8E',youtube:'#E62117',radio:'#6A3FC1',revista:'#3B8FE0',papers:'#0B76AE'};
-  var color=function(c){return COL[c.id]||c.color||'#1B5A99'};
-  var abrir=function(c){
-    if(c.ultimo==='Muy pronto')return 'href="?cat='+c.id+'" class="js-cat" data-cat="'+c.id+'"';
-    if(c.slug)return 'href="?leer='+encodeURIComponent(c.slug)+'" class="js-leer" data-slug="'+esc(c.slug)+'"';
-    return 'href="'+esc(c.url||'#ultimo')+'"'+(c.url&&c.url.indexOf('http')===0?' target="_blank" rel="noopener"':'');
+  var abrir=function(it,cls){cls=cls?cls+' ':'';
+    if(it.slug)return 'href="?leer='+encodeURIComponent(it.slug)+'" class="'+cls+'js-leer" data-slug="'+esc(it.slug)+'"';
+    if(it.url)return 'href="'+esc(it.url)+'"'+(cls?' class="'+cls.trim()+'"':'')+(it.url.indexOf('http')===0?' target="_blank" rel="noopener"':'');
+    return 'href="#ultimo"'+(cls?' class="'+cls.trim()+'"':'');
   };
-  var img=function(c,tam){return '<span class="ul-img">'+'<span class="ul-ph">'+ico(I[c.icono]||I.inv,tam,1.5)+'</span>'+(c.img?'<img src="'+esc(c.img)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'</span>'};
-  var estilo=function(c){var k=color(c);return 'style="--c:'+k+';--ck:'+k+'"'};
-  var catLink=function(c,txt){return '<a class="ul-cat js-cat" data-cat="'+c.id+'" href="?cat='+c.id+'">'+esc(txt)+'</a>'};
-  var h=cats[0],resto=cats.slice(1);
-  var hero=h?'<article class="ul-hero" '+estilo(h)+'><a '+abrir(h)+' tabindex="-1" aria-hidden="true">'+img(h,56)+'</a>'+
-    '<div class="ul-b"><span class="ul-k">'+ico(I[h.icono]||I.inv,16,2)+esc(h.corto)+'</span>'+
-    '<h3><a '+abrir(h)+'>'+esc(h.ultimo)+'</a></h3>'+(h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+
-    '<div class="ul-pie"><a class="ul-go" '+abrir(h).replace('class="','class="ul-go ')+'>'+(UL_ACCION[h.id]||'Ver')+ico('M5 12h14M13 6l6 6-6 6',15,2.2)+'</a>'+catLink(h,h.mas)+'</div></div></article>':'';
-  var lista=resto.map(function(c){
-    var vacio=c.ultimo==='Muy pronto';
-    return '<article class="ul-it'+(vacio?' vacio':'')+'" '+estilo(c)+'><a '+abrir(c)+' tabindex="-1" aria-hidden="true" style="display:block">'+img(c,30)+'</a>'+
-      '<div class="ul-b"><span class="ul-k">'+esc(c.corto)+'</span><h4><a '+abrir(c)+'>'+esc(c.ultimo)+'</a></h4>'+
-      '<div class="ul-pie">'+(vacio?'<span class="ul-cat">Próximamente</span>':'<a class="ul-go" '+abrir(c).replace('class="','class="ul-go ')+'>'+(UL_ACCION[c.id]||'Ver')+ico('M5 12h14M13 6l6 6-6 6',13,2.2)+'</a>'+catLink(c,'Ver todo'))+'</div></div></article>';
+  var foto=function(c,src,tam){return '<span class="ul-img"><span class="ul-ph">'+ico(I[c.icono]||I.inv,tam||40,1.5)+'</span>'+
+    (src?'<img src="'+esc(src)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'</span>'};
+  var nada=function(it){return '<img src="'+esc(it)+'" alt="" loading="lazy" onerror="this.remove()">'};
+
+  var cabecera=function(c){
+    return '<div class="cs-hd"><span class="cs-ic">'+ico(I[c.icono]||I.inv,18,2)+'</span><h3>'+esc(c.nombre)+'</h3><span class="cs-ln"></span>'+
+      '<a class="cs-mas js-cat" data-cat="'+c.id+'" href="?cat='+c.id+'">'+(MAS[c.id]||'Ver todo')+flecha(14)+'</a></div>';
+  };
+
+  var F={
+    // Columnas: la última en grande y las anteriores en lista al lado.
+    columnas:function(c,h,r){
+      var hero='<article class="ul-hero"><a '+abrir(h)+' tabindex="-1" aria-hidden="true">'+foto(c,h.img,56)+'</a>'+
+        '<div class="ul-b"><span class="ul-k">'+esc(fecha(h.fecha))+(h.autores?' · '+esc(h.autores):'')+'</span>'+
+        '<h3><a '+abrir(h)+'>'+esc(h.titulo)+'</a></h3>'+(h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+
+        '<div class="ul-pie"><a '+abrir(h,'ul-go')+'>'+ACCION[c.id]+flecha()+'</a></div></div></article>';
+      if(!r.length)return '<div class="ul solo">'+hero+'</div>';
+      return '<div class="ul">'+hero+'<div class="ul-list">'+r.slice(0,4).map(function(x){
+        return '<article class="ul-it"><a '+abrir(x)+' tabindex="-1" aria-hidden="true" style="display:block">'+foto(c,x.img,28)+'</a>'+
+          '<div class="ul-b"><span class="cs-fe">'+esc(fecha(x.fecha))+'</span><h4><a '+abrir(x)+'>'+esc(x.titulo)+'</a></h4></div></article>';
+      }).join('')+'</div></div>';
+    },
+    // Informe Especial: banda ancha con la foto y, debajo, los anteriores en tarjetas.
+    investigacion:function(c,h,r){
+      return '<article class="ie-top"><a '+abrir(h)+' tabindex="-1" aria-hidden="true">'+foto(c,h.img,60)+'</a>'+
+        '<div class="ie-b"><span class="ul-k">Informe · '+esc(fecha(h.fecha))+'</span><h3><a '+abrir(h)+'>'+esc(h.titulo)+'</a></h3>'+
+        (h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+'<div class="ul-pie"><a '+abrir(h,'ul-go')+'>'+ACCION[c.id]+flecha()+'</a></div></div></article>'+
+        (r.length?'<div class="ie-row">'+r.slice(0,3).map(function(x){
+          return '<article class="ie-card"><a '+abrir(x)+' tabindex="-1" aria-hidden="true">'+foto(c,x.img,30)+'</a>'+
+            '<div><span class="cs-fe">'+esc(fecha(x.fecha))+'</span><h4><a '+abrir(x)+'>'+esc(x.titulo)+'</a></h4></div></article>';
+        }).join('')+'</div>':'');
+    },
+    // Revista: la portada del último número en grande y los números anteriores como estante.
+    revista:function(c,h,r){
+      var tapa=function(x){return '<span class="rv-cov">'+((x.portada||x.img)?nada(x.portada||x.img):'')+'</span>'};
+      return '<div class="rv"><a '+abrir(h)+' aria-label="'+esc(h.titulo)+'">'+tapa(h)+'</a>'+
+        '<div class="rv-b"><span class="ul-k">'+esc(mesAno(h.fecha))+' · Último número</span><h3><a '+abrir(h)+'>'+esc(h.titulo)+'</a></h3>'+
+        (h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+'<div class="ul-pie"><a '+abrir(h,'ul-go')+'>'+ACCION[c.id]+flecha()+'</a></div>'+
+        (r.length?'<div class="rv-mini">'+r.slice(0,4).map(function(x){
+          return '<a '+abrir(x)+' title="'+esc(x.titulo)+'">'+tapa(x)+'<span class="t">'+esc(mesAno(x.fecha))+'</span></a>';
+        }).join('')+'</div>':'')+'</div></div>';
+    },
+    // Papers: índice tipo revista académica, sin fotos.
+    papers:function(c,h,r){
+      return '<a class="pp-top '+(h.slug?'js-leer':'')+'" '+abrir(h).replace(/class="[^"]*"\s?/,'')+'>'+
+        '<span class="ul-k">Último · '+esc(ano(h.fecha))+'</span><h3>'+esc(h.titulo)+'</h3>'+(h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+
+        (h.autores?'<div class="pp-aut">'+esc(h.autores)+'</div>':'')+
+        '<div class="ul-pie"><span class="ul-go">'+ACCION[c.id]+flecha()+'</span></div></a>'+
+        (r.length?'<div class="pp-list">'+r.slice(0,4).map(function(x){
+          return '<a class="pp-it '+(x.slug?'js-leer':'')+'" '+abrir(x).replace(/class="[^"]*"\s?/,'')+'><span class="cs-fe">'+esc(ano(x.fecha))+(x.autores?' · '+esc(x.autores):'')+'</span><h4>'+esc(x.titulo)+'</h4></a>';
+        }).join('')+'</div>':'');
+    },
+    // Radio: banda oscura, botón de reproducir y lista de episodios anteriores.
+    radio:function(c,h,r){
+      return '<div class="ra"><a class="ra-main '+(h.slug?'js-leer':'')+'" '+abrir(h).replace(/class="[^"]*"\s?/,'')+'>'+
+        '<span class="ra-play">'+ico(PLAY,40,2)+'</span><span><span class="cs-fe">Último episodio · '+esc(fecha(h.fecha))+'</span>'+
+        '<h3>'+esc(h.titulo)+'</h3>'+(h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+'</span></a>'+
+        (r.length?'<div>'+r.slice(0,4).map(function(x){
+          return '<a class="ra-ep '+(x.slug?'js-leer':'')+'" '+abrir(x).replace(/class="[^"]*"\s?/,'')+'>'+ico(PLAY,16,2)+'<span class="t">'+esc(x.titulo)+'</span><span class="cs-fe">'+esc(fecha(x.fecha))+'</span></a>';
+        }).join('')+'</div>':'')+'</div>';
+    },
+    // YouTube: el video grande y los anteriores en columna, como lista de reproducción.
+    youtube:function(c,h,r){
+      var main='<a class="yt-main '+(h.slug?'js-leer':'')+'" '+abrir(h).replace(/class="[^"]*"\s?/,'')+'>'+(h.img?nada(h.img):'')+
+        '<span class="yt-btn">'+ico(PLAY,26,2)+'</span><span class="yt-cap"><span class="cs-fe">'+esc(fecha(h.fecha))+'</span><h3>'+esc(h.titulo)+'</h3></span></a>';
+      if(!r.length)return '<div class="yt" style="grid-template-columns:minmax(0,1fr);max-width:760px">'+main+'</div>';
+      return '<div class="yt">'+main+'<div class="yt-side">'+r.slice(0,4).map(function(x){
+        return '<a class="yt-it '+(x.slug?'js-leer':'')+'" '+abrir(x).replace(/class="[^"]*"\s?/,'')+'><span class="yt-th">'+(x.img?nada(x.img):'')+'</span>'+
+          '<span><span class="cs-fe">'+esc(fecha(x.fecha))+'</span><h4>'+esc(x.titulo)+'</h4></span></a>';
+      }).join('')+'</div></div>';
+    }
+  };
+  var FONDO={investigacion:' cs-panel',papers:' cs-panel',radio:' cs-osc cs-radio',youtube:' cs-osc cs-yt'};
+
+  $('#tiles').innerHTML=cats.map(function(c){
+    var k=COL[c.id]||c.color||'#1B5A99';
+    var items=(c.recientes&&c.recientes.length)?c.recientes:
+      (c.ultimo&&c.ultimo!=='Muy pronto'?[{slug:c.slug,titulo:c.ultimo,bajada:c.bajada||'',fecha:c.fecha||'',img:c.img||'',portada:'',url:c.url||'',autores:''}]:[]);
+    var est='style="--c:'+k+';--ck:'+(TINTA[c.id]||k)+'"';
+    if(!items.length)return '<section class="cs cs-vacio" '+est+'>'+cabecera(c)+'<div class="cs-nada"><b>Muy pronto.</b> '+esc(c.desc||'')+'</div></section>';
+    var f=F[c.id]||F.columnas;
+    return '<section class="cs'+(FONDO[c.id]||'')+'" '+est+'>'+cabecera(c)+f(c,items[0],items.slice(1))+'</section>';
   }).join('');
-  $('#tiles').innerHTML=hero+'<div class="ul-list">'+lista+'</div>';
 }
 
 /* Radar Vox Liber */
@@ -1024,7 +1193,10 @@ function aplicarContenido(d){
     var u=c.ultimo;
     return {slug:u?u.slug:'',id:c.id,nombre:c.nombre,corto:c.corto,desc:c.desc,color:c.color,tinta:c.tinta,icono:c.icono,
       img:u&&(imagenDe(u)||u.portada)||'',ultimo:u?u.titulo:'Muy pronto',mas:u?c.mas:'Próximamente',url:u?(u.pdf||u.enlace||''):'',
-      fecha:u?u.fecha:'',bajada:u?(u.bajada||''):''};
+      fecha:u?u.fecha:'',bajada:u?(u.bajada||''):'',
+      recientes:(c.recientes&&c.recientes.length?c.recientes:(u?[u]:[])).map(function(x){
+        return {slug:x.slug||'',titulo:x.titulo,bajada:x.bajada||'',fecha:x.fecha||'',img:imagenDe(x)||x.portada||'',
+          portada:x.portada||'',url:x.pdf||x.enlace||'',autores:x.autores||''}})};
   });
   DATA.recomendados=d.recomendados.map(function(r){return {tipo:r.tipo,titulo:r.titulo,autor:r.autor,nota:r.nota,imagen:r.imagen}});
   DATA.radar=d.radar||[];
