@@ -190,17 +190,19 @@ img{display:block}
 .ie-card div{padding:11px 14px 14px;display:flex;flex-direction:column;gap:4px}
 .ie-card h4{margin:0;font-family:var(--serif);font-size:16.5px;line-height:1.28;font-weight:700;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 /* Revista: estante de portadas */
-.rv{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;align-items:center}
-.rv-cov{position:relative;display:block;aspect-ratio:3/4;border-radius:6px;overflow:hidden;background:var(--c);box-shadow:10px 12px 24px -8px rgba(15,23,42,.5);transition:transform .15s}
+.rv{display:grid;grid-template-columns:230px minmax(0,1fr);gap:8px 34px;align-items:end}
+.rv>a:first-child{grid-row:1/3;align-self:center}
+.rv-mini{grid-column:2;align-self:start}
+.rv-cov{position:relative;display:block;aspect-ratio:1/1.414;border-radius:6px;overflow:hidden;background:var(--c);box-shadow:10px 12px 24px -8px rgba(15,23,42,.5);transition:transform .15s}
 .rv-cov:hover,.rv-mini a:hover .rv-cov{transform:translateY(-3px) rotate(-.6deg)}
 .rv-cov img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .rv-b{display:flex;flex-direction:column;gap:10px}
 .rv-b h3{margin:0;font-family:var(--serif);font-size:29px;line-height:1.16;font-weight:700}
 .rv-b p{margin:0;font-size:15.5px;line-height:1.55;color:var(--ink2);max-width:560px}
-.rv-mini{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px;align-items:flex-end}
-.rv-mini a{display:flex;flex-direction:column;gap:6px;width:88px;font-size:12px;font-weight:600;color:var(--muted)}
+.rv-mini{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;margin-top:18px;align-items:start;max-width:700px}
+.rv-mini a{display:flex;flex-direction:column;gap:8px;min-width:0;font-size:12px;font-weight:600;color:var(--muted)}
 .rv-mini .rv-cov{box-shadow:5px 6px 14px -6px rgba(15,23,42,.5)}
-.rv-mini span.t{font-size:12px;color:var(--muted)}
+.rv-mini span.t{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* Papers: índice académico */
 .pp-top{display:grid;grid-template-columns:150px minmax(0,1fr);gap:26px;align-items:start;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:14px;padding:22px 24px}
 .pp-hoja{position:relative;display:block;aspect-ratio:1/1.414;background:#fff;border:1px solid var(--line);border-radius:3px;overflow:hidden;box-shadow:6px 8px 18px -8px rgba(15,23,42,.45);transition:transform .15s}
@@ -274,7 +276,7 @@ img{display:block}
   .ul.solo .ul-hero{display:flex}.ul.solo .ul-hero>a .ul-img{min-height:0;aspect-ratio:16/9}.ul.solo .ul-b{border-left:none;border-top:6px solid var(--c)}
   .ie-top{grid-template-columns:minmax(0,1fr)}.ie-top>a .ul-img{min-height:0;aspect-ratio:16/9}.ie-b{border-left:none;border-top:6px solid var(--c);padding:16px 18px}.ie-b h3{font-size:22px}
   .ie-row{grid-template-columns:minmax(0,1fr);gap:10px}.ie-card{flex-direction:row}.ie-card>a{flex:0 0 116px}.ie-card .ul-img{height:100%;aspect-ratio:auto;min-height:84px}
-  .rv{grid-template-columns:118px minmax(0,1fr);gap:16px;align-items:start}.rv-b h3{font-size:20px}.rv-b p{font-size:14px}.rv-mini{grid-column:1/-1;gap:12px}.rv-mini a{width:72px}
+  .rv{grid-template-columns:118px minmax(0,1fr);gap:16px;align-items:start}.rv>a:first-child{grid-row:auto}.rv-b h3{font-size:20px}.rv-b p{font-size:14px}.rv-mini{grid-column:1/-1;gap:10px;margin-top:4px}.rv-mini span.t{font-size:11px}
   .pp-list{grid-template-columns:minmax(0,1fr)}.pp-top h3{font-size:20px}.pp-top{grid-template-columns:84px minmax(0,1fr);gap:14px;padding:16px}.pp-bt .btn{padding:9px 14px;font-size:14px}
   .ra{grid-template-columns:minmax(0,1fr);gap:16px}.ra-main{grid-template-columns:110px minmax(0,1fr);gap:14px;align-items:start}.ra-play{width:46px;height:46px}.ra-b h3{font-size:20px}.ra-b p{font-size:14px;-webkit-line-clamp:2}.ra-bt{grid-column:1/-1}.ra-bt .btn{height:40px;padding:0 14px;font-size:13.5px}.ra-eq{display:none}
   .yt{grid-template-columns:minmax(0,1fr)}.yt-cap{left:14px;right:14px;bottom:10px}.yt-cap h3{font-size:17px}.yt-btn{width:56px;height:40px;top:38%}.yt-it{grid-template-columns:120px minmax(0,1fr)}
@@ -954,6 +956,7 @@ function renderTiles(){
   var MESL=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   var fecha=function(f){var p=String(f||'').split('-');return p.length<3?'':(+p[2])+' '+MES[(+p[1])-1]+' '+p[0]};
   var mesAno=function(f){var p=String(f||'').split('-');return p.length<2?'':MESL[(+p[1])-1]+' '+p[0]};
+  var mesCorto=function(f){var p=String(f||'').split('-');return p.length<2?'':MESL[(+p[1])-1].slice(0,3)+' '+p[0]};
   var ano=function(f){return String(f||'').slice(0,4)};
   var flecha=function(t){return ico('M5 12h14M13 6l6 6-6 6',t||15,2.2)};
   var PLAY='M8 5.5v13l11-6.5z';
@@ -1001,10 +1004,10 @@ function renderTiles(){
       var tapa=function(x){return '<span class="rv-cov">'+((x.portada||x.img)?nada(x.portada||x.img):'')+'</span>'};
       return '<div class="rv"><a '+abrir(h)+' aria-label="'+esc(h.titulo)+'">'+tapa(h)+'</a>'+
         '<div class="rv-b"><span class="ul-k">'+esc(mesAno(h.fecha))+' · Último número</span><h3><a '+abrir(h)+'>'+esc(h.titulo)+'</a></h3>'+
-        (h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+'<div class="ul-pie"><a '+abrir(h,'ul-go')+'>'+ACCION[c.id]+flecha()+'</a></div>'+
-        (r.length?'<div class="rv-mini">'+r.slice(0,4).map(function(x){
-          return '<a '+abrir(x)+' title="'+esc(x.titulo)+'">'+tapa(x)+'<span class="t">'+esc(mesAno(x.fecha))+'</span></a>';
-        }).join('')+'</div>':'')+'</div></div>';
+        (h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+'<div class="ul-pie"><a '+abrir(h,'ul-go')+'>'+ACCION[c.id]+flecha()+'</a></div></div>'+
+        (r.length?'<div class="rv-mini">'+r.slice(0,5).map(function(x){
+          return '<a '+abrir(x)+' title="'+esc(x.titulo)+'">'+tapa(x)+'<span class="t">'+esc(mesCorto(x.fecha))+'</span></a>';
+        }).join('')+'</div>':'')+'</div>';
     },
     // Papers: índice tipo revista académica, sin fotos.
     papers:function(c,h,r){
@@ -1308,7 +1311,7 @@ function pintarLector(it,cat){
     (it.bajada?'<p class="lec-bajada">'+esc(it.bajada)+'</p>':'')+(it.texto?botonEscuchar():'')+
     (emb||(it.imagen?'<figure class="lec-fig"><img src="'+esc(it.imagen)+'" alt="" onerror="this.parentNode.remove()"></figure>':''))+
     (function(){var e=String(it.enlace||'');   // botón directo a Spotify o YouTube, aunque el reproductor ya esté arriba
-      if(/spotify\.(com|link)/.test(e))return '<div class="lec-ext"><a href="'+esc(e)+'" target="_blank" rel="noopener" style="background:#1DB954;color:#0B1B33">'+(SVG.spotify||'')+'Escuchar en Spotify</a></div>';
+      if(/spotify\.(com|link)/.test(e))return '<div class="lec-ext"><a href="'+esc(e)+'" target="_blank" rel="noopener" style="background:#1DB954;color:#0B1B33">'+ico('M6.5 9.3c3.8-1.1 7.6-.7 11 1.1M7.2 12.6c3.1-.8 6.1-.4 8.8 1M7.9 15.8c2.3-.6 4.6-.3 6.6.8',20,2)+'Escuchar en Spotify</a></div>';
       if(ytId(e))return '<div class="lec-ext"><a href="'+esc(e)+'" target="_blank" rel="noopener" style="background:#E62117">'+ico('M8 5.5v13l11-6.5z',16,2.2)+'Ver en YouTube</a></div>';
       return ''})()+
     (it.texto?'<div class="lec-body">'+md(it.texto)+'</div>':'<div class="lec-body"><p style="color:var(--muted)">Este contenido no tiene texto para leer aquí.'+(it.pdf?' Descárgalo en PDF con el botón de abajo.':'')+'</p></div>')+
