@@ -175,6 +175,8 @@ img{display:block}
 .ul.solo .ul-hero>a .ul-img{height:100%;aspect-ratio:auto;min-height:250px}
 .ul.solo .ul-b{border-top:none;border-left:6px solid var(--c);justify-content:center}
 .ul-it .cs-fe{font-size:12px}
+/* Columnas: la lista de la derecha se estira para terminar a la misma altura que la columna grande */
+.ul-col{align-items:stretch}.ul-col .ul-list{justify-content:space-between}.ul-col .ul-it{flex:1;max-height:190px}
 /* Informe Especial: banda ancha y tarjetas */
 .ie-top{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:box-shadow .15s}
 .ie-top:hover,.ie-card:hover{box-shadow:0 18px 30px -20px rgba(15,23,42,.55)}
@@ -200,14 +202,24 @@ img{display:block}
 .rv-mini .rv-cov{box-shadow:5px 6px 14px -6px rgba(15,23,42,.5)}
 .rv-mini span.t{font-size:12px;color:var(--muted)}
 /* Papers: índice académico */
-.pp-top{display:block;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:14px;padding:18px 22px}
-.pp-top h3{margin:6px 0 6px;font-family:var(--serif);font-size:23px;line-height:1.22;font-weight:700}
+.pp-top{display:grid;grid-template-columns:150px minmax(0,1fr);gap:26px;align-items:start;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:14px;padding:22px 24px}
+.pp-hoja{position:relative;display:block;aspect-ratio:1/1.414;background:#fff;border:1px solid var(--line);border-radius:3px;overflow:hidden;box-shadow:6px 8px 18px -8px rgba(15,23,42,.45);transition:transform .15s}
+.pp-hoja:hover{transform:translateY(-3px)}
+.pp-hoja img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
+.pp-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:var(--c);background:linear-gradient(#F4F7FB,#fff)}
+.pp-ph i{display:block;width:64%;height:4px;border-radius:2px;background:#D6DEE8}.pp-ph i:last-child{width:44%}
+.pp-b{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pp-ref{margin-top:8px;font-size:13px;line-height:1.5;color:var(--muted);padding-left:12px;border-left:3px solid var(--line)}
+.pp-bt{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.pp-bt .btn{display:inline-flex;align-items:center;gap:7px}
+.pp-pdf{background:var(--soft);color:var(--ink)}
+.pp-top h3 a{color:inherit}.pp-top h3{margin:6px 0 6px;font-family:var(--serif);font-size:23px;line-height:1.22;font-weight:700}
 .pp-top p{margin:0;font-size:15px;line-height:1.55;color:var(--ink2)}
 .pp-aut{font-size:14px;color:var(--muted);margin-top:6px}
 .pp-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 34px;margin-top:8px}
 .pp-it{display:block;padding:13px 0;border-bottom:1px solid var(--line)}
 .pp-it h4{margin:3px 0 0;font-family:var(--serif);font-size:16.5px;line-height:1.3;font-weight:700}
-.pp-it:hover h4,.pp-top:hover h3{color:var(--ck)}
+.pp-it:hover h4,.pp-top h3 a:hover{color:var(--ck)}
 /* Radio: banda oscura con episodios */
 .ra{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:34px;align-items:center}
 .ra-main{display:flex;gap:20px;align-items:center;color:#fff}
@@ -242,7 +254,7 @@ img{display:block}
   .ie-top{grid-template-columns:minmax(0,1fr)}.ie-top>a .ul-img{min-height:0;aspect-ratio:16/9}.ie-b{border-left:none;border-top:6px solid var(--c);padding:16px 18px}.ie-b h3{font-size:22px}
   .ie-row{grid-template-columns:minmax(0,1fr);gap:10px}.ie-card{flex-direction:row}.ie-card>a{flex:0 0 116px}.ie-card .ul-img{height:100%;aspect-ratio:auto;min-height:84px}
   .rv{grid-template-columns:118px minmax(0,1fr);gap:16px;align-items:start}.rv-b h3{font-size:20px}.rv-b p{font-size:14px}.rv-mini{grid-column:1/-1;gap:12px}.rv-mini a{width:72px}
-  .pp-list{grid-template-columns:minmax(0,1fr)}.pp-top h3{font-size:20px}
+  .pp-list{grid-template-columns:minmax(0,1fr)}.pp-top h3{font-size:20px}.pp-top{grid-template-columns:84px minmax(0,1fr);gap:14px;padding:16px}.pp-bt .btn{padding:9px 14px;font-size:14px}
   .ra{grid-template-columns:minmax(0,1fr);gap:16px}.ra-play{width:64px;height:64px}.ra-main h3{font-size:20px}
   .yt{grid-template-columns:minmax(0,1fr)}.yt-cap{left:14px;right:14px;bottom:10px}.yt-cap h3{font-size:17px}.yt-btn{width:56px;height:40px;top:38%}.yt-it{grid-template-columns:120px minmax(0,1fr)}
 }
@@ -945,7 +957,7 @@ function renderTiles(){
         '<h3><a '+abrir(h)+'>'+esc(h.titulo)+'</a></h3>'+(h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+
         '<div class="ul-pie"><a '+abrir(h,'ul-go')+'>'+ACCION[c.id]+flecha()+'</a></div></div></article>';
       if(!r.length)return '<div class="ul solo">'+hero+'</div>';
-      return '<div class="ul">'+hero+'<div class="ul-list">'+r.slice(0,4).map(function(x){
+      return '<div class="ul ul-col">'+hero+'<div class="ul-list">'+r.slice(0,5).map(function(x){
         return '<article class="ul-it"><a '+abrir(x)+' tabindex="-1" aria-hidden="true" style="display:block">'+foto(c,x.img,28)+'</a>'+
           '<div class="ul-b"><span class="cs-fe">'+esc(fecha(x.fecha))+'</span><h4><a '+abrir(x)+'>'+esc(x.titulo)+'</a></h4></div></article>';
       }).join('')+'</div></div>';
@@ -972,10 +984,13 @@ function renderTiles(){
     },
     // Papers: índice tipo revista académica, sin fotos.
     papers:function(c,h,r){
-      return '<a class="pp-top '+(h.slug?'js-leer':'')+'" '+abrir(h).replace(/class="[^"]*"\s?/,'')+'>'+
-        '<span class="ul-k">Último · '+esc(ano(h.fecha))+'</span><h3>'+esc(h.titulo)+'</h3>'+(h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+
-        (h.autores?'<div class="pp-aut">'+esc(h.autores)+'</div>':'')+
-        '<div class="ul-pie"><span class="ul-go">'+ACCION[c.id]+flecha()+'</span></div></a>'+
+      var hoja=(h.portada||h.img)?nada(h.portada||h.img):'<span class="pp-ph">'+ico(I[c.icono]||I.inv,34,1.6)+'<i></i><i></i><i></i></span>';
+      return '<article class="pp-top"><a class="pp-hoja '+(h.slug?'js-leer':'')+'" '+abrir(h).replace(/class="[^"]*"\s?/,'')+' tabindex="-1" aria-hidden="true">'+hoja+'</a>'+
+        '<div class="pp-b"><span class="ul-k">Último · '+esc(ano(h.fecha))+'</span><h3><a '+abrir(h)+'>'+esc(h.titulo)+'</a></h3>'+
+        (h.autores?'<div class="pp-aut">'+esc(h.autores)+'</div>':'')+(h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+
+        (h.ref?'<div class="pp-ref">'+esc(h.ref)+'</div>':'')+
+        '<div class="pp-bt"><a '+abrir(h,'btn btn-blue')+'>'+ACCION[c.id]+flecha()+'</a>'+
+        (h.pdf?'<a class="btn pp-pdf" href="'+esc(h.pdf)+'" target="_blank" rel="noopener">'+ico('M12 4v11M7 10l5 5 5-5M5 20h14',16,2.2)+'Descargar PDF</a>':'')+'</div></div></article>'+
         (r.length?'<div class="pp-list">'+r.slice(0,4).map(function(x){
           return '<a class="pp-it '+(x.slug?'js-leer':'')+'" '+abrir(x).replace(/class="[^"]*"\s?/,'')+'><span class="cs-fe">'+esc(ano(x.fecha))+(x.autores?' · '+esc(x.autores):'')+'</span><h4>'+esc(x.titulo)+'</h4></a>';
         }).join('')+'</div>':'');
@@ -1196,7 +1211,7 @@ function aplicarContenido(d){
       fecha:u?u.fecha:'',bajada:u?(u.bajada||''):'',
       recientes:(c.recientes&&c.recientes.length?c.recientes:(u?[u]:[])).map(function(x){
         return {slug:x.slug||'',titulo:x.titulo,bajada:x.bajada||'',fecha:x.fecha||'',img:imagenDe(x)||x.portada||'',
-          portada:x.portada||'',url:x.pdf||x.enlace||'',autores:x.autores||''}})};
+          portada:x.portada||'',url:x.pdf||x.enlace||'',autores:x.autores||'',pdf:x.pdf||'',ref:x.referencia||''}})};
   });
   DATA.recomendados=d.recomendados.map(function(r){return {tipo:r.tipo,titulo:r.titulo,autor:r.autor,nota:r.nota,imagen:r.imagen}});
   DATA.radar=d.radar||[];
