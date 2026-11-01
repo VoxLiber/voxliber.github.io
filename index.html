@@ -220,18 +220,39 @@ img{display:block}
 .pp-it{display:block;padding:13px 0;border-bottom:1px solid var(--line)}
 .pp-it h4{margin:3px 0 0;font-family:var(--serif);font-size:16.5px;line-height:1.3;font-weight:700}
 .pp-it:hover h4,.pp-top h3 a:hover{color:var(--ck)}
-/* Radio: banda oscura con episodios */
-.ra{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:34px;align-items:center}
-.ra-main{display:flex;gap:20px;align-items:center;color:#fff}
-.ra-play{width:92px;height:92px;border-radius:50%;background:var(--c);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 0 0 8px rgba(106,63,193,.25);transition:transform .15s}
-.ra-main:hover .ra-play{transform:scale(1.06)}
-.ra-main h3{margin:4px 0 6px;font-family:var(--serif);font-size:25px;line-height:1.2;font-weight:700;color:#fff}
-.ra-main p{margin:0;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,.72);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ra-ep{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid rgba(255,255,255,.12);color:#fff;font-size:15px}
-.ra-ep:last-child{border-bottom:none}
-.ra-ep .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ra-ep svg{color:#C9B4FF;flex:none}
-.ra-ep:hover .t{text-decoration:underline}
+/* Radio: banda oscura con portada, botón en vivo y episodios */
+.ra{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;align-items:center}
+.ra-main{display:grid;grid-template-columns:190px minmax(0,1fr);gap:22px;align-items:center;color:#fff}
+.ra-cov{position:relative;display:block;aspect-ratio:1/1;border-radius:16px;overflow:hidden;box-shadow:0 22px 40px -18px rgba(0,0,0,.8)}
+.ra-tapa{position:absolute;inset:0;display:block;background:linear-gradient(135deg,#6A3FC1,#2A1650)}
+.ra-tapa img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ra-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.8)}
+.ra-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:76px;height:76px;border-radius:50%;background:rgba(106,63,193,.92);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 0 0 7px rgba(255,255,255,.18);transition:transform .15s}
+.ra-cov:hover .ra-play{transform:translate(-50%,-50%) scale(1.08)}
+.ra-b{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ra-b h3{margin:2px 0 2px;font-family:var(--serif);font-size:30px;line-height:1.15;font-weight:700}
+.ra-b h3 a{color:#fff}
+.ra-b p{margin:0;font-size:15px;line-height:1.55;color:rgba(255,255,255,.75);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ra-eq{display:flex;align-items:flex-end;gap:4px;height:26px;margin:8px 0 2px}
+.ra-eq i{display:block;width:5px;height:30%;border-radius:3px;background:#C9B4FF;opacity:.75;animation:raEq .9s ease-in-out infinite alternate}
+@keyframes raEq{0%{height:18%}50%{height:90%}100%{height:40%}}
+@media (prefers-reduced-motion:reduce){.ra-eq i{animation:none;height:50%}}
+.ra-bt{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.ra-bt .btn{height:44px;padding:0 18px;font-size:14.5px;white-space:nowrap;display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.ra-esc{background:#fff;color:#2E1B4E}
+.ra-vivo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.35)!important}
+.ra-vivo:hover{background:rgba(255,255,255,.08)}
+.ra-dot{width:9px;height:9px;border-radius:50%;background:#FF4D5E;box-shadow:0 0 0 0 rgba(255,77,94,.6);animation:raDot 1.6s infinite}
+@keyframes raDot{70%{box-shadow:0 0 0 9px rgba(255,77,94,0)}100%{box-shadow:0 0 0 0 rgba(255,77,94,0)}}
+.ra-list{display:flex;flex-direction:column;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:12px}
+.ra-lt{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#C9B4FF;padding:2px 6px 4px}
+.ra-ep{display:grid;grid-template-columns:54px minmax(0,1fr) 32px;gap:12px;align-items:center;padding:7px 6px;border-radius:10px;color:#fff;transition:background .15s}
+.ra-ep:hover{background:rgba(255,255,255,.08)}
+.ra-ep .ra-tapa{position:relative;display:block;width:54px;height:54px;border-radius:8px;overflow:hidden}
+.ra-ep .t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ra-ep .t b{font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ra-mini{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(201,180,255,.5);display:flex;align-items:center;justify-content:center;color:#C9B4FF}
+.ra-ep:hover .ra-mini{background:#6A3FC1;border-color:#6A3FC1;color:#fff}
 /* YouTube: sala de video */
 .yt{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:18px}
 .yt-main{position:relative;display:block;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#2a2a2a}
@@ -255,7 +276,7 @@ img{display:block}
   .ie-row{grid-template-columns:minmax(0,1fr);gap:10px}.ie-card{flex-direction:row}.ie-card>a{flex:0 0 116px}.ie-card .ul-img{height:100%;aspect-ratio:auto;min-height:84px}
   .rv{grid-template-columns:118px minmax(0,1fr);gap:16px;align-items:start}.rv-b h3{font-size:20px}.rv-b p{font-size:14px}.rv-mini{grid-column:1/-1;gap:12px}.rv-mini a{width:72px}
   .pp-list{grid-template-columns:minmax(0,1fr)}.pp-top h3{font-size:20px}.pp-top{grid-template-columns:84px minmax(0,1fr);gap:14px;padding:16px}.pp-bt .btn{padding:9px 14px;font-size:14px}
-  .ra{grid-template-columns:minmax(0,1fr);gap:16px}.ra-play{width:64px;height:64px}.ra-main h3{font-size:20px}
+  .ra{grid-template-columns:minmax(0,1fr);gap:16px}.ra-main{grid-template-columns:110px minmax(0,1fr);gap:14px;align-items:start}.ra-play{width:46px;height:46px}.ra-b h3{font-size:20px}.ra-b p{font-size:14px;-webkit-line-clamp:2}.ra-bt{grid-column:1/-1}.ra-bt .btn{height:40px;padding:0 14px;font-size:13.5px}.ra-eq{display:none}
   .yt{grid-template-columns:minmax(0,1fr)}.yt-cap{left:14px;right:14px;bottom:10px}.yt-cap h3{font-size:17px}.yt-btn{width:56px;height:40px;top:38%}.yt-it{grid-template-columns:120px minmax(0,1fr)}
 }
 
@@ -997,11 +1018,17 @@ function renderTiles(){
     },
     // Radio: banda oscura, botón de reproducir y lista de episodios anteriores.
     radio:function(c,h,r){
-      return '<div class="ra"><a class="ra-main '+(h.slug?'js-leer':'')+'" '+abrir(h).replace(/class="[^"]*"\s?/,'')+'>'+
-        '<span class="ra-play">'+ico(PLAY,40,2)+'</span><span><span class="cs-fe">Último episodio · '+esc(fecha(h.fecha))+'</span>'+
-        '<h3>'+esc(h.titulo)+'</h3>'+(h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+'</span></a>'+
-        (r.length?'<div>'+r.slice(0,4).map(function(x){
-          return '<a class="ra-ep '+(x.slug?'js-leer':'')+'" '+abrir(x).replace(/class="[^"]*"\s?/,'')+'>'+ico(PLAY,16,2)+'<span class="t">'+esc(x.titulo)+'</span><span class="cs-fe">'+esc(fecha(x.fecha))+'</span></a>';
+      var tapa=function(x,t){return '<span class="ra-tapa">'+(x.img?nada(x.img):'<span class="ra-ph">'+ico(I[c.icono]||I.inv,t,1.6)+'</span>')+'</span>'};
+      var ondas='<span class="ra-eq" aria-hidden="true">'+[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17].map(function(n){return '<i style="animation-delay:-'+((n*137)%900)/1000+'s"></i>'}).join('')+'</span>';
+      return '<div class="ra"><div class="ra-main">'+
+        '<a class="ra-cov '+(h.slug?'js-leer':'')+'" '+abrir(h).replace(/class="[^"]*"\s?/,'')+' aria-label="Escuchar '+esc(h.titulo)+'">'+tapa(h,60)+'<span class="ra-play">'+ico(PLAY,34,2)+'</span></a>'+
+        '<div class="ra-b"><span class="cs-fe">Último episodio · '+esc(fecha(h.fecha))+'</span><h3><a '+abrir(h)+'>'+esc(h.titulo)+'</a></h3>'+
+        (h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+ondas+
+        '<div class="ra-bt"><a '+abrir(h,'btn ra-esc')+'>'+ico(PLAY,16,2.4)+'Escuchar</a>'+
+        '<button type="button" class="btn ra-vivo" onclick="toggleRadio()"><span class="ra-dot"></span>Radio en vivo</button></div></div></div>'+
+        (r.length?'<div class="ra-list"><span class="ra-lt">Episodios anteriores</span>'+r.slice(0,5).map(function(x){
+          return '<a class="ra-ep '+(x.slug?'js-leer':'')+'" '+abrir(x).replace(/class="[^"]*"\s?/,'')+'>'+tapa(x,22)+
+            '<span class="t"><b>'+esc(x.titulo)+'</b><span class="cs-fe">'+esc(fecha(x.fecha))+'</span></span><span class="ra-mini">'+ico(PLAY,14,2.4)+'</span></a>';
         }).join('')+'</div>':'')+'</div>';
     },
     // YouTube: el video grande y los anteriores en columna, como lista de reproducción.
