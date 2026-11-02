@@ -183,6 +183,7 @@ iframe.prev{width:100%;height:640px;border:1px solid var(--line);border-radius:1
         <button data-tab="radar">Radar</button>
         <button data-tab="seleccion">Difundir</button>
         <button data-tab="columnas">Columnas <span class="badge hidden" id="bCol"></span></button>
+        <button data-tab="revista">Revista CMIA</button>
         <button data-tab="suscriptores">Suscriptores</button>
         <button data-tab="boletin">Boletín</button>
         <button data-tab="ajustes">Ajustes</button>
@@ -313,7 +314,7 @@ function ir(tab) {
   S.tab = tab; S.filtro = 'todas';
   $$('#tabs button').forEach(function (b) { b.setAttribute('aria-current', b.getAttribute('data-tab') === tab ? 'true' : 'false'); });
   var v = $('#vista'); v.innerHTML = '<p class="sub">Cargando…</p>';
-  ({ resumen: vResumen, estadisticas: vEstadisticas, contenidos: vContenidos, recomendados: vRecomendados, monitor: vMonitor, radar: vRadar, seleccion: vSeleccion, columnas: vColumnas, suscriptores: vSuscriptores, boletin: vBoletin, ajustes: vAjustes })[tab]();
+  ({ resumen: vResumen, estadisticas: vEstadisticas, contenidos: vContenidos, recomendados: vRecomendados, monitor: vMonitor, radar: vRadar, seleccion: vSeleccion, columnas: vColumnas, revista: vRevista, suscriptores: vSuscriptores, boletin: vBoletin, ajustes: vAjustes })[tab]();
 }
 
 /* ===== Resumen ===== */
@@ -602,6 +603,7 @@ $('#edForm').addEventListener('submit', function (e) {
   var fd = new FormData(this), d = { id: S.edit.id };
   fd.forEach(function (v, k) { d[k] = v; });
   if (S.edit.tipo === 'columnista') { guardarColumnista(d); return; }
+  if (/^r_/.test(S.edit.tipo)) { guardarRevista(d); return; }
   if (S.edit.tipo === 'radar' && String(d.comentario || '').trim().length < 20) { toast('El comentario de Vox Liber es obligatorio: escribe al menos una frase.', true); $('#rdCom').focus(); return; }
   if (S.edit.tipo === 'radar' && this.destacado && this.destacado.checked) {
     var actual = (S.datos.radar || []).filter(function (x) { return x.id === S.edit.id; })[0];
@@ -1246,6 +1248,208 @@ function pintarColumnas() {
       }).catch(function (e) { b.disabled = false; toast(e.message, true); });
     };
   });
+}
+
+
+/* ===== Revista CMIA ===== */
+var RV = { sub: 'numeros', datos: null, filtroNum: '' };
+function vRevista() {
+  run('adminRevista').then(function (r) { RV.datos = r; pintarRevista(); }).catch(function (e) { toast(e.message, true); });
+}
+function rvNum(id) { return (RV.datos.numeros || []).filter(function (n) { return n.id === id; })[0]; }
+function rvNumTxt(n) { return n ? 'Vol. ' + n.volumen + ', Núm. ' + n.numero + ' (' + n.anio + ')' : 'Sin número'; }
+function rvAutores(l) { return (l || []).map(function (x) { return (x.nombres || '') + ' ' + (x.apellidos || ''); }).join(', '); }
+function pintarRevista() {
+  var R = RV.datos, s = RV.sub;
+  var subs = [['numeros', 'Números'], ['articulos', 'Artículos'], ['equipo', 'Equipo editorial'], ['paginas', 'Políticas'], ['ajustes', 'Datos de la revista']];
+  var h = '<div class="head"><div><h2>' + esc(R.nombre) + ' (' + R.sigla + ')</h2><p class="sub">Revista científica de acceso abierto de Vox Liber Comunicaciones.</p></div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-s" href="' + esc(S.cfg.sitio) + '?revista=" target="_blank">Ver la revista</a></div></div>';
+  if (!R.instalada) h += '<div class="empty" style="text-align:left;color:var(--bad)"><b>Falta instalar la revista.</b> Abre Codigo.gs en Apps Script y ejecuta una vez la función instalarRevista. Crea las hojas, los textos base de las políticas y la dirección www.voxliber.cl/cmia/.</div>';
+  h += '<div class="filters">' + subs.map(function (x) { return '<button data-rs="' + x[0] + '" aria-pressed="' + (s === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>';
+  if (s === 'numeros') {
+    h += '<div style="margin:6px 0 14px"><button class="btn btn-p" id="rvNuevoNum">Nuevo número</button></div>' +
+      (R.numeros.length ? '<div class="list">' + R.numeros.map(function (n) {
+        var cant = R.articulos.filter(function (a) { return a.numeroId === n.id; }).length;
+        return '<div class="row">' + (n.portadaUrl ? '<img class="thumb" src="' + esc(n.portadaUrl) + '" alt="" style="width:46px;height:64px;object-fit:cover">' : '<div class="thumb" style="width:46px;height:64px;background:#0F2E57;color:#C9A227;font-size:11px">CMIA</div>') +
+          '<div class="row-main"><div class="row-title">' + rvNumTxt(n) + (n.titulo ? ' · ' + esc(n.titulo) : '') + '</div><div class="row-meta"><span>' + esc(n.periodo || '') + '</span>' +
+          (n.estado === 'publicado' ? '<span class="chip" style="background:#E3F6EE;color:#0E7A55">Publicado ' + esc(n.fecha || '') + '</span>' : '<span class="chip" style="background:#F1F5F9;color:#475569">En preparación</span>') +
+          '<span class="chip" style="background:#E8F0FB;color:#1B5A99">' + cant + (cant === 1 ? ' artículo' : ' artículos') + '</span></div></div>' +
+          '<div class="row-actions"><button class="btn btn-s btn-sm" data-rvart="' + n.id + '">Ver artículos</button><button class="btn btn-s btn-sm" data-rved="' + n.id + '">Editar</button>' +
+          (n.estado !== 'publicado' ? '<button class="btn btn-d btn-sm" data-rvdel="' + n.id + '">Eliminar</button>' : '') + '</div></div>';
+      }).join('') + '</div>' : '<div class="empty">Todavía no hay números. Crea el Vol. 1, Núm. 1 y después carga sus artículos.</div>');
+  } else if (s === 'articulos') {
+    var f = RV.filtroNum, lista = R.articulos.filter(function (a) { return !f || a.numeroId === f; }).sort(function (a, b) { return (Number(a.orden) || 0) - (Number(b.orden) || 0); });
+    h += '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0 14px"><button class="btn btn-p" id="rvNuevoArt">Nuevo artículo</button>' +
+      '<select id="rvFiltro" style="height:40px;border:1px solid var(--line);border-radius:10px;padding:0 10px"><option value="">Todos los números</option>' +
+      R.numeros.map(function (n) { return '<option value="' + n.id + '"' + (f === n.id ? ' selected' : '') + '>' + rvNumTxt(n) + '</option>'; }).join('') + '</select></div>' +
+      (lista.length ? '<div class="list">' + lista.map(function (a) {
+        var n = rvNum(a.numeroId);
+        return '<div class="row"><div class="row-main"><div class="row-title">' + esc(a.titulo) + '</div><div class="row-meta">' +
+          '<span class="chip" style="background:#FCEEF2;color:#8C1D40">' + esc(a.area || 'Sin área') + '</span><span>' + esc(a.tipo) + '</span><span>' + rvNumTxt(n) + (a.paginas ? ' · pp. ' + esc(a.paginas) : '') + '</span>' +
+          (a.estado === 'borrador' ? '<span class="chip" style="background:#F1F5F9;color:#475569">Borrador</span>' : n && n.estado === 'publicado' ? '<span class="chip" style="background:#E3F6EE;color:#0E7A55">Publicado</span>' : '<span class="chip" style="background:#FDF1D8;color:#8A5A00">Listo, sale con el número</span>') +
+          (a.doi ? '' : '<span class="chip" style="background:#FDEBE5;color:#B4401F">Sin DOI</span>') + (a.pdfUrl ? '' : '<span class="chip" style="background:#FDEBE5;color:#B4401F">Sin PDF</span>') +
+          '</div><div class="hint" style="margin-top:4px">' + esc(rvAutores(a.autoresLista)) + (Number(a.lecturas) ? ' · ' + a.lecturas + ' lecturas, ' + (a.descargas || 0) + ' descargas' : '') + '</div></div>' +
+          '<div class="row-actions"><button class="btn btn-s btn-sm" data-rvaed="' + a.id + '">Editar</button><button class="btn btn-d btn-sm" data-rvadel="' + a.id + '">Eliminar</button></div></div>';
+      }).join('') + '</div>' : '<div class="empty">' + (R.numeros.length ? 'No hay artículos aquí. Usa «Nuevo artículo».' : 'Primero crea un número en la pestaña Números.') + '</div>');
+  } else if (s === 'equipo') {
+    var ext = R.equipo.filter(function (e) { return !/vox liber/i.test(e.institucion || ''); }).length, tot = R.equipo.length;
+    h += '<div style="margin:6px 0 10px"><button class="btn btn-p" id="rvNuevoEq">Agregar persona</button></div>' +
+      '<p class="hint" style="margin:0 0 12px">Latindex pide que al menos dos tercios del equipo pertenezcan a instituciones distintas de la entidad editora. Hoy: <b>' + ext + ' de ' + tot + '</b> externos' + (tot && ext / tot >= 2 / 3 ? ' ✓' : ' (falta)') + '.</p>' +
+      (tot ? '<div class="list">' + R.equipo.map(function (e) {
+        return '<div class="row"><div class="row-main"><div class="row-title">' + esc(e.nombre) + '</div><div class="row-meta"><span class="chip" style="background:#E8F0FB;color:#1B5A99">' + esc(e.rol) + '</span><span>' + esc([e.institucion, e.pais].filter(Boolean).join(', ')) + '</span>' + (e.orcid ? '<span>ORCID ' + esc(e.orcid) + '</span>' : '') + '</div></div>' +
+          '<div class="row-actions"><button class="btn btn-s btn-sm" data-rveed="' + e.id + '">Editar</button><button class="btn btn-d btn-sm" data-rvedel="' + e.id + '">Quitar</button></div></div>';
+      }).join('') + '</div>' : '<div class="empty">Agrega al director, a los editores y al comité científico.</div>');
+  } else if (s === 'paginas') {
+    h += '<p class="hint" style="margin:6px 0 12px">Estas páginas son las que revisa el evaluador de Latindex. Vienen con un texto base que conviene revisar y ajustar a la realidad de la revista.</p>' +
+      '<div class="list">' + R.paginas.map(function (p) {
+        return '<div class="row"><div class="row-main"><div class="row-title">' + esc(p.titulo) + '</div><div class="hint" style="margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(String(p.texto || '').slice(0, 160)) + '</div></div>' +
+          '<div class="row-actions"><button class="btn btn-s btn-sm" data-rvped="' + esc(p.clave) + '">Editar</button></div></div>';
+      }).join('') + '</div>';
+  } else {
+    var A = R.ajustes, campo = function (k, t, ayuda, area) { return '<label class="field">' + t + (area ? '<textarea name="' + k + '" style="min-height:' + (area === 2 ? 130 : 80) + 'px">' + esc(A[k]) + '</textarea>' : '<input name="' + k + '" value="' + esc(A[k]) + '">') + (ayuda ? '<span class="hint">' + ayuda + '</span>' : '') + '</label>'; };
+    h += '<form id="rvAjForm" style="max-width:760px;margin-top:8px">' +
+      '<div class="grid2">' + campo('issn', 'ISSN en línea', 'Lo asigna gratis el Centro Nacional ISSN de la Biblioteca Nacional de Chile. Déjalo vacío hasta tenerlo.') + campo('periodicidad', 'Periodicidad', '') + '</div>' +
+      '<div class="grid2">' + campo('entidad', 'Entidad editora', '') + campo('correo', 'Correo de la revista', 'Se publica: es el contacto para autores.') + '</div>' +
+      campo('direccion', 'Dirección postal de la entidad editora', 'Latindex la exige completa: calle, número, comuna, ciudad y país.') +
+      '<div class="grid2">' + campo('ciudad', 'Ciudad y país', '') + campo('idiomas', 'Idiomas que acepta', '') + '</div>' +
+      campo('descripcion', 'Descripción breve', 'Dos o tres líneas: aparece en la portada de la revista y en la banda de Vox Liber.', 1) +
+      campo('areas', 'Áreas temáticas', 'Una por línea. Sirven para clasificar y agrupar los artículos.', 2) +
+      campo('convocatoria', 'Convocatoria abierta', 'Si escribes algo aquí, aparece destacado en la portada de la revista. Por ejemplo: «Recibimos artículos para el Vol. 1, Núm. 2 hasta el 30 de abril de 2027».', 1) +
+      '<div class="grid2">' + campo('indexaciones', 'Indexada en', 'Separadas por comas. Solo las confirmadas.') + campo('arbitraje', 'Arbitraje', '') + '</div>' +
+      '<div class="grid2">' + campo('licencia', 'Licencia', '') + campo('cargos', 'Cargos para autores', '') + '</div>' +
+      '<button class="btn btn-p" type="submit" id="rvAjGuardar">Guardar datos</button></form>' +
+      '<div class="agenda" style="max-width:760px"><h3>Interoperabilidad (OAI-PMH)</h3><p class="hint" style="margin:6px 0">Esta es la dirección que se declara a Latindex, DOAJ y otros cosechadores:</p><code style="display:block;word-break:break-all;background:var(--soft);padding:10px 12px;border-radius:10px;font-size:13px">' + esc((S.cfg.urlPublica || '(se completa cuando el sitio consulte la API)') + '?verb=Identify') + '</code>' +
+      '<p class="hint" style="margin:14px 0 8px">Páginas fijas de los artículos (para Google Académico): se crean solas al publicar. Si cambias el ISSN o los datos de la revista, vuelve a generarlas.</p><button class="btn btn-s" id="rvRegen">Volver a generar las páginas de los artículos</button></div>';
+  }
+  $('#vista').innerHTML = h;
+  $$('[data-rs]').forEach(function (b) { b.onclick = function () { RV.sub = b.getAttribute('data-rs'); pintarRevista(); }; });
+  var on = function (sel, fn) { $$(sel).forEach(function (b) { b.onclick = function () { fn(b); }; }); };
+  if ($('#rvNuevoNum')) $('#rvNuevoNum').onclick = function () { abrirNumero(); };
+  if ($('#rvNuevoArt')) $('#rvNuevoArt').onclick = function () { if (!R.numeros.length) { toast('Primero crea un número.', true); return; } abrirArticulo({ numeroId: RV.filtroNum || R.numeros[0].id }); };
+  if ($('#rvNuevoEq')) $('#rvNuevoEq').onclick = function () { abrirEquipo(); };
+  if ($('#rvFiltro')) $('#rvFiltro').onchange = function () { RV.filtroNum = this.value; pintarRevista(); };
+  on('[data-rved]', function (b) { abrirNumero(rvNum(b.getAttribute('data-rved'))); });
+  on('[data-rvart]', function (b) { RV.sub = 'articulos'; RV.filtroNum = b.getAttribute('data-rvart'); pintarRevista(); });
+  on('[data-rvdel]', function (b) { if (!confirm('¿Eliminar este número? Solo se puede si no tiene artículos y no está publicado.')) return; run('adminRevistaEliminarNumero', b.getAttribute('data-rvdel')).then(function () { toast('Número eliminado.'); vRevista(); }).catch(function (e) { toast(e.message, true); }); });
+  on('[data-rvaed]', function (b) { abrirArticulo(R.articulos.filter(function (a) { return a.id === b.getAttribute('data-rvaed'); })[0]); });
+  on('[data-rvadel]', function (b) { if (!confirm('¿Eliminar este artículo? Un artículo publicado no se puede eliminar: primero debes pasarlo a borrador.')) return; run('adminRevistaEliminarArticulo', b.getAttribute('data-rvadel')).then(function () { toast('Artículo eliminado.'); vRevista(); }).catch(function (e) { toast(e.message, true); }); });
+  on('[data-rveed]', function (b) { abrirEquipo(R.equipo.filter(function (e) { return e.id === b.getAttribute('data-rveed'); })[0]); });
+  on('[data-rvedel]', function (b) { if (!confirm('¿Quitar a esta persona del equipo editorial?')) return; run('adminRevistaEliminarEquipo', b.getAttribute('data-rvedel')).then(function () { toast('Listo.'); vRevista(); }).catch(function (e) { toast(e.message, true); }); });
+  on('[data-rvped]', function (b) { abrirPaginaRv(R.paginas.filter(function (p) { return p.clave === b.getAttribute('data-rvped'); })[0]); });
+  if ($('#rvAjForm')) $('#rvAjForm').onsubmit = function (e) {
+    e.preventDefault(); var d = {}; new FormData(this).forEach(function (v, k) { d[k] = v; });
+    var btn = $('#rvAjGuardar'); btn.disabled = true;
+    run('adminRevistaAjustes', d).then(function (aj) { RV.datos.ajustes = aj; toast('Datos de la revista guardados.'); }).catch(function (er) { toast(er.message, true); }).then(function () { btn.disabled = false; });
+  };
+  if ($('#rvRegen')) $('#rvRegen').onclick = function () {
+    var b = this; b.disabled = true; b.textContent = 'Generando…';
+    run('adminRevistaRegenerar').then(function (n) { toast(n + (n === 1 ? ' página lista.' : ' páginas listas.')); }).catch(function (e) { toast(e.message, true); }).then(function () { b.disabled = false; b.textContent = 'Volver a generar las páginas de los artículos'; });
+  };
+}
+function rvAbrir(tipo, id, titulo, html) {
+  S.edit = { tipo: tipo, id: id || '', volver: 'revista' }; S.archivos = {};
+  $('#edTitulo').textContent = titulo; $('#edBody').innerHTML = html; $('#editor').classList.remove('hidden');
+  $$('#edBody [data-img]').forEach(function (inp) {
+    inp.onchange = function () {
+      var key = inp.getAttribute('data-img'), file = inp.files[0]; if (!file) return;
+      var box = $('#prev-' + key); box.innerHTML = 'Procesando imagen…';
+      comprimir(file, +inp.getAttribute('data-w'), +inp.getAttribute('data-h')).then(function (r) { S.archivos[key] = r; box.innerHTML = '<img src="data:' + r.mime + ';base64,' + r.base64 + '" alt="Vista previa">'; })
+        .catch(function (e) { box.innerHTML = 'No se pudo leer la imagen.'; toast(e.message, true); });
+    };
+  });
+  $$('#edBody [data-quitar]').forEach(function (b) { b.onclick = function () { var k = b.getAttribute('data-quitar'); S.archivos['quitar_' + k] = true; delete S.archivos[k]; $('#prev-' + k).innerHTML = 'Sin imagen'; b.remove(); }; });
+  if ($('#rvPdfIn')) $('#rvPdfIn').onchange = function () {
+    var file = this.files[0]; if (!file) return;
+    if (file.size > 30 * 1024 * 1024) { toast('El PDF supera los 30 MB.', true); return; }
+    leerBase64(file).then(function (b64) { S.archivos.pdf = { nombre: file.name, mime: 'application/pdf', base64: b64 }; $('#rvPdfInfo').textContent = file.name + ' · ' + (file.size / 1048576).toFixed(1) + ' MB'; });
+  };
+  if ($('#rvPdfQuitar')) $('#rvPdfQuitar').onclick = function () { S.archivos.quitar_pdf = true; $('#rvPdfInfo').textContent = 'Sin PDF'; };
+}
+function rvPdf(url) {
+  return '<div class="upload"><div class="upload-top"><b>PDF</b><span class="picker btn btn-s btn-sm">Elegir PDF<input type="file" accept="application/pdf" id="rvPdfIn"></span></div>' +
+    '<div class="pdfline" id="rvPdfInfo">' + (url ? '<a href="' + esc(url) + '" target="_blank">Ver PDF actual</a><button type="button" class="btn btn-d btn-sm" id="rvPdfQuitar">Quitar</button>' : 'Sin PDF') + '</div></div>';
+}
+function rvSel(name, ops, val) { return '<select name="' + name + '">' + ops.map(function (o) { var v = Array.isArray(o) ? o[0] : o, t = Array.isArray(o) ? o[1] : o; return '<option value="' + esc(v) + '"' + (String(val) === String(v) ? ' selected' : '') + '>' + esc(t) + '</option>'; }).join('') + '</select>'; }
+function abrirNumero(n) {
+  n = n || {}; var hoy = new Date().getFullYear();
+  rvAbrir('r_numero', n.id, n.id ? 'Editar ' + rvNumTxt(n) : 'Nuevo número',
+    '<div class="grid2"><label class="field">Volumen<input type="number" name="volumen" min="1" required value="' + esc(n.volumen || 1) + '"></label><label class="field">Número<input type="number" name="numero" min="1" required value="' + esc(n.numero || 1) + '"></label></div>' +
+    '<div class="grid2"><label class="field">Año<input type="number" name="anio" required value="' + esc(n.anio || hoy) + '"></label><label class="field">Periodo que cubre<input name="periodo" value="' + esc(n.periodo || 'enero a junio de ' + (n.anio || hoy)) + '"></label></div>' +
+    '<label class="field">Título del número (opcional)<input name="titulo" maxlength="160" value="' + esc(n.titulo) + '" placeholder="Por ejemplo: Número inaugural"></label>' +
+    '<label class="field">Presentación del número (opcional)<textarea name="presentacion" style="min-height:160px">' + esc(n.presentacion) + '</textarea><span class="hint">La nota del director o del editor que abre el número.</span></label>' +
+    bloqueImagen('portada', 'Tapa del número', 'Vertical, proporción A4.', n.portadaUrl, '1 / 1.414', 1240, 1754) + rvPdf(n.pdfUrl) +
+    '<div class="estado' + (n.estado === 'publicado' ? '' : '') + '"><div class="estado-t">Estado</div><div class="estado-op">' +
+    [['borrador', 'En preparación'], ['publicado', 'Publicado']].map(function (o) { return '<label><input type="radio" name="estado" value="' + o[0] + '"' + ((n.estado || 'borrador') === o[0] ? ' checked' : '') + '>' + o[1] + '</label>'; }).join('') + '</div>' +
+    '<label class="field" style="margin:12px 0 0">Fecha de publicación<input type="date" name="fecha" value="' + esc(n.fecha || '') + '"></label>' +
+    '<span class="hint">Al publicar el número se publican todos sus artículos que no estén en borrador, y se crean sus páginas para Google Académico.</span></div>');
+}
+function filaAutor(x) {
+  x = x || {};
+  var c = function (k, ph, w) { return '<input data-au="' + k + '" value="' + esc(x[k]) + '" placeholder="' + ph + '"' + (w ? ' style="grid-column:span ' + w + '"' : '') + '>'; };
+  return '<div class="au-fila" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:#fff">' +
+    c('nombres', 'Nombres') + c('apellidos', 'Apellidos') + c('afiliacion', 'Institución completa', 2) + c('ciudad', 'Ciudad') + c('pais', 'País') + c('orcid', 'ORCID (0000-0000-0000-0000)') + c('correo', 'Correo') +
+    '<div style="grid-column:span 2;display:flex;gap:6px;justify-content:flex-end"><button type="button" class="btn btn-s btn-sm" data-ausub>↑</button><button type="button" class="btn btn-d btn-sm" data-auqui>Quitar</button></div></div>';
+}
+function enlazarAutores() {
+  $$('#auLista [data-auqui]').forEach(function (b) { b.onclick = function () { b.closest('.au-fila').remove(); }; });
+  $$('#auLista [data-ausub]').forEach(function (b) { b.onclick = function () { var f = b.closest('.au-fila'); if (f.previousElementSibling) f.parentNode.insertBefore(f, f.previousElementSibling); }; });
+}
+function abrirArticulo(a) {
+  a = a || {}; var R = RV.datos, areas = String(R.ajustes.areas || '').split(/\n+/).filter(Boolean);
+  var cuenta = function (id, max) { return '<span class="hint" id="' + id + 'N"></span>'; };
+  rvAbrir('r_articulo', a.id, a.id ? 'Editar artículo' : 'Nuevo artículo',
+    '<div class="grid2"><label class="field">Número' + rvSel('numeroId', R.numeros.map(function (n) { return [n.id, rvNumTxt(n)]; }), a.numeroId) + '</label><label class="field">Orden en el número<input type="number" name="orden" value="' + esc(a.orden || '') + '" placeholder="1"></label></div>' +
+    '<div class="grid2"><label class="field">Área temática' + rvSel('area', areas, a.area) + '</label><label class="field">Tipo de trabajo' + rvSel('tipo', R.tipos, a.tipo) + '</label></div>' +
+    '<label class="field">Idioma del artículo' + rvSel('idioma', [['es', 'Español'], ['en', 'Inglés'], ['pt', 'Portugués']], a.idioma || 'es') + '</label>' +
+    '<label class="field">Título<textarea name="titulo" required style="min-height:60px">' + esc(a.titulo) + '</textarea></label>' +
+    '<label class="field">Título en inglés (o en español, si el artículo está en inglés)<textarea name="tituloEn" style="min-height:60px">' + esc(a.tituloEn) + '</textarea></label>' +
+    '<div class="field">Autores<span class="hint" style="margin-bottom:6px">En el orden en que firman. Institución con nombre completo, ciudad y país; si trabaja de forma independiente, escribe «Investigador independiente».</span>' +
+    '<div id="auLista">' + ((a.autoresLista && a.autoresLista.length ? a.autoresLista : [{}]).map(filaAutor).join('')) + '</div><button type="button" class="btn btn-s btn-sm" id="auMas">Agregar autor</button></div>' +
+    '<label class="field">Resumen<textarea name="resumen" id="rvRes" style="min-height:150px">' + esc(a.resumen) + '</textarea>' + cuenta('rvRes') + '</label>' +
+    '<label class="field">Palabras clave<input name="palabras" value="' + esc(a.palabras) + '" placeholder="Separadas por comas, entre tres y seis"></label>' +
+    '<label class="field">Abstract<textarea name="resumenEn" id="rvAbs" style="min-height:150px">' + esc(a.resumenEn) + '</textarea>' + cuenta('rvAbs') + '</label>' +
+    '<label class="field">Keywords<input name="palabrasEn" value="' + esc(a.palabrasEn) + '" placeholder="Separated by commas"></label>' +
+    '<div class="grid2"><label class="field">Recibido<input type="date" name="recibido" value="' + esc(a.recibido || '') + '"></label><label class="field">Aceptado<input type="date" name="aceptado" value="' + esc(a.aceptado || '') + '"></label></div>' +
+    '<div class="grid2"><label class="field">Páginas<input name="paginas" value="' + esc(a.paginas) + '" placeholder="1 a 22"></label><label class="field">Publicado (opcional)<input type="date" name="fecha" value="' + esc(a.fecha || '') + '"><span class="hint">Si lo dejas vacío, usa la fecha del número.</span></label></div>' +
+    '<label class="field">DOI<input name="doi" value="' + esc(a.doi) + '" placeholder="10.5281/zenodo.1234567"><span class="hint">Lo entrega Zenodo al depositar el PDF. Sin DOI el artículo se publica igual, pero Latindex lo exige.</span></label>' +
+    rvPdf(a.pdfUrl) +
+    '<label class="field">Texto completo en HTML (opcional)<textarea name="texto" style="min-height:220px;font-family:\'Source Serif 4\',Georgia,serif">' + esc(a.texto) + '</textarea><span class="hint">Para el segundo formato que pide Latindex. Pega el texto del artículo: línea en blanco entre párrafos y subtítulos con <b>## Título</b>.</span></label>' +
+    '<label class="field">Referencias<textarea name="referencias" style="min-height:140px">' + esc(a.referencias) + '</textarea><span class="hint">Una por párrafo, en APA 7.</span></label>' +
+    '<div class="estado"><div class="estado-t">Estado</div><div class="estado-op">' + [['listo', 'Listo'], ['borrador', 'Borrador']].map(function (o) { return '<label><input type="radio" name="estado" value="' + o[0] + '"' + ((a.estado || 'listo') === o[0] ? ' checked' : '') + '>' + o[1] + '</label>'; }).join('') + '</div>' +
+    '<span class="hint">Un artículo «Listo» se publica cuando su número está publicado. En borrador no se ve en el sitio.</span></div>');
+  $('#auMas').onclick = function () { $('#auLista').insertAdjacentHTML('beforeend', filaAutor()); enlazarAutores(); };
+  enlazarAutores();
+  ['rvRes', 'rvAbs'].forEach(function (id) { var t = $('#' + id), f = function () { var n = t.value.trim() ? t.value.trim().split(/\s+/).length : 0; $('#' + id + 'N').textContent = n + ' palabras (se recomiendan entre 150 y 250).'; }; t.oninput = f; f(); });
+}
+function abrirEquipo(e) {
+  e = e || {}; var R = RV.datos;
+  rvAbrir('r_equipo', e.id, e.id ? 'Editar' : 'Agregar al equipo editorial',
+    '<label class="field">Nombre completo<input name="nombre" required value="' + esc(e.nombre) + '"></label>' +
+    '<div class="grid2"><label class="field">Rol' + rvSel('rol', R.roles, e.rol || 'Comité científico') + '</label><label class="field">Orden<input type="number" name="orden" value="' + esc(e.orden || '') + '" placeholder="1"></label></div>' +
+    '<label class="field">Institución<input name="institucion" value="' + esc(e.institucion) + '" placeholder="Nombre completo de la universidad o institución"></label>' +
+    '<div class="grid2"><label class="field">País<input name="pais" value="' + esc(e.pais) + '"></label><label class="field">ORCID<input name="orcid" value="' + esc(e.orcid) + '" placeholder="0000-0000-0000-0000"></label></div>' +
+    '<label class="field">Correo (no se publica)<input type="email" name="correo" value="' + esc(e.correo) + '"></label>');
+}
+function abrirPaginaRv(p) {
+  rvAbrir('r_pagina', p.clave, 'Editar: ' + p.titulo,
+    '<label class="field">Título<input name="titulo" value="' + esc(p.titulo) + '"></label>' +
+    '<label class="field">Texto<textarea name="texto" style="min-height:420px;font-family:\'Source Serif 4\',Georgia,serif;font-size:16px;line-height:1.6">' + esc(p.texto) + '</textarea><span class="hint">Línea en blanco entre párrafos. Subtítulo: <b>## Texto</b>. Negrita: <b>**texto**</b>.</span></label>');
+}
+function guardarRevista(d) {
+  var t = S.edit.tipo, A = S.archivos, fn = { r_numero: 'adminRevistaGuardarNumero', r_articulo: 'adminRevistaGuardarArticulo', r_equipo: 'adminRevistaGuardarEquipo', r_pagina: 'adminRevistaGuardarPagina' }[t];
+  if (t === 'r_pagina') d.clave = S.edit.id;
+  if (t === 'r_articulo') {
+    d.autores = $$('#auLista .au-fila').map(function (f) { var o = {}; Array.prototype.slice.call(f.querySelectorAll('[data-au]')).forEach(function (i) { o[i.getAttribute('data-au')] = i.value.trim(); }); return o; })
+      .filter(function (o) { return o.nombres || o.apellidos; });
+    if (!d.autores.length) { toast('Agrega al menos un autor con su nombre.', true); return; }
+    var malo = d.autores.filter(function (o) { return o.orcid && !/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(o.orcid.replace(/^https?:\/\/orcid\.org\//, '')); })[0];
+    if (malo) { toast('El ORCID de ' + (malo.nombres || malo.apellidos) + ' no tiene el formato 0000-0000-0000-0000.', true); return; }
+  }
+  if (A.portada) d.portadaNueva = A.portada; if (A.quitar_portada) d.quitarPortada = true;
+  if (A.pdf) d.pdfNuevo = A.pdf; if (A.quitar_pdf) d.quitarPdf = true;
+  var btn = $('#edGuardar'); btn.disabled = true; btn.textContent = (A.pdf || A.portada) ? 'Subiendo archivos…' : 'Guardando…';
+  run(fn, d).then(function (r) { cerrarEditor(); toast(r && r._aviso ? r._aviso : 'Guardado.', !!(r && r._aviso)); vRevista(); })
+    .catch(function (e) { toast(e.message, true); }).then(function () { btn.disabled = false; btn.textContent = 'Guardar'; });
 }
 
 /* ===== Suscriptores ===== */
