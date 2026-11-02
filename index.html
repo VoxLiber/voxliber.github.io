@@ -571,6 +571,12 @@ html.leyendo,html.ruta{overflow:hidden}
 .rv-pols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
 .rv-pols a{display:block;border:1px solid var(--line);border-radius:14px;padding:15px 17px;background:var(--card)}
 .rv-pols b{display:block;font-family:var(--serif);font-size:17px;color:#0F2E57}.rv-pols span{font-size:13.5px;color:var(--muted)}
+.rv-desc{display:flex;flex-direction:column;gap:8px}.rv-desc.g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:10px}
+.rv-desc a{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink)}.rv-desc a:hover b{text-decoration:underline}
+.rv-desc.g a{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--card);align-items:flex-start}
+.rv-desc b{display:block;color:#0F2E57}.rv-desc span span{font-size:13px;color:var(--muted)}
+.rv-doc{flex:none;font-size:10px;font-weight:700;background:#1B5A99;color:#fff;border-radius:5px;padding:4px 6px}
+@media (max-width:860px){.rv-desc.g{grid-template-columns:minmax(0,1fr)}}
 .rv-eq{margin-top:8px}.rv-eq div{padding:11px 0;border-bottom:1px solid var(--line);font-size:15px}.rv-eq span{display:block;color:var(--muted);font-size:13.5px}
 .rv-archivo{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:22px;margin-top:18px}
 .rv-archivo a{display:flex;flex-direction:column;gap:8px;font-size:14px}.rv-archivo b{font-family:var(--serif);color:#0F2E57}
@@ -1173,12 +1179,16 @@ function rvCabecera(R,act){
     '<div class="rv-meta">'+(r.issn?'ISSN '+esc(r.issn)+' (en línea) · ':'')+esc(r.periodicidad||'')+' · Acceso abierto · '+esc(r.licencia||'CC BY 4.0')+'</div>'+
     '<nav class="rv-nav">'+items.map(function(x){return rvLink(x[0],x[1],x[0]===act?'on':'')}).join('')+'</nav></header>';
 }
+/* Documentos para autores: se suben a la carpeta cmia/descargas/ del sitio. */
+var RV_DESCARGAS=[['CMIA_Plantilla_para_autores.docx','Plantilla para autores','El formato del manuscrito'],['CMIA_Guia_para_autores.docx','Guía para autores','Normas, ejemplos APA y lista de verificación'],['CMIA_Carta_de_presentacion.docx','Carta de presentación','Datos de autoría y declaración de originalidad']];
+function rvDescargas(grande){return '<div class="rv-desc'+(grande?' g':'')+'">'+RV_DESCARGAS.map(function(x){return '<a href="cmia/descargas/'+x[0]+'" download><span class="rv-doc">DOCX</span><span><b>'+x[1]+'</b>'+(grande?'<span>'+x[2]+'</span>':'')+'</span></a>'}).join('')+'</div>'}
 function rvLateral(R){
   var r=R.revista;
   return '<aside class="rv-lat">'+(r.convocatoria?'<div class="rv-box rv-conv"><h5>Convocatoria abierta</h5><p>'+esc(r.convocatoria)+'</p><div class="rv-btns">'+rvLink('p/instrucciones','Enviar un artículo','rv-b rv-b1')+'</div></div>':'')+
     '<div class="rv-box"><h5>Datos de la revista</h5><dl>'+(r.issn?'<dt>ISSN en línea</dt><dd>'+esc(r.issn)+'</dd>':'')+'<dt>Entidad editora</dt><dd>'+esc(r.entidad)+'</dd><dt>Periodicidad</dt><dd>'+esc(r.periodicidad)+'</dd>'+
     '<dt>Arbitraje</dt><dd>'+esc(r.arbitraje)+'</dd><dt>Cargos para autores</dt><dd>'+esc(r.cargos)+'</dd><dt>Idiomas</dt><dd>'+esc(r.idiomas)+'</dd></dl></div>'+
     (r.indexaciones?'<div class="rv-box"><h5>Indexada en</h5><div class="rv-chips">'+String(r.indexaciones).split(',').map(function(x){return x.trim()?'<span>'+esc(x.trim())+'</span>':''}).join('')+'</div></div>':'')+
+    '<div class="rv-box"><h5>Para autores</h5>'+rvDescargas(false)+'</div>'+
     '<div class="rv-box"><h5>Licencia</h5><div class="rv-cc"><i>CC BY 4.0</i>Uso y reutilización con atribución.</div></div>'+
     '<div class="rv-box"><h5>Áreas temáticas</h5><div class="rv-chips">'+(r.areas||[]).map(function(a){return '<span>'+esc(a)+'</span>'}).join('')+'</div></div></aside>';
 }
@@ -1212,7 +1222,7 @@ function rvPagina(R,ruta){
       (R.equipo[0]?'<div><b>Director</b><span>'+esc(R.equipo[0].nombre)+'</span></div>':'')+'</div>'}
   else if(ruta.indexOf('p/')===0){var pg=R.paginas.filter(function(x){return x.clave===ruta.slice(2)})[0];act=ruta==='p/instrucciones'?'p/instrucciones':ruta==='p/enfoque'?'p/enfoque':'politicas';
     if(!pg)cont='<p class="rv-sub">Página no encontrada.</p>';else{titulo=pg.titulo;cont='<h2 class="rv-h2">'+esc(pg.titulo)+'</h2><div class="lec-body">'+md(pg.texto)+'</div>'+
-      (pg.clave==='instrucciones'?'<div class="rv-btns" style="margin-top:20px"><a class="rv-b rv-bn" href="mailto:'+esc(r.correo)+'?subject='+encodeURIComponent('Envío de artículo a CMIA')+'">Enviar mi artículo por correo</a></div>':'')+
+      (pg.clave==='instrucciones'?'<div class="rv-sec" style="margin-top:26px">Documentos para descargar</div>'+rvDescargas(true)+'<div class="rv-btns" style="margin-top:20px"><a class="rv-b rv-bn" href="mailto:'+esc(r.correo)+'?subject='+encodeURIComponent('Envío de artículo a CMIA')+'">Enviar mi artículo por correo</a></div>':'')+
       (pg.clave==='enfoque'?'<p style="margin-top:20px">'+rvLink('politicas','Ver todas las políticas →','rv-b rv-bs')+'</p>':'')}}
   document.title=(titulo?titulo+' · ':'')+'CMIA · Cuaderno Multidisciplinar de Investigación Aplicada';
   $('#lecCont').innerHTML='<section class="cat-page fade">'+rvCabecera(R,act)+'<div class="rv-grid"><div>'+cont+'</div>'+rvLateral(R)+'</div></section>';
