@@ -51,6 +51,21 @@ h2{font-family:var(--serif);font-size:30px;margin:0}
 .field textarea{min-height:90px;resize:vertical}
 .hint{font-size:12.5px;font-weight:400;color:var(--muted)}
 .check{display:flex;align-items:center;gap:10px;font-weight:500;padding:6px 0}
+.estado{margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--soft)}
+.estado-t{font-weight:600;margin-bottom:10px}
+.estado-op{display:flex;flex-wrap:wrap;gap:6px}
+.estado-op label{display:flex;align-items:center;gap:7px;height:40px;padding:0 14px;border-radius:20px;border:1px solid var(--line);background:#fff;font-weight:500;cursor:pointer}
+.estado-op label:has(input:checked){border-color:var(--blue);background:#E8F0FB;color:var(--blue);font-weight:600}
+.estado-op input{accent-color:var(--blue)}
+.estado-prog{display:none;margin-top:12px}
+.estado.prog .estado-prog{display:block}
+.estado-prog input{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:15px;background:#fff;color:var(--ink)}
+.agenda{margin-top:24px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.agenda h3{margin:0 0 4px;font-size:17px}
+.agenda-it{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.agenda-it b{color:#6A3FC1;font-size:14px}
+.agenda-it span{font-size:13px;color:var(--muted)}
+@media (max-width:640px){.agenda-it{grid-template-columns:minmax(0,1fr) auto}.agenda-it b{grid-column:1/-1}}
 .check input{width:20px;height:20px;accent-color:var(--blue)}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
 
@@ -310,11 +325,22 @@ function vResumen() {
       '<div class="stats">' +
       stat(r.contenidos, 'contenidos') + stat(r.recomendados, 'recomendados') + stat(r.radar || 0, 'noticias en el Radar') + stat(r.monitor || 0, 'titulares por revisar en el Monitor') + stat(r.activos, 'suscriptores activos') +
       stat(r.pendientes, 'suscripciones por confirmar') + stat(r.columnasNuevas, 'columnas por revisar') + stat(r.cuotaCorreo, 'correos disponibles hoy') +
-      '</div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px"><button class="btn btn-p" id="qNuevo">Nuevo contenido</button><button class="btn btn-s" id="qRec">Nueva recomendación</button><button class="btn btn-s" id="qRadar">Nueva noticia del Radar</button></div>';
+      '</div>' + agendaProgramadas(cfg) + '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px"><button class="btn btn-p" id="qNuevo">Nuevo contenido</button><button class="btn btn-s" id="qRec">Nueva recomendación</button><button class="btn btn-s" id="qRadar">Nueva noticia del Radar</button></div>';
     $('#qNuevo').onclick = function () { ir('contenidos'); abrirEditor('contenidos'); };
     $('#qRadar').onclick = function () { ir('radar'); abrirEditor('radar'); };
     $('#qRec').onclick = function () { ir('recomendados'); abrirEditor('recomendados'); };
+    $$('[data-ag]').forEach(function (b) { b.onclick = function () { ir(b.getAttribute('data-ag')); }; });
   }).catch(function (e) { toast(e.message, true); });
+}
+function agendaProgramadas(cfg) {
+  var l = cfg.programadas || [];
+  if (!l.length) return '';
+  return '<div class="agenda"><h3>Publicaciones programadas</h3><p class="sub" style="margin:0 0 6px">' + l.length + (l.length === 1 ? ' publicación en espera.' : ' publicaciones en espera.') + '</p>' +
+    (cfg.relojProgramacion ? '' : '<p class="hint" style="color:var(--bad);margin:6px 0 10px"><b>El reloj de publicación no está activo.</b> Abre Codigo.gs en Apps Script y ejecuta una vez la función instalarProgramacion; si no, estas publicaciones no saldrán solas.</p>') +
+    l.map(function (x) {
+      return '<div class="agenda-it"><b>' + esc(fechaProg(x.cuando)) + '</b><div style="min-width:0"><div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(x.titulo) + '</div><span>' + esc(x.donde) + '</span></div>' +
+        '<button class="btn btn-s btn-sm" data-ag="' + x.tipo + '">Ver</button></div>';
+    }).join('') + '</div>';
 }
 function stat(n, t) { return '<div class="stat"><b>' + n + '</b><span>' + t + '</span></div>'; }
 
@@ -333,12 +359,24 @@ function pintarContenidos() {
   $$('.filters button').forEach(function (b) { b.onclick = function () { S.filtro = b.getAttribute('data-f'); pintarContenidos(); }; });
   enlazarAcciones('contenidos');
 }
+/* Publicación programada: etiqueta de estado y fecha legible. */
+var DIAS_C = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'], MESES_C = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+function fechaProg(s) {
+  var m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/); if (!m) return '';
+  var d = new Date(+m[1], +m[2] - 1, +m[3]);
+  return DIAS_C[d.getDay()] + ' ' + (+m[3]) + ' ' + MESES_C[+m[2] - 1] + ', ' + m[4] + ':' + m[5];
+}
+function chipEstado(x) {
+  if (x.publicado === 'SI') return '<span class="chip" style="background:#E3F6EE;color:#0E7A55">Publicado</span>';
+  if (x.programado) return '<span class="chip" style="background:#EFE8FB;color:#5B2FB0">Programado · ' + esc(fechaProg(x.programado)) + '</span>';
+  return '<span class="chip" style="background:#F1F5F9;color:#475569">Borrador</span>';
+}
 function filaContenido(c) {
   var k = COLORES[c.categoria] || { corto: c.categoria, color: '#64748B', tinta: '#fff' };
   return '<div class="row">' + (c.imagenUrl || c.portadaUrl ? '<img class="thumb" src="' + esc(c.imagenUrl || c.portadaUrl) + '" alt="">' : '<div class="thumb">Sin imagen</div>') +
     '<div class="row-main"><div class="row-title">' + esc(c.titulo) + '</div><div class="row-meta">' +
     '<span class="chip" style="background:' + k.color + ';color:' + k.tinta + '">' + esc(k.corto) + '</span><span>' + esc(c.fecha) + '</span>' +
-    (c.publicado === 'SI' ? '<span class="chip" style="background:#E3F6EE;color:#0E7A55">Publicado</span>' : '<span class="chip" style="background:#F1F5F9;color:#475569">Borrador</span>') +
+    chipEstado(c) +
     (c.destacado === 'SI' ? '<span class="chip" style="background:#FDF1D8;color:#8A5A00">En el carrusel</span>' : '') +
     (c.pdfUrl ? '<a href="' + esc(c.pdfUrl) + '" target="_blank">PDF</a>' : '') + '</div></div>' +
     '<div class="row-actions">' + (c.publicado === 'SI' && c.slug ? '<button class="btn btn-s btn-sm" data-link="' + esc(c.pagina === 'SI' ? S.cfg.sitio + 'l/' + encodeURIComponent(c.slug) + '/' : S.cfg.sitio + '?leer=' + encodeURIComponent(c.slug)) + '" title="Copiar el enlace para compartir">Copiar enlace</button>' : '') +
@@ -360,7 +398,7 @@ function pintarRecomendados() {
       return '<div class="row">' + (r.imagenUrl ? '<img class="thumb" src="' + esc(r.imagenUrl) + '" alt="" style="width:56px;height:72px">' : '<div class="thumb" style="width:56px;height:72px">Sin imagen</div>') +
         '<div class="row-main"><div class="row-title">' + esc(r.titulo) + '</div><div class="row-meta"><span class="chip" style="background:' + c[0] + ';color:' + c[1] + '">' + esc(r.tipo) + '</span>' +
         (r.autor ? '<span>' + esc(r.autor) + '</span>' : '') + '<span>' + esc(r.fecha) + '</span>' +
-        (r.publicado === 'SI' ? '<span class="chip" style="background:#E3F6EE;color:#0E7A55">Publicado</span>' : '<span class="chip" style="background:#F1F5F9;color:#475569">Borrador</span>') + '</div></div>' +
+        chipEstado(r) + '</div></div>' +
         '<div class="row-actions"><button class="btn btn-s btn-sm" data-ed="' + r.id + '">Editar</button><button class="btn btn-d btn-sm" data-del="' + r.id + '">Eliminar</button></div></div>';
     }).join('') + '</div>' : '<div class="empty">Todavía no hay recomendaciones aquí.</div>');
   $('#nuevo').onclick = function () { abrirEditor('recomendados'); };
@@ -384,7 +422,7 @@ function pintarRadar() {
       return '<div class="row">' + (r.imagenUrl ? '<img class="thumb" src="' + esc(r.imagenUrl) + '" alt="">' : '<div class="thumb" style="width:56px;height:56px;border-radius:28px;background:' + colorMedio(r.medio) + ';color:#fff;font-weight:700;font-size:16px">' + esc(iniciales(r.medio)) + '</div>') +
         '<div class="row-main"><div class="row-title">' + esc(r.titulo) + '</div><div class="row-meta">' +
         '<span class="chip" style="background:#FDEBE5;color:#B4401F">' + esc(r.medio) + '</span><span>' + esc(r.fecha) + '</span>' +
-        (r.publicado === 'SI' ? '<span class="chip" style="background:#E3F6EE;color:#0E7A55">Publicado</span>' : '<span class="chip" style="background:#F1F5F9;color:#475569">Borrador</span>') +
+        chipEstado(r) +
         (tiene ? '<span class="chip" style="background:#E8F0FB;color:#1B5A99">Con resumen</span>' : '') +
         String(r.etiquetas || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean).map(function (x) { return '<span class="chip" style="background:#F1F5F9;color:#475569;font-weight:600">#' + esc(x) + '</span>'; }).join('') +
         (r.destacado === 'SI' ? '<span class="chip" style="background:#FDF1D8;color:#8A5A00">En el carrusel</span>' : '') + '</div>' +
@@ -488,8 +526,16 @@ function abrirEditor(tipo, it) {
       '<label class="field">Referencia APA personalizada (opcional)<textarea name="referencia" maxlength="1200" style="min-height:80px">' + esc(it.referencia) + '</textarea><span class="hint">Para papers publicados en revistas: pega la referencia que entrega la revista o Google Académico, con el DOI. Marca la cursiva con *asteriscos*. Si la dejas vacía, el sitio la genera sola con los datos de arriba.</span></label>' +
       '<label class="check"><input type="checkbox" name="destacado"' + (it.destacado === 'SI' ? ' checked' : '') + '> Mostrar en el carrusel de destacados</label>';
   }
-  h += '<label class="check"><input type="checkbox" name="publicado"' + (it.id ? (it.publicado === 'SI' ? ' checked' : '') : ' checked') + '> Publicado en el sitio</label>';
+  var est = it.programado && it.publicado !== 'SI' ? 'programar' : (!it.id || it.publicado === 'SI') ? 'ahora' : 'borrador';
+  var manana = new Date(Date.now() + 864e5), dos = function (n) { return ('0' + n).slice(-2); };
+  var progVal = it.programado || (manana.getFullYear() + '-' + dos(manana.getMonth() + 1) + '-' + dos(manana.getDate()) + 'T08:00');
+  h += '<div class="estado' + (est === 'programar' ? ' prog' : '') + '" id="edEstado"><div class="estado-t">Publicación</div><div class="estado-op">' +
+    [['borrador', 'Borrador'], ['ahora', 'Publicar ahora'], ['programar', 'Programar']].map(function (o) {
+      return '<label><input type="radio" name="estado" value="' + o[0] + '"' + (est === o[0] ? ' checked' : '') + '>' + o[1] + '</label>'; }).join('') + '</div>' +
+    '<div class="estado-prog"><label class="field" style="margin:0">Día y hora de publicación<input type="datetime-local" name="programado" id="edProg" value="' + esc(progVal) + '" step="300"></label>' +
+    '<span class="hint">Hora de Chile. Se publica sola en un plazo de hasta 10 minutos desde esa hora; hasta entonces nadie la ve en el sitio.</span></div></div>';
   $('#edBody').innerHTML = h;
+  $$('#edEstado input[name=estado]').forEach(function (r) { r.onchange = function () { $('#edEstado').classList.toggle('prog', r.value === 'programar' && r.checked); }; });
   $('#editor').classList.remove('hidden');
   if ($('#recNota')) { var rc = function () { var n = $('#recNota').value.length; $('#recCuenta').textContent = n + ' de 700 caracteres.'; }; $('#recNota').oninput = rc; rc(); }
   if (esRadar) {
@@ -556,7 +602,16 @@ $('#edForm').addEventListener('submit', function (e) {
     var tieneImg = S.archivos.imagen || (actual && actual.imagenUrl && !S.archivos.quitar_imagen);
     if (!tieneImg) { toast('Para destacar la noticia en el carrusel, sube una imagen propia o de libre uso.', true); return; }
   }
-  d.publicado = !!this.publicado.checked;
+  var estado = (this.querySelector('input[name=estado]:checked') || {}).value || 'ahora';
+  d.publicado = estado === 'ahora';
+  d.programado = '';
+  if (estado === 'programar') {
+    var pv = this.programado.value;
+    if (!pv) { toast('Elige el día y la hora de publicación.', true); return; }
+    if (new Date(pv).getTime() <= Date.now()) { toast('La hora programada ya pasó. Elige una hora futura o usa «Publicar ahora».', true); return; }
+    d.programado = pv;
+  }
+  delete d.estado;
   if (this.destacado) d.destacado = !!this.destacado.checked;
   var A = S.archivos;
   if (A.imagen) d.imagenNueva = A.imagen; if (A.portada) d.portadaNueva = A.portada; if (A.pdf) d.pdfNuevo = A.pdf;
@@ -564,7 +619,7 @@ $('#edForm').addEventListener('submit', function (e) {
   var btn = $('#edGuardar'); btn.disabled = true; btn.textContent = (A.pdf || A.imagen || A.portada) ? 'Subiendo archivos…' : 'Guardando…';
   var tipo = S.edit.tipo, volver = S.edit.volver || tipo;
   if (S.edit.monitorIds) d.monitorId = S.edit.monitorIds; // viene del Monitor: se marca como llevada al Radar
-  run('adminGuardar', tipo, d).then(function (r) { cerrarEditor(); if (r && r._aviso) toast(r._aviso, true); else toast('Guardado. El sitio se actualiza en unos segundos.'); ir(volver); })
+  run('adminGuardar', tipo, d).then(function (r) { cerrarEditor(); if (r && r._aviso) toast(r._aviso, true); else toast(r && r.programado ? 'Programado para el ' + fechaProg(r.programado) + '. Se publicará solo.' : 'Guardado. El sitio se actualiza en unos segundos.'); ir(volver); })
     .catch(function (err) { toast(err.message, true); })
     .then(function () { btn.disabled = false; btn.textContent = 'Guardar'; });
 });
