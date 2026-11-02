@@ -514,6 +514,9 @@ function abrirEditor(tipo, it) {
       '<label class="field">Fecha de publicación<input type="date" name="fecha" value="' + esc(f) + '"></label></div>' +
       '<label class="field">Título<input name="titulo" required value="' + esc(it.titulo) + '"></label>' +
       '<label class="field">Autor o autores<input name="autores" maxlength="600" value="' + esc(it.id ? it.autores : 'Leyton-Johns, L.') + '" placeholder="Leyton-Johns, L.; Vega-Muñoz, A."><span class="hint">Formato APA: Apellido, inicial. Separa a cada autor con punto y coma. En videos puedes poner Vox Liber. En audios y pódcast, escribe a quienes presentan: se citan como «(Presentador)».</span></label>' +
+      '<label class="field" id="edColBox"' + (it.categoria === 'columnas' ? '' : ' style="display:none"') + '>Columnista<select name="columnistaId"><option value="">Sin columnista (Vox Liber)</option>' +
+        (S.cfg.columnistas || []).map(function (k) { return '<option value="' + k.id + '"' + (it.columnistaId === k.id ? ' selected' : '') + '>' + esc(k.nombre) + (k.activo === 'NO' ? ' (inactivo)' : '') + '</option>'; }).join('') +
+        '</select><span class="hint">Su ficha aparece al pie de la columna y la columna se suma a su página. Los columnistas se crean en la pestaña Columnas.</span></label>' +
       '<label class="field">Bajada<textarea name="bajada" maxlength="260">' + esc(it.bajada) + '</textarea><span class="hint">Una o dos frases que aparecen bajo el título. Máximo 260 caracteres.</span></label>' +
       '<label class="field">Texto completo (opcional)<textarea name="texto" id="edTexto" style="min-height:260px;font-family:\'Source Serif 4\',Georgia,serif;font-size:16px;line-height:1.6">' + esc(it.texto) + '</textarea>' +
       '<span class="hint">Se lee dentro del sitio. Deja una línea en blanco entre párrafos. Subtítulo: <b>## Texto</b>. Negrita: <b>**texto**</b>. Cita destacada: <b>&gt; texto</b>. <span id="edCuenta"></span></span></label>' +
@@ -535,6 +538,8 @@ function abrirEditor(tipo, it) {
     '<div class="estado-prog"><label class="field" style="margin:0">Día y hora de publicación<input type="datetime-local" name="programado" id="edProg" value="' + esc(progVal) + '" step="300"></label>' +
     '<span class="hint">Hora de Chile. Se publica sola en un plazo de hasta 10 minutos desde esa hora; hasta entonces nadie la ve en el sitio.</span></div></div>';
   $('#edBody').innerHTML = h;
+  var selCat = $('#edBody select[name=categoria]');
+  if (selCat && $('#edColBox')) selCat.onchange = function () { $('#edColBox').style.display = selCat.value === 'columnas' ? '' : 'none'; };
   $$('#edEstado input[name=estado]').forEach(function (r) { r.onchange = function () { $('#edEstado').classList.toggle('prog', r.value === 'programar' && r.checked); }; });
   $('#editor').classList.remove('hidden');
   if ($('#recNota')) { var rc = function () { var n = $('#recNota').value.length; $('#recCuenta').textContent = n + ' de 700 caracteres.'; }; $('#recNota').oninput = rc; rc(); }
@@ -596,6 +601,7 @@ $('#edForm').addEventListener('submit', function (e) {
   e.preventDefault();
   var fd = new FormData(this), d = { id: S.edit.id };
   fd.forEach(function (v, k) { d[k] = v; });
+  if (S.edit.tipo === 'columnista') { guardarColumnista(d); return; }
   if (S.edit.tipo === 'radar' && String(d.comentario || '').trim().length < 20) { toast('El comentario de Vox Liber es obligatorio: escribe al menos una frase.', true); $('#rdCom').focus(); return; }
   if (S.edit.tipo === 'radar' && this.destacado && this.destacado.checked) {
     var actual = (S.datos.radar || []).filter(function (x) { return x.id === S.edit.id; })[0];
@@ -1144,12 +1150,64 @@ $('#mcGuardar').onclick = function () {
 
 /* ===== Columnas ===== */
 function vColumnas() {
-  run('adminListar', 'columnas').then(function (l) { S.datos.columnas = l; pintarColumnas(); }).catch(function (e) { toast(e.message, true); });
+  Promise.all([run('adminListar', 'columnas'), run('adminColumnistas')]).then(function (r) {
+    S.datos.columnas = r[0]; S.datos.columnistas = r[1]; pintarColumnas();
+  }).catch(function (e) { toast(e.message, true); });
+}
+/* ===== Columnistas ===== */
+function bloqueColumnistas() {
+  var l = S.datos.columnistas || [];
+  return '<div class="head" style="margin-top:4px"><div><h2>Columnistas</h2><p class="sub">Cada columnista tiene su ficha al pie de sus columnas y su propia página en el sitio.</p></div><button class="btn btn-p" id="nuevoCol">Nuevo columnista</button></div>' +
+    (l.length ? '<div class="list">' + l.map(function (k) {
+      var pag = S.cfg.sitio + '?autor=' + encodeURIComponent(k.slug);
+      return '<div class="row">' + (k.fotoUrl ? '<img class="thumb" src="' + esc(k.fotoUrl) + '" alt="" style="width:56px;height:56px;border-radius:28px">' : '<div class="thumb" style="width:56px;height:56px;border-radius:28px;background:#0E9F8E;color:#fff;font-weight:700">' + esc(String(k.nombre || '?').charAt(0)) + '</div>') +
+        '<div class="row-main"><div class="row-title">' + esc(k.nombre) + '</div><div class="row-meta"><span>' + esc(k.presentacion || 'Sin presentación') + '</span>' +
+        '<span class="chip" style="background:#E0F5F2;color:#0A7568">' + k.columnas + (k.columnas === 1 ? ' columna' : ' columnas') + '</span>' +
+        (k.activo === 'NO' ? '<span class="chip" style="background:#F1F5F9;color:#475569">Inactivo</span>' : '') + '</div></div>' +
+        '<div class="row-actions"><button class="btn btn-s btn-sm" data-link="' + esc(pag) + '" title="Copiar el enlace de su página">Copiar enlace</button>' +
+        '<button class="btn btn-s btn-sm" data-edcol="' + k.id + '">Editar</button><button class="btn btn-d btn-sm" data-delcol="' + k.id + '">Eliminar</button></div></div>';
+    }).join('') + '</div>' : '<div class="empty">Todavía no hay columnistas. Crea el primero, partiendo por ti.</div>') +
+    '<div style="height:34px"></div>';
+}
+function abrirColumnista(k) {
+  k = k || {}; S.edit = { tipo: 'columnista', id: k.id || '', volver: 'columnas' }; S.archivos = {};
+  $('#edTitulo').textContent = k.id ? 'Editar columnista' : 'Nuevo columnista';
+  $('#edBody').innerHTML =
+    '<label class="field">Nombre completo<input name="nombre" required maxlength="120" value="' + esc(k.nombre) + '" placeholder="Nombre Apellido"></label>' +
+    '<label class="field">Presentación<input name="presentacion" maxlength="160" value="' + esc(k.presentacion) + '" placeholder="Por ejemplo: Economista, académica de la Universidad de Chile"><span class="hint">Una línea bajo su nombre.</span></label>' +
+    '<label class="field">Biografía breve<textarea name="bio" maxlength="1200" style="min-height:120px">' + esc(k.bio) + '</textarea><span class="hint">Dos o tres frases. Aparece al pie de cada columna y en su página.</span></label>' +
+    '<label class="field">Redes y enlaces<textarea name="redes" style="min-height:90px" placeholder="https://www.linkedin.com/in/...&#10;https://x.com/...">' + esc(k.redes) + '</textarea><span class="hint">Un enlace por línea: LinkedIn, X, Instagram, ORCID, Google Académico o su sitio. Hasta 6.</span></label>' +
+    '<label class="field">Correo (no se publica)<input type="email" name="correo" maxlength="120" value="' + esc(k.correo) + '"></label>' +
+    bloqueImagen('foto', 'Foto', 'Foto de rostro, cuadrada. Se muestra en un círculo.', k.fotoUrl, '1 / 1', 600, 600) +
+    '<label class="check"><input type="checkbox" name="activo"' + (k.activo === 'NO' ? '' : ' checked') + '> Activo (su página y su ficha se muestran en el sitio)</label>';
+  $('#editor').classList.remove('hidden');
+  $$('#edBody [data-img]').forEach(function (inp) {
+    inp.onchange = function () {
+      var key = inp.getAttribute('data-img'), file = inp.files[0]; if (!file) return;
+      var box = $('#prev-' + key); box.innerHTML = 'Procesando imagen…';
+      comprimir(file, +inp.getAttribute('data-w'), +inp.getAttribute('data-h')).then(function (r) {
+        S.archivos[key] = r; box.innerHTML = '<img src="data:' + r.mime + ';base64,' + r.base64 + '" alt="Vista previa">';
+      }).catch(function (e) { box.innerHTML = 'No se pudo leer la imagen.'; toast(e.message, true); });
+    };
+  });
+  $$('#edBody [data-quitar]').forEach(function (b) { b.onclick = function () { S.archivos.quitar_foto = true; delete S.archivos.foto; $('#prev-foto').innerHTML = 'Sin imagen'; b.remove(); }; });
+}
+function guardarColumnista(d) {
+  d.activo = !!$('#edForm').activo.checked;
+  if (S.archivos.foto) d.fotoNueva = S.archivos.foto;
+  if (S.archivos.quitar_foto) d.quitarFoto = true;
+  var btn = $('#edGuardar'); btn.disabled = true; btn.textContent = d.fotoNueva ? 'Subiendo foto…' : 'Guardando…';
+  run('adminGuardarColumnista', d).then(function (k) {
+    var l = S.cfg.columnistas || (S.cfg.columnistas = []), i = l.map(function (x) { return x.id; }).indexOf(k.id);
+    var corto = { id: k.id, nombre: k.nombre, activo: k.activo };
+    if (i > -1) l[i] = corto; else l.push(corto);
+    cerrarEditor(); toast('Columnista guardado.'); vColumnas();
+  }).catch(function (e) { toast(e.message, true); }).then(function () { btn.disabled = false; btn.textContent = 'Guardar'; });
 }
 function pintarColumnas() {
   var l = S.datos.columnas, f = S.filtro;
   var items = l.filter(function (c) { return f === 'todas' || c.estado === f; });
-  $('#vista').innerHTML = '<div class="head"><div><h2>Columnas recibidas</h2><p class="sub">Textos que enviaron los lectores desde el sitio.</p></div></div>' +
+  $('#vista').innerHTML = bloqueColumnistas() + '<div class="head"><div><h2>Columnas recibidas</h2><p class="sub">Textos que enviaron los lectores desde el sitio.</p></div></div>' +
     '<div class="filters">' + [['todas', 'Todas'], ['recibida', 'Por revisar'], ['aprobada', 'Aprobadas'], ['rechazada', 'Rechazadas']].map(function (x) { return '<button data-f="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
     (items.length ? '<div class="list">' + items.map(function (c) {
       var e = ESTADO_COL[c.estado] || ESTADO_COL.recibida;
@@ -1157,10 +1215,24 @@ function pintarColumnas() {
         '<span>' + esc(c.nombre) + '</span><a href="mailto:' + esc(c.correo) + '">' + esc(c.correo) + '</a><span>' + esc(c.fecha) + '</span></div>' +
         (c.nota ? '<div class="hint" style="margin-top:6px">Nota: ' + esc(c.nota) + '</div>' : '') + '</div>' +
         '<div class="row-actions"><a class="btn btn-s btn-sm" href="' + esc(c.archivoUrl) + '" target="_blank">Abrir</a>' +
+        (c.estado === 'aprobada' && String(c.nota || '').indexOf('Borrador creado') < 0 ? '<button class="btn btn-p btn-sm" data-borr="' + c.id + '" title="Crea al columnista si no existe y deja la columna como borrador en Contenidos">Crear borrador</button>' : '') +
         (c.estado !== 'aprobada' ? '<button class="btn btn-sm" style="background:#E3F6EE;color:#0E7A55" data-col="' + c.id + '" data-est="aprobada">Aprobar</button>' : '') +
         (c.estado !== 'rechazada' ? '<button class="btn btn-d btn-sm" data-col="' + c.id + '" data-est="rechazada">Rechazar</button>' : '') + '</div></div>';
     }).join('') + '</div>' : '<div class="empty">No hay columnas en esta lista.</div>');
   $$('.filters button').forEach(function (b) { b.onclick = function () { S.filtro = b.getAttribute('data-f'); pintarColumnas(); }; });
+  $('#nuevoCol').onclick = function () { abrirColumnista(); };
+  $$('[data-edcol]').forEach(function (b) { b.onclick = function () { abrirColumnista(S.datos.columnistas.filter(function (x) { return x.id === b.getAttribute('data-edcol'); })[0]); }; });
+  $$('[data-delcol]').forEach(function (b) { b.onclick = function () {
+    if (!confirm('¿Eliminar a este columnista? Solo se puede si no tiene columnas asociadas.')) return;
+    run('adminEliminarColumnista', b.getAttribute('data-delcol')).then(function () { toast('Columnista eliminado.'); S.cfg.columnistas = (S.cfg.columnistas || []).filter(function (x) { return x.id !== b.getAttribute('data-delcol'); }); vColumnas(); }).catch(function (e) { toast(e.message, true); });
+  }; });
+  $$('#vista [data-link]').forEach(function (b) { b.onclick = function () { navigator.clipboard.writeText(b.getAttribute('data-link')).then(function () { toast('Enlace copiado.'); }); }; });
+  $$('[data-borr]').forEach(function (b) { b.onclick = function () {
+    b.disabled = true;
+    run('adminBorradorColumna', b.getAttribute('data-borr')).then(function (o) {
+      return run('adminIniciar').then(function (cfg) { S.cfg = cfg; COLORES.columnas = COLORES.columnas || {}; toast('Borrador creado. Pega el texto y publica.'); ir('contenidos'); abrirEditor('contenidos', o); });
+    }).catch(function (e) { b.disabled = false; toast(e.message, true); });
+  }; });
   $$('[data-col]').forEach(function (b) {
     b.onclick = function () {
       var est = b.getAttribute('data-est');
