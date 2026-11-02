@@ -520,7 +520,9 @@ html.leyendo,html.ruta{overflow:hidden}
 .rv-band{display:grid;grid-template-columns:150px minmax(0,1fr) minmax(0,260px);gap:28px;align-items:center;background:linear-gradient(120deg,#0B2345,#0F2E57);border-radius:22px;padding:26px 28px;color:#fff}
 .rv-tapa{aspect-ratio:1/1.414;border-radius:4px;background:linear-gradient(160deg,#0F2E57,#1B5A99);box-shadow:6px 8px 20px -6px rgba(0,0,0,.6);color:#fff;padding:12px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;position:relative}
 .rv-tapa img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.rv-tapa b{font:700 17px var(--serif);line-height:1.1}.rv-tapa span{font-size:10px;letter-spacing:.1em;color:#C9D6E8}
+.rv-tapa b{font:700 17px var(--serif);line-height:1.1;position:relative}.rv-tapa>span{position:relative}
+.rv-tapa-top{display:flex;align-items:center;gap:7px;font-weight:700}
+.rv-head-top{display:flex;align-items:center;gap:18px}.rv-head-top .rv-logo{flex:none}.rv-tapa span{font-size:10px;letter-spacing:.1em;color:#C9D6E8}
 .rv-band small{font-size:12px;font-weight:700;letter-spacing:.14em;color:#C9A227}
 .rv-band h3{font-family:var(--serif);font-size:26px;line-height:1.2;margin:6px 0;color:#fff}
 .rv-band p{color:#C9D6E8;font-size:15px;line-height:1.5;margin:0}
@@ -574,7 +576,7 @@ html.leyendo,html.ruta{overflow:hidden}
 .rv-archivo a{display:flex;flex-direction:column;gap:8px;font-size:14px}.rv-archivo b{font-family:var(--serif);color:#0F2E57}
 @media (max-width:860px){
   .rv-band{grid-template-columns:96px minmax(0,1fr);padding:18px;gap:16px}.rv-band ul{grid-column:1/-1}.rv-band h3{font-size:20px}
-  .rv-head{padding:18px 18px 0}.rv-head h1{font-size:24px}.rv-nav a{padding:9px 10px;font-size:13px}
+  .rv-head{padding:18px 18px 0}.rv-head h1{font-size:24px}.rv-head-top{gap:12px}.rv-head-top .rv-logo{width:44px;height:44px}.rv-nav a{padding:9px 10px;font-size:13px}
   .rv-grid{grid-template-columns:minmax(0,1fr)}.rv-num{grid-template-columns:110px minmax(0,1fr);gap:14px}.rv-a h1{font-size:24px}.rv-pols{grid-template-columns:minmax(0,1fr)}
 }
 
@@ -1147,12 +1149,16 @@ function renderTiles(){
 
 /* ===== Revista CMIA: Cuaderno Multidisciplinar de Investigación Aplicada =====
    Rutas: ?revista= (portada) · ?revista=archivo · ?revista=equipo · ?revista=politicas · ?revista=p/<clave> · ?revista=n/<id> · ?revista=a/<slug> */
+/* Símbolo de la revista: tres disciplinas que convergen en una sola salida. oscuro=true para fondos azules. */
+function rvLogo(oscuro,tam){var c=oscuro?['#FFFFFF','#C8486E','#C9A227']:['#0F2E57','#8C1D40','#C9A227'];
+  var p=function(r,y,col){var a=38*Math.PI/180,x1=(50+r*Math.cos(-a)).toFixed(2),y1=(50+r*Math.sin(-a)).toFixed(2);return '<path d="M'+x1+' '+y1+'A'+r+' '+r+' 0 1 0 50 '+(50+r)+'L95 '+y+'" fill="none" stroke="'+col+'" stroke-width="9.5" stroke-linejoin="round"/>'};
+  return '<svg class="rv-logo" viewBox="0 0 100 100" width="'+(tam||40)+'" height="'+(tam||40)+'" aria-hidden="true">'+p(42,87.5,c[0])+p(28.5,75.5,c[1])+p(15,63.5,c[2])+'</svg>'}
 var RVP={datos:null};
 function rvNumT(n){return 'Vol. '+n.volumen+', Núm. '+n.numero+' ('+n.anio+')'}
 function rvAut(l){return (l||[]).map(function(x){return esc((x.nombres||'')+' '+(x.apellidos||''))}).join(', ')}
 function rvFecha(f){var p=String(f||'').split('-'),M=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];return p.length<3?'':(+p[2])+' de '+M[(+p[1])-1]+' de '+p[0]}
 function rvFechaC(f){var p=String(f||'').split('-'),M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];return p.length<3?'':(+p[2])+' '+M[(+p[1])-1]+' '+p[0]}
-function rvTapa(n){return '<span class="rv-tapa">'+(n&&n.portada?'<img src="'+esc(n.portada)+'" alt="" onerror="this.remove()">':'')+'<span>CMIA</span><b>'+(n?'Vol. '+n.volumen+'<br>Núm. '+n.numero:'Vol. 1<br>Núm. 1')+'</b><span>'+esc(n?String(n.periodo||n.anio).toUpperCase():'')+'</span></span>'}
+function rvTapa(n){return '<span class="rv-tapa">'+(n&&n.portada?'<img src="'+esc(n.portada)+'" alt="" onerror="this.remove()">':'')+'<span class="rv-tapa-top">'+rvLogo(true,26)+'CMIA</span><b>'+(n?'Vol. '+n.volumen+'<br>Núm. '+n.numero:'Vol. 1<br>Núm. 1')+'</b><span>'+esc(n?String(n.periodo||n.anio).toUpperCase():'')+'</span></span>'}
 function rvLink(ruta,txt,cls){return '<a class="js-rev'+(cls?' '+cls:'')+'" data-rev="'+esc(ruta)+'" href="?revista='+encodeURIComponent(ruta)+'">'+txt+'</a>'}
 /* Banda de acceso en la portada de Vox Liber */
 function bandaRevista(){
@@ -1163,7 +1169,7 @@ function bandaRevista(){
 }
 function rvCabecera(R,act){
   var r=R.revista,items=[['','Número actual'],['archivo','Archivo'],['p/enfoque','Acerca de'],['equipo','Equipo editorial'],['p/instrucciones','Envíos'],['politicas','Políticas'],['contacto','Contacto']];
-  return '<header class="rv-head"><small>Una publicación de '+esc(r.entidad||'Vox Liber Comunicaciones')+'</small><h1>Cuaderno Multidisciplinar <em>de Investigación Aplicada</em></h1>'+
+  return '<header class="rv-head"><div class="rv-head-top">'+rvLogo(true,64)+'<div><small>Una publicación de '+esc(r.entidad||'Vox Liber Comunicaciones')+'</small><h1>Cuaderno Multidisciplinar <em>de Investigación Aplicada</em></h1></div></div>'+
     '<div class="rv-meta">'+(r.issn?'ISSN '+esc(r.issn)+' (en línea) · ':'')+esc(r.periodicidad||'')+' · Acceso abierto · '+esc(r.licencia||'CC BY 4.0')+'</div>'+
     '<nav class="rv-nav">'+items.map(function(x){return rvLink(x[0],x[1],x[0]===act?'on':'')}).join('')+'</nav></header>';
 }
