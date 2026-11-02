@@ -498,6 +498,26 @@ html.leyendo,html.ruta{overflow:hidden}
 .rd-filtro button span{color:var(--muted);font-weight:500;margin-left:4px}
 .rd-filtro button[aria-pressed="true"]{background:var(--rd);border-color:var(--rd);color:#fff}
 .rd-filtro button[aria-pressed="true"] span{color:rgba(255,255,255,.8)}
+.rd-filtro.col button[aria-pressed="true"]{background:#0E9F8E;border-color:#0E9F8E}
+/* Columnistas */
+.lec-por{margin-top:6px;font-size:15px;color:var(--ink2)}.lec-por a{color:#0E9F8E;font-weight:600}
+.col-ficha{margin-top:36px;display:grid;grid-template-columns:84px minmax(0,1fr);gap:18px;align-items:start;padding:22px;border-radius:18px;border:1px solid var(--line);background:var(--card)}
+.col-foto{width:84px;height:84px;border-radius:50%;overflow:hidden;background:#0E9F8E;color:#fff;display:flex;align-items:center;justify-content:center;font:700 28px var(--serif)}
+.col-foto img{width:100%;height:100%;object-fit:cover}
+.col-ficha small{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0E9F8E}
+.col-ficha b{display:block;font-family:var(--serif);font-size:21px;margin-top:2px}
+.col-ficha .pres{font-size:14.5px;color:var(--muted);margin-top:2px}
+.col-ficha p{margin:10px 0 0;font-size:15px;line-height:1.55;color:var(--ink2)}
+.col-ficha .col-links{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px;font-size:14px;font-weight:600}
+.col-ficha .col-links a{color:#0E9F8E}
+.col-aviso{margin-top:16px;font-size:13px;line-height:1.5;color:var(--muted);font-style:italic}
+.cc-b .cc-por{font-size:13px;font-weight:600;color:#0E9F8E;margin-top:-2px}
+.autor-head{display:grid;grid-template-columns:120px minmax(0,1fr);gap:26px;align-items:center;margin-top:8px}
+.autor-head .col-foto{width:120px;height:120px;font-size:40px}
+.autor-head h1{margin:4px 0 6px}
+.autor-head .pres{font-size:16px;color:var(--muted)}
+.autor-bio{margin-top:18px;font-size:16px;line-height:1.6;color:var(--ink2);max-width:760px}
+@media (max-width:640px){.col-ficha{grid-template-columns:60px minmax(0,1fr);padding:16px;gap:14px}.col-foto{width:60px;height:60px;font-size:22px}.autor-head{grid-template-columns:84px minmax(0,1fr);gap:16px}.autor-head .col-foto{width:84px;height:84px;font-size:28px}}
 .lec-art .rd-etq{margin-top:18px}
 .btn-line{height:44px;padding:0 18px;border-radius:22px;border:1.5px solid var(--line2);color:var(--ink);font-size:15px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
 .btn-line:hover{background:var(--soft)}
@@ -980,7 +1000,7 @@ function renderTiles(){
     // Columnas: la última en grande y las anteriores en lista al lado.
     columnas:function(c,h,r){
       var hero='<article class="ul-hero"><a '+abrir(h)+' tabindex="-1" aria-hidden="true">'+foto(c,h.img,56)+'</a>'+
-        '<div class="ul-b"><span class="ul-k">'+esc(fecha(h.fecha))+(h.autores?' · '+esc(h.autores):'')+'</span>'+
+        '<div class="ul-b"><span class="ul-k">'+esc(fecha(h.fecha))+((h.autor||h.autores)?' · '+esc(h.autor||h.autores):'')+'</span>'+
         '<h3><a '+abrir(h)+'>'+esc(h.titulo)+'</a></h3>'+(h.bajada?'<p>'+esc(h.bajada)+'</p>':'')+
         '<div class="ul-pie"><a '+abrir(h,'ul-go')+'>'+ACCION[c.id]+flecha()+'</a></div></div></article>';
       if(!r.length)return '<div class="ul solo">'+hero+'</div>';
@@ -1244,7 +1264,7 @@ function aplicarContenido(d){
       fecha:u?u.fecha:'',bajada:u?(u.bajada||''):'',
       recientes:(c.recientes&&c.recientes.length?c.recientes:(u?[u]:[])).map(function(x){
         return {slug:x.slug||'',titulo:x.titulo,bajada:x.bajada||'',fecha:x.fecha||'',img:imagenDe(x)||x.portada||'',
-          portada:x.portada||'',url:x.pdf||x.enlace||'',autores:x.autores||'',pdf:x.pdf||'',ref:x.referencia||''}})};
+          portada:x.portada||'',url:x.pdf||x.enlace||'',autores:x.autores||'',autor:x.columnista?x.columnista.nombre:'',pdf:x.pdf||'',ref:x.referencia||''}})};
   });
   DATA.recomendados=d.recomendados.map(function(r){return {tipo:r.tipo,titulo:r.titulo,autor:r.autor,nota:r.nota,imagen:r.imagen}});
   DATA.radar=d.radar||[];
@@ -1307,7 +1327,7 @@ function pintarLector(it,cat){
   var ci=CAT_INFO[it.categoria]||[cat&&cat.nombre||'','#1B5A99'];
   var emb=embed(it.enlace),url=it.compartir||urlLectura(it.slug),txt=encodeURIComponent(it.titulo+' | Vox Liber');
   var h='<article class="lec-art fade"><div class="lec-kick" style="color:'+ci[1]+'">'+esc(ci[0])+'</div>'+
-    '<h1>'+esc(it.titulo)+'</h1>'+(it.fecha?'<div class="lec-meta">'+fechaLarga(it.fecha)+'</div>':'')+
+    '<h1>'+esc(it.titulo)+'</h1>'+(it.columnista?'<div class="lec-por">Por <a class="js-autor" data-autor="'+esc(it.columnista.slug)+'" href="?autor='+encodeURIComponent(it.columnista.slug)+'">'+esc(it.columnista.nombre)+'</a></div>':'')+(it.fecha?'<div class="lec-meta">'+fechaLarga(it.fecha)+'</div>':'')+
     (it.bajada?'<p class="lec-bajada">'+esc(it.bajada)+'</p>':'')+(it.texto?botonEscuchar():'')+
     (emb||(it.imagen?'<figure class="lec-fig"><img src="'+esc(it.imagen)+'" alt="" onerror="this.parentNode.remove()"></figure>':''))+
     (function(){var e=String(it.enlace||'');   // botón directo a Spotify o YouTube, aunque el reproductor ya esté arriba
@@ -1316,6 +1336,7 @@ function pintarLector(it,cat){
       return ''})()+
     (it.texto?'<div class="lec-body">'+md(it.texto)+'</div>':'<div class="lec-body"><p style="color:var(--muted)">Este contenido no tiene texto para leer aquí.'+(it.pdf?' Descárgalo en PDF con el botón de abajo.':'')+'</p></div>')+
     (it.pdf?'<div class="lec-pdf"><a class="btn btn-blue" href="'+esc(it.pdf)+'" target="_blank" rel="noopener">'+ico('M12 3v12M7 10l5 5 5-5M4 21h16',18,2)+'Descargar el documento (PDF)</a></div>':'')+
+    fichaColumnista(it)+
     (function(){var ext=it.enlace&&!emb,origen=it.medio||(ext?medio(it.enlace):'');if(!origen)return '';
       return '<div class="lec-orig"><div><b>Publicada originalmente en '+esc(origen)+'</b>'+(ext?'<span>Puedes consultar la versión original en el medio.</span>':'')+'</div>'+
         (ext?'<a href="'+esc(it.enlace)+'" target="_blank" rel="noopener">Ver publicación original</a>':'')+'</div>'})()+
@@ -1497,7 +1518,7 @@ function tarjeta(x,k){
   return '<a class="cat-card js-leer" data-slug="'+esc(x.slug)+'" href="?leer='+encodeURIComponent(x.slug)+'">'+
     '<div class="cc-img">'+(img?'<img src="'+esc(img)+'" alt="" loading="lazy" onerror="this.remove()">':ico(I[k.icono]||I.inv,40,1.5))+
     (ytId(x.enlace)?'<span class="cc-play">'+ico('M8 5v14l11-7z',22,0).replace('fill="none"','fill="currentColor"')+'</span>':'')+'</div>'+
-    '<div class="cc-b"><small>'+fechaLarga(x.fecha)+'</small><h3>'+esc(x.titulo)+'</h3>'+(x.bajada?'<p>'+esc(x.bajada)+'</p>':'')+'</div></a>';
+    '<div class="cc-b"><small>'+fechaLarga(x.fecha)+'</small><h3>'+esc(x.titulo)+'</h3>'+(x.columnista?'<div class="cc-por">'+esc(x.columnista.nombre)+'</div>':'')+(x.bajada?'<p>'+esc(x.bajada)+'</p>':'')+'</div></a>';
 }
 var MAS_TITULO={investigacion:'Más informes especiales',columnas:'Más columnas',youtube:'Más videos',radio:'Más de la radio',revista:'Más números de la revista',papers:'Más papers e investigación'};
 function cargarRelacionados(it){
@@ -1515,12 +1536,58 @@ function cargarRelacionados(it){
 }
 function pintarCategoria(r){
   var k=r.categoria,ci=CAT_INFO[k.id]||['',k.color];document.title=k.nombre+' · Vox Liber';
-  var cards=r.items.map(function(x){return tarjeta(x,k)}).join('');
-  $('#lecCont').innerHTML='<section class="cat-page fade"><div class="lec-kick" style="color:'+ci[1]+'">'+r.items.length+(r.items.length===1?' publicación':' publicaciones')+'</div>'+
-    '<h1>'+esc(k.nombre)+'</h1><p class="cat-desc">'+esc(k.desc)+'</p>'+
+  // Columnas: filtro por columnista (?cat=columnas&columnista=slug)
+  var cols=r.columnistas||[],selC=new URLSearchParams(location.search).get('columnista')||'';
+  var lista=selC?r.items.filter(function(x){return x.columnista&&x.columnista.slug===selC}):r.items;
+  var filtro=cols.length>1?'<div class="rd-filtro col" role="group" aria-label="Filtrar por columnista"><button type="button" data-c=""'+(selC?'':' aria-pressed="true"')+'>Todas<span>'+r.items.length+'</span></button>'+
+    cols.map(function(c){var n=r.items.filter(function(x){return x.columnista&&x.columnista.slug===c.slug}).length;return '<button type="button" data-c="'+esc(c.slug)+'" aria-pressed="'+(c.slug===selC)+'">'+esc(c.nombre)+'<span>'+n+'</span></button>'}).join('')+'</div>':'';
+  var cards=lista.map(function(x){return tarjeta(x,k)}).join('');
+  $('#lecCont').innerHTML='<section class="cat-page fade"><div class="lec-kick" style="color:'+ci[1]+'">'+lista.length+(lista.length===1?' publicación':' publicaciones')+'</div>'+
+    '<h1>'+esc(k.nombre)+'</h1><p class="cat-desc">'+esc(k.desc)+'</p>'+filtro+
     (cards?'<div class="cat-grid">'+cards+'</div>':'<p class="cat-desc" style="margin-top:32px">Todavía no hay publicaciones en esta categoría. Vuelve pronto.</p>')+
+    (k.id==='columnas'?'<p class="col-aviso">Las opiniones expresadas en las columnas son de exclusiva responsabilidad de sus autores y no representan necesariamente la línea editorial de Vox Liber.</p>':'')+
     cajaSuscripcion(SUB_TEXTO[k.id])+'</section>';
   activarSuscripcion($('#lecCont'));
+  $$('.rd-filtro.col button').forEach(function(b){b.onclick=function(){
+    var c=b.getAttribute('data-c');history.replaceState(history.state,'','?cat='+k.id+(c?'&columnista='+encodeURIComponent(c):''));pintarCategoria(r);
+  }});
+}
+/* Columnistas: ficha al pie de cada columna y página propia con todas sus columnas. */
+function inicialesCol(n){var p=String(n||'?').trim().split(/\s+/);return ((p[0]||'?').charAt(0)+(p.length>1?p[p.length-1].charAt(0):'')).toUpperCase()}
+function fotoCol(c){return '<span class="col-foto">'+(c.foto?'<img src="'+esc(c.foto)+'" alt="" onerror="this.remove()">':'')+(c.foto?'':esc(inicialesCol(c.nombre)))+'</span>'}
+function redesCol(c){return (c.redes||[]).map(function(u){var h='';try{h=new URL(u).hostname.replace(/^www\./,'')}catch(e){}
+  var n=/linkedin/.test(h)?'LinkedIn':/x\.com|twitter/.test(h)?'X':/instagram/.test(h)?'Instagram':/orcid/.test(h)?'ORCID':/scholar\.google/.test(h)?'Google Académico':/facebook/.test(h)?'Facebook':/youtube/.test(h)?'YouTube':h||'Sitio';
+  return '<a href="'+esc(u)+'" target="_blank" rel="noopener">'+esc(n)+'</a>'}).join('')}
+function fichaColumnista(it){
+  if(it.categoria!=='columnas')return '';
+  var aviso='<p class="col-aviso">Las opiniones expresadas en esta columna son de exclusiva responsabilidad de su autor y no representan necesariamente la línea editorial de Vox Liber.</p>';
+  var c=it.columnista;if(!c)return aviso;
+  return '<div class="col-ficha">'+fotoCol(c)+'<div><small>Columnista</small><b>'+esc(c.nombre)+'</b>'+(c.presentacion?'<div class="pres">'+esc(c.presentacion)+'</div>':'')+
+    (c.bio?'<p>'+esc(c.bio)+'</p>':'')+'<div class="col-links"><a class="js-autor" data-autor="'+esc(c.slug)+'" href="?autor='+encodeURIComponent(c.slug)+'">Ver todas sus columnas</a>'+redesCol(c)+'</div></div></div>'+aviso;
+}
+function pintarAutor(r){
+  var c=r.columnista,n=r.items.length;document.title=c.nombre+' · Columnista de Vox Liber';
+  var k={id:'columnas',icono:'col'};
+  $('#lecCont').innerHTML='<section class="cat-page fade"><div class="lec-kick" style="color:#0E9F8E">Columnista · '+n+(n===1?' columna':' columnas')+'</div>'+
+    '<div class="autor-head">'+fotoCol(c)+'<div><h1>'+esc(c.nombre)+'</h1>'+(c.presentacion?'<div class="pres">'+esc(c.presentacion)+'</div>':'')+
+    ((c.redes||[]).length?'<div class="col-ficha" style="all:unset"><div class="col-links" style="display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px;font-size:14px;font-weight:600">'+redesCol(c).replace(/<a /g,'<a style="color:#0E9F8E" ')+'</div></div>':'')+'</div></div>'+
+    (c.bio?'<p class="autor-bio">'+esc(c.bio)+'</p>':'')+
+    (n?'<div class="cat-grid" style="margin-top:28px">'+r.items.map(function(x){return tarjeta(x,k)}).join('')+'</div>':'<p class="cat-desc" style="margin-top:28px">Todavía no hay columnas publicadas.</p>')+
+    '<p class="col-aviso">Las opiniones expresadas son de exclusiva responsabilidad de su autor y no representan necesariamente la línea editorial de Vox Liber.</p>'+
+    '<p style="margin-top:24px"><a class="btn-line js-cat" data-cat="columnas" href="?cat=columnas">Ver todas las columnas</a></p>'+
+    cajaSuscripcion(SUB_TEXTO.columnas)+'</section>';
+  activarSuscripcion($('#lecCont'));
+}
+function cargarAutor(slug){
+  mostrarCapa();lecActual=null;$('#lecCompartir').style.visibility='hidden';lector.scrollTop=0;$('#lecProg').style.width='0';
+  var pre=leerCache('vl-a-'+slug),mostrado=pre?JSON.stringify(pre):'';
+  if(pre)pintarAutor(pre);else estado('Cargando…');
+  fetch(CONFIG.apiUrl+'?api=autor&id='+encodeURIComponent(slug)).then(function(r){return r.json()}).then(function(r){
+    if(new URLSearchParams(location.search).get('autor')!==slug)return;
+    if(!r.ok){borrarCache('vl-a-'+slug);estado(esc(r.error||'No encontramos a este columnista.'),true);return}
+    guardarCache('vl-a-'+slug,r);
+    if(JSON.stringify(r)!==mostrado){var y=lector.scrollTop;pintarAutor(r);if(mostrado)lector.scrollTop=y}
+  }).catch(function(){if(!mostrado)estado('No hay conexión. Revisa tu internet e intenta de nuevo.',true)});
 }
 function pintarRadarLector(it){
   var url=it.compartir||urlRadar(it.slug),txt=encodeURIComponent(it.titulo+' | Radar Vox Liber'),eu=encodeURIComponent(url);
@@ -1764,9 +1831,9 @@ function pintarSeleccion(s){
 }
 function enrutar(){
   ttsDetener();
-  var p=new URLSearchParams(location.search),sl=p.get('leer'),ct=p.get('cat'),rd=p.get('radar'),se=p.get('sel'),su=p.has('suscribete');
-  if(sl)cargarItem(sl);else if(rd)cargarRadarItem(rd);else if(se)cargarSeleccion(se);else if(su)pintarSuscribete();else if(ct)cargarCategoria(ct);else{ocultarCapa();pasos=0}
-  registrarVisita(sl?'contenido':rd?'radar':se?'seleccion':su?'categoria':ct?'categoria':'portada',sl||rd||se||(su?'suscribete':'')||ct||'');
+  var p=new URLSearchParams(location.search),sl=p.get('leer'),ct=p.get('cat'),rd=p.get('radar'),se=p.get('sel'),su=p.has('suscribete'),au=p.get('autor');
+  if(au&&!sl)cargarAutor(au);else if(sl)cargarItem(sl);else if(rd)cargarRadarItem(rd);else if(se)cargarSeleccion(se);else if(su)pintarSuscribete();else if(ct)cargarCategoria(ct);else{ocultarCapa();pasos=0}
+  registrarVisita(sl?'contenido':rd?'radar':se?'seleccion':(su||au||ct)?'categoria':'portada',sl||rd||se||(su?'suscribete':'')||(au?'autor-'+au:'')||ct||'');
 }
 /* Estadísticas propias de Vox Liber: sin cookies ni datos personales. Cada navegador recibe un código al azar
    para contar visitantes únicos; se envía la página, de dónde llegó la persona y si usa celular o computador.
@@ -1815,7 +1882,9 @@ window.cerrarLector=volver;
 document.addEventListener('click',function(e){
   if(e.metaKey||e.ctrlKey||e.shiftKey||!e.target.closest)return;
   var a=e.target.closest('a.js-leer'),c=e.target.closest('a.js-cat'),rr=e.target.closest('a.js-radar'),et=e.target.closest('a.js-etq');
-  if(et){e.preventDefault();navegar('?cat=radar&etiqueta='+encodeURIComponent(et.getAttribute('data-etq')))}
+  var au=e.target.closest('a.js-autor');
+  if(au){e.preventDefault();navegar('?autor='+encodeURIComponent(au.getAttribute('data-autor')))}
+  else if(et){e.preventDefault();navegar('?cat=radar&etiqueta='+encodeURIComponent(et.getAttribute('data-etq')))}
   else if(rr){e.preventDefault();navegar('?radar='+encodeURIComponent(rr.getAttribute('data-slug')))}
   else if(a){e.preventDefault();navegar('?leer='+encodeURIComponent(a.getAttribute('data-slug')))}
   else if(c){e.preventDefault();navegar('?cat='+encodeURIComponent(c.getAttribute('data-cat')))}
