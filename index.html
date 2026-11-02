@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
+<base href="/">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vox Liber</title>
@@ -63,6 +64,8 @@ img{display:block}
 .nav a,.nav button{position:relative;padding:14px 11px;border:none;background:none;color:var(--ink2);font-size:15px;font-weight:500;display:flex;align-items:center;gap:7px;border-radius:10px}
 .nav a:hover,.nav button:hover{background:var(--soft);color:var(--ink)}
 .nav a.on{color:var(--ink);font-weight:600}
+.nav a.nav-cmia{background:#0F2E57;color:#fff;font-weight:600;border-radius:22px;margin:0 4px;padding:10px 15px}
+.nav a.nav-cmia:hover{background:#1B3F6E;color:#fff}
 .nav a.on::after{content:"";position:absolute;left:11px;right:11px;bottom:5px;height:3px;border-radius:2px;background:var(--blue)}
 .chev{transition:transform .2s}
 .nav button[aria-expanded="true"] .chev{transform:rotate(180deg)}
@@ -715,7 +718,7 @@ html.leyendo,html.ruta{overflow:hidden}
       </button>
       <a href="?cat=investigacion" class="js-cat" data-cat="investigacion">Informe Especial</a>
       <a href="?cat=columnas" class="js-cat" data-cat="columnas">Columnas</a>
-      <a href="?revista=" class="js-rev" data-rev="">Revista CMIA</a>
+      <a href="/cmia/" class="js-rev nav-cmia" data-rev=""><svg viewBox="0 0 100 100" width="20" height="20" aria-hidden="true"><path d="M83.10 24.14A42 42 0 1 0 50 92L95 87.5" fill="none" stroke="#FFFFFF" stroke-width="10"/><path d="M72.46 32.45A28.5 28.5 0 1 0 50 78.5L95 75.5" fill="none" stroke="#E07A98" stroke-width="10"/><path d="M61.82 40.77A15 15 0 1 0 50 65L95 63.5" fill="none" stroke="#C9A227" stroke-width="10"/></svg>Revista Científica CMIA</a>
       <a href="?cat=youtube" class="yt js-cat" data-cat="youtube"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="#E62117"/><path d="M10 9v6l5-3z" fill="#fff"/></svg>YouTube</a>
       <a href="#recomendados">Recomendados</a>
       <a href="#nosotros">Nosotros</a>
@@ -988,7 +991,7 @@ setTheme(saved||(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').m
 $$('[data-theme-set]').forEach(function(b){b.addEventListener('click',function(){setTheme(b.getAttribute('data-theme-set'))})});
 
 /* Megamenú */
-var allCats=DATA.categorias.map(function(c){return{id:c.id,nombre:c.nombre,desc:c.desc,color:c.color,tinta:c.tinta,icono:c.icono,url:c.id==='revista'?'?revista=':'?cat='+c.id}}).concat(DATA.extras);
+var allCats=DATA.categorias.map(function(c){return{id:c.id,nombre:c.nombre,desc:c.desc,color:c.color,tinta:c.tinta,icono:c.icono,url:c.id==='revista'?'/cmia/':'?cat='+c.id}}).concat(DATA.extras);
 DATA.radar=[];
 $('#megaGrid').innerHTML=allCats.map(function(c){return '<a href="'+c.url+'"'+(c.id?' class="js-cat" data-cat="'+c.id+'"':'')+'><span class="cat-ico" style="background:'+c.color+';color:'+c.tinta+'">'+ico(I[c.icono])+'</span><span><b>'+esc(c.nombre)+'</b><span>'+esc(c.desc)+'</span></span></a>'}).join('');
 var catBtn=$('#catBtn'),mega=$('#mega');
@@ -1165,7 +1168,10 @@ function rvAut(l){return (l||[]).map(function(x){return esc((x.nombres||'')+' '+
 function rvFecha(f){var p=String(f||'').split('-'),M=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];return p.length<3?'':(+p[2])+' de '+M[(+p[1])-1]+' de '+p[0]}
 function rvFechaC(f){var p=String(f||'').split('-'),M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];return p.length<3?'':(+p[2])+' '+M[(+p[1])-1]+' '+p[0]}
 function rvTapa(n){return '<span class="rv-tapa">'+(n&&n.portada?'<img src="'+esc(n.portada)+'" alt="" onerror="this.remove()">':'')+'<span class="rv-tapa-top">'+rvLogo(true,26)+'CMIA</span><b>'+(n?'Vol. '+n.volumen+'<br>Núm. '+n.numero:'Vol. 1<br>Núm. 1')+'</b><span>'+esc(n?String(n.periodo||n.anio).toUpperCase():'')+'</span></span>'}
-function rvLink(ruta,txt,cls){return '<a class="js-rev'+(cls?' '+cls:'')+'" data-rev="'+esc(ruta)+'" href="?revista='+encodeURIComponent(ruta)+'">'+txt+'</a>'}
+/* Dirección de la revista: www.voxliber.cl/cmia/ y, para cada página, www.voxliber.cl/cmia/#a/slug */
+function urlRevista(r){return '/cmia/'+(r?'#'+r:'')}
+function rutaRevista(){if(location.pathname.indexOf('/cmia')===0)return decodeURIComponent(location.hash.slice(1));var p=new URLSearchParams(location.search);return p.has('revista')?(p.get('revista')||''):null}
+function rvLink(ruta,txt,cls){return '<a class="js-rev'+(cls?' '+cls:'')+'" data-rev="'+esc(ruta)+'" href="'+urlRevista(ruta)+'">'+txt+'</a>'}
 /* Banda de acceso en la portada de Vox Liber */
 function bandaRevista(){
   return '<div class="rv-band">'+rvTapa(null)+'<div><small>REVISTA CIENTÍFICA · ACCESO ABIERTO</small><h3>Cuaderno Multidisciplinar de Investigación Aplicada</h3>'+
@@ -1272,7 +1278,7 @@ function cargarRevista(ruta){
     var slug=ruta.slice(2),pre=leerCache('vl-ra-'+slug),mostrado=pre?JSON.stringify(pre):'';
     if(pre)rvArticuloVista(R,pre);else estado('Cargando el artículo…');
     fetch(CONFIG.apiUrl+'?api=revistaArticulo&id='+encodeURIComponent(slug)).then(function(x){return x.json()}).then(function(r){
-      if(new URLSearchParams(location.search).get('revista')!==ruta)return;
+      if(rutaRevista()!==ruta)return;
       if(!r.ok){borrarCache('vl-ra-'+slug);estado(esc(r.error||'Este artículo no está disponible.'),true);return}
       guardarCache('vl-ra-'+slug,r);if(JSON.stringify(r)!==mostrado)rvArticuloVista(R,r);
     }).catch(function(){if(!mostrado)estado('No hay conexión. Revisa tu internet e intenta de nuevo.',true)});
@@ -1280,7 +1286,7 @@ function cargarRevista(ruta){
   var pre=leerCache('vl-rev'),mostrado=pre?JSON.stringify(pre):'';
   if(pre)pintar(pre);else estado('Cargando la revista…');
   fetch(CONFIG.apiUrl+'?api=revista').then(function(x){return x.json()}).then(function(R){
-    if(!new URLSearchParams(location.search).has('revista'))return;
+    if(rutaRevista()===null)return;
     if(!R.ok){if(!mostrado)estado(esc(R.error||'La revista no está disponible.'),true);return}
     guardarCache('vl-rev',R);if(JSON.stringify(R)!==mostrado)pintar(R);
   }).catch(function(){if(!mostrado)estado('No hay conexión. Revisa tu internet e intenta de nuevo.',true)});
@@ -1289,7 +1295,7 @@ function cargarRevista(ruta){
 /* Radar Vox Liber */
 function iniciales(m){var p=String(m||'?').replace(/^(el|la|los|las|the)\s+/i,'').split(/[\s.\-]+/).filter(Boolean);return ((p[0]||'?').charAt(0)+(p[1]?p[1].charAt(0):'')).toUpperCase()}
 function colorMedio(m){var h=0;String(m||'').split('').forEach(function(c){h=(h*31+c.charCodeAt(0))%360});return 'hsl('+h+',48%,38%)'}
-function urlRadar(slug){return location.origin+location.pathname+'?radar='+encodeURIComponent(slug)}
+function urlRadar(slug){return location.origin+'/?radar='+encodeURIComponent(slug)}
 function chipsEtiquetas(l){l=l||[];if(!l.length)return '';
   return '<div class="rd-etq">'+l.map(function(e){return '<a class="js-etq" data-etq="'+esc(e)+'" href="?cat=radar&etiqueta='+encodeURIComponent(e)+'">#'+esc(e)+'</a>'}).join('')+'</div>'}
 function tarjetaRadar(r,conBajada){
@@ -1527,7 +1533,7 @@ function embed(url){
 }
 function medio(url){try{return new URL(url).hostname.replace(/^www\./,'')}catch(e){return ''}}
 var lector=$('#lector'),lecActual=null,pasos=0;
-function urlLectura(slug){return location.origin+location.pathname+'?leer='+encodeURIComponent(slug)}
+function urlLectura(slug){return location.origin+'/?leer='+encodeURIComponent(slug)}
 function pintarLector(it,cat){
   var ci=CAT_INFO[it.categoria]||[cat&&cat.nombre||'','#1B5A99'];
   var emb=embed(it.enlace),url=it.compartir||urlLectura(it.slug),txt=encodeURIComponent(it.titulo+' | Vox Liber');
@@ -1690,7 +1696,7 @@ function activarWhatsApp(raiz){
 }
 /* Página «Suscríbete» (www.voxliber.cl/suscribete): correo o WhatsApp. */
 function pintarSuscribete(){
-  mostrarCapa();lecActual={titulo:'Suscríbete a Vox Liber',slug:'',compartir:location.origin+location.pathname.replace(/[^\/]*$/,'')+'suscribete/'};
+  mostrarCapa();lecActual={titulo:'Suscríbete a Vox Liber',slug:'',compartir:location.origin+'/suscribete/'};
   $('#lecCompartir').style.visibility='visible';
   $('#lecCont').innerHTML='<article class="lec-art fade"><div class="lec-kick" style="color:var(--blue)">Suscríbete</div><h1>Recibe Vox Liber</h1>'+
     '<p class="lec-bajada">Columnas, informes especiales, el Radar y la radio, una vez por semana. Elige cómo quieres recibirlo; es gratis y te das de baja cuando quieras.</p>'+
@@ -1701,7 +1707,7 @@ function pintarSuscribete(){
     '<p style="margin-top:24px"><a class="btn-line" href="./" id="susInicio">Ir al inicio</a></p></article>';
   lector.scrollTop=0;$('#lecProg').style.width='0';document.title='Suscríbete · Vox Liber';
   activarSuscripcion($('#lecCont'));activarWhatsApp($('#lecCont'));
-  $('#susInicio').onclick=function(e){e.preventDefault();history.pushState({vl:1},'',location.pathname);pasos=0;enrutar()};
+  $('#susInicio').onclick=function(e){e.preventDefault();history.pushState({vl:1},'','/');pasos=0;enrutar()};
 }
 var subN=0;
 function activarSuscripcion(raiz){
@@ -1965,7 +1971,7 @@ function ttsDetener(){
 window.addEventListener('pagehide',function(){if(TTS.ok)speechSynthesis.cancel()});
 
 /* Selección Vox Liber: varias lecturas en una sola página para compartir */
-function urlSel(slug){return location.origin+location.pathname+'?sel='+encodeURIComponent(slug)}
+function urlSel(slug){return location.origin+'/?sel='+encodeURIComponent(slug)}
 function cargarSeleccion(slug){
   mostrarCapa();$('#lecCompartir').style.visibility='visible';
   var pre=null,mostrado='';
@@ -2030,16 +2036,18 @@ function pintarSeleccion(s){
   $('#lecCont').innerHTML=h;$('#lecProg').style.width='0';
   document.title=s.titulo+' · Vox Liber';
   $('#lecCopiar').onclick=function(){var b=this;(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){b.textContent='Enlace copiado'},function(){prompt('Copia este enlace:',url)})};
-  $('#selInicio').onclick=function(e){e.preventDefault();history.pushState({vl:1},'',location.pathname);pasos=0;enrutar()};
+  $('#selInicio').onclick=function(e){e.preventDefault();history.pushState({vl:1},'','/');pasos=0;enrutar()};
   $('#selRadio').onclick=function(){toggleRadio();this.textContent=playing?'Pausar la radio':'Escuchar la radio en vivo'};
   activarSuscripcion($('#lecCont'));
 }
 function enrutar(){
   ttsDetener();
-  var p=new URLSearchParams(location.search),sl=p.get('leer'),ct=p.get('cat'),rd=p.get('radar'),se=p.get('sel'),su=p.has('suscribete'),au=p.get('autor'),rv=p.has('revista')&&!sl;
-  if(ct==='revista'){history.replaceState(history.state,'','?revista=');rv=true;ct=null}
-  if(rv)cargarRevista(p.get('revista')||'');else if(au&&!sl)cargarAutor(au);else if(sl)cargarItem(sl);else if(rd)cargarRadarItem(rd);else if(se)cargarSeleccion(se);else if(su)pintarSuscribete();else if(ct)cargarCategoria(ct);else{ocultarCapa();pasos=0}
-  registrarVisita(rv?'revista':sl?'contenido':rd?'radar':se?'seleccion':(su||au||ct)?'categoria':'portada',rv?('cmia-'+(p.get('revista')||'portada')).replace(/[^a-z0-9-]/gi,'-'):sl||rd||se||(su?'suscribete':'')||(au?'autor-'+au:'')||ct||'');
+  var p=new URLSearchParams(location.search),sl=p.get('leer'),ct=p.get('cat'),rd=p.get('radar'),se=p.get('sel'),su=p.has('suscribete'),au=p.get('autor');
+  if(ct==='revista'){history.replaceState(history.state,'',urlRevista(''));ct=null}
+  if(p.has('revista')&&!sl)history.replaceState(history.state,'',urlRevista(p.get('revista')||''));   // viene de www.voxliber.cl/cmia/
+  var rvRuta=sl?null:rutaRevista(),rv=rvRuta!==null;
+  if(rv)cargarRevista(rvRuta);else if(au&&!sl)cargarAutor(au);else if(sl)cargarItem(sl);else if(rd)cargarRadarItem(rd);else if(se)cargarSeleccion(se);else if(su)pintarSuscribete();else if(ct)cargarCategoria(ct);else{ocultarCapa();pasos=0}
+  registrarVisita(rv?'revista':sl?'contenido':rd?'radar':se?'seleccion':(su||au||ct)?'categoria':'portada',rv?('cmia-'+(rvRuta||'portada')).replace(/[^a-z0-9-]/gi,'-'):sl||rd||se||(su?'suscribete':'')||(au?'autor-'+au:'')||ct||'');
 }
 /* Estadísticas propias de Vox Liber: sin cookies ni datos personales. Cada navegador recibe un código al azar
    para contar visitantes únicos; se envía la página, de dónde llegó la persona y si usa celular o computador.
@@ -2083,15 +2091,15 @@ function registrarVisita(tipo,id){
   }catch(e){}
 }
 function navegar(url){closeMega();closeDrawer();history.pushState({vl:1},'',url);pasos++;enrutar()}
-function volver(){if(pasos>0){pasos--;history.back()}else{history.replaceState({},'',location.pathname);enrutar()}}
+function volver(){if(pasos>0){pasos--;history.back()}else{history.replaceState({},'','/');enrutar()}}
 window.cerrarLector=volver;
 document.addEventListener('click',function(e){
   if(e.metaKey||e.ctrlKey||e.shiftKey||!e.target.closest)return;
   var a=e.target.closest('a.js-leer'),c=e.target.closest('a.js-cat'),rr=e.target.closest('a.js-radar'),et=e.target.closest('a.js-etq');
   var au=e.target.closest('a.js-autor'),rvl=e.target.closest('a.js-rev'),rpdf=e.target.closest('a.js-rvpdf');
   if(rpdf){rvCuenta(rpdf.getAttribute('data-slug'),'descarga');return}
-  if(rvl){e.preventDefault();navegar('?revista='+encodeURIComponent(rvl.getAttribute('data-rev')||''));return}
-  if(c&&c.getAttribute('data-cat')==='revista'){e.preventDefault();navegar('?revista=');return}
+  if(rvl){e.preventDefault();navegar(urlRevista(rvl.getAttribute('data-rev')||''));return}
+  if(c&&c.getAttribute('data-cat')==='revista'){e.preventDefault();navegar(urlRevista(''));return}
   if(au){e.preventDefault();navegar('?autor='+encodeURIComponent(au.getAttribute('data-autor')))}
   else if(et){e.preventDefault();navegar('?cat=radar&etiqueta='+encodeURIComponent(et.getAttribute('data-etq')))}
   else if(rr){e.preventDefault();navegar('?radar='+encodeURIComponent(rr.getAttribute('data-slug')))}
@@ -2107,7 +2115,8 @@ $('#lecCompartir').onclick=function(){
 };
 lector.addEventListener('scroll',function(){if(!lecActual)return;var m=lector.scrollHeight-lector.clientHeight;$('#lecProg').style.width=(m>0?Math.min(100,lector.scrollTop/m*100):0)+'%'},{passive:true});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lector.classList.contains('open'))volver()});
-window.addEventListener('popstate',function(){if(!location.search)pasos=0;enrutar()});
+window.addEventListener('popstate',function(){if(!location.search&&location.pathname==='/')pasos=0;enrutar()});
+window.addEventListener('hashchange',function(){if(location.pathname.indexOf('/cmia')===0)enrutar()});
 enrutar();
 
 /* Instalar como app (PWA) */
