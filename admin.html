@@ -757,14 +757,15 @@ function sellarQR(c, url, opc) {
   if (!url || typeof qrcode !== 'function') return c;
   try {
     opc = opc || {}; var cx = c.getContext('2d'), q = qrcode(0, 'M'); q.addData(url); q.make();
-    var n = q.getModuleCount(), lado = opc.lado || 104, pad = 8, mod = Math.max(2, Math.floor((lado - pad * 2) / n)), real = mod * n + pad * 2;
-    var x = c.width - (opc.der || 64) - real, y = c.height - (opc.abajo || 40) - real;
+    var n = q.getModuleCount(), lado = opc.lado || 104, pad = opc.lado > 150 ? 10 : 8, mod = Math.max(2, Math.floor((lado - pad * 2) / n)), real = mod * n + pad * 2;
+    var x = opc.x != null ? opc.x + lado - real : c.width - (opc.der || 64) - real, y = opc.arriba != null ? opc.arriba : c.height - (opc.abajo || 40) - real;
     cx.save(); cx.shadowColor = 'rgba(0,0,0,.35)'; cx.shadowBlur = 14; cx.fillStyle = '#FFFFFF'; rrect(cx, x, y, real, real, 12); cx.fill(); cx.restore();
     cx.fillStyle = '#0B1B33';
     for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (q.isDark(r, k)) cx.fillRect(x + pad + k * mod, y + pad + r * mod, mod, mod);
   } catch (e) { /* sin QR, la imagen sirve igual */ }
   return c;
 }
+var QR_TJ = { arriba: 36, lado: 224 };   // QR de las tarjetas: arriba a la derecha del bloque de texto
 function urlColumna(slug) { return slug ? S.cfg.sitio + 'l/' + encodeURIComponent(slug) + '/' : ''; }
 function urlColumnista(slug) { return slug ? S.cfg.sitio + 'c/' + encodeURIComponent(slug) + '/' : ''; }
 
@@ -917,9 +918,11 @@ var FONDO_URG = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYF
 function fondoDifusion(formato, d) {
   if (formato === 'especial') return FONDO_ESP;
   if (formato === 'urgente') return FONDO_URG;
-  d = d || new Date(); var dia = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5);
-  return FONDOS_SEL[ROTA_SEL[dia % ROTA_SEL.length]];
+  return FONDOS_SEL[fondoSelDelDia(d)];
 }
+function fondoSelDelDia(d) { d = d || new Date(); var dia = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); return ROTA_SEL[dia % ROTA_SEL.length]; }
+/* Tamaño del QR según el fondo: chico donde uno grande taparía la imagen (micrófono y Santiago). */
+var QR_SEL = { normal: 210, micro: 104, stgo: 104 };
 function laminaSeleccion(formato, titulo, items, textoUno, fondo, url) {
   // Estilo oscuro: imagen a sangre, degradado azul noche a la izquierda y texto blanco encima.
   var W = 1200, H = 630, c = lienzo(W, H), cx = c.getContext('2d'), F = FMT[formato] || FMT.seleccion;
@@ -965,11 +968,12 @@ function laminaSeleccion(formato, titulo, items, textoUno, fondo, url) {
     }
     if (items.length > mostrados && y + 24 <= limite + 10) { cx.font = '500 18px ' + SANS; cx.fillStyle = '#B9CBE2'; var resto = items.length - mostrados; cx.fillText('y ' + resto + (resto === 1 ? ' lectura más' : ' lecturas más'), izq + 48, y + 16); }
   }
-  cx.fillStyle = 'rgba(255,255,255,.18)'; cx.fillRect(izq, 548, W - 128 - (url ? 128 : 0), 2);
+  cx.fillStyle = 'rgba(255,255,255,.18)'; var qrLado = (fondo && fondo.qr) || QR_SEL.normal;
+  cx.fillRect(izq, 548, W - 128 - (url ? qrLado + 24 : 0), 2);
   cx.font = '700 22px ' + SANS; cx.fillStyle = CELESTE; cx.fillText('www.voxliber.cl', izq, 586);
   var wu = cx.measureText('www.voxliber.cl').width; cx.font = '500 19px ' + SANS; cx.fillStyle = '#B9CBE2'; cx.fillText('Pensamiento crítico desde 2010', izq + wu + 18, 586);
   cx.fillStyle = '#0E9F8E'; cx.fillRect(0, H - 10, W, 10);
-  return sellarQR(c, url, { abajo: 40 });
+  return sellarQR(c, url, { abajo: qrLado > 150 ? 34 : 40, lado: qrLado });
 }
 
 function crearSeleccion() {
@@ -984,7 +988,7 @@ function crearSeleccion() {
     cargarImg(fondoDifusion(SEL.formato))].concat(SEL.formato === 'seleccion' ? [] : conFoto.slice(0, 1).map(function (c) { return imagenRemota([c.imagen]); }))).then(function (r) {
     var propio = r[1], foto = r[2] || null;
     // La Selección usa siempre su fondo del día; Especial y Urgente usan la foto de la nota si la tiene.
-    var fondo = SEL.formato !== 'seleccion' && foto ? { img: foto, propio: false } : propio ? { img: propio, propio: true } : null;
+    var fondo = SEL.formato !== 'seleccion' && foto ? { img: foto, propio: false } : propio ? { img: propio, propio: true, qr: SEL.formato === 'seleccion' ? QR_SEL[fondoSelDelDia()] : 0 } : null;
     var base = { formato: SEL.formato, titulo: SEL.titulo, intro: SEL.intro, items: SEL.refs };
     function lamina(url) { return laminaSeleccion(SEL.formato, SEL.titulo, cs.map(function (c) { return c.titulo; }), cs.length === 1 ? cs[0].texto : '', fondo, url).toDataURL('image/jpeg', 0.88); }
     function guardarCon(id, datos) {
@@ -1371,6 +1375,11 @@ function dibujarTarjeta(tipo, o) {
       tl = tjRecortar(cx, tl, 4, ANCHO);
       cx.font = '500 20px ' + SANS; var pl = tjRecortar(cx, tjLineas(cx, o.presentacion, 600), 2, 600);
       var alto = 22 + 14 + tl.length * tam * 1.08 + 26 + 30 + pl.length * 28, y = H - 62 - alto;
+      // Con QR arriba, el título no puede subir hasta él: se achica la letra hasta que quepa debajo.
+      while (o.url && y < QR_TJ.arriba + QR_TJ.lado + 22 && tam > 28) {
+        tam -= 4; cx.font = '700 ' + tam + 'px ' + SERIF; tl = tjRecortar(cx, tjLineas(cx, o.titulo, ANCHO), 4, ANCHO);
+        alto = 22 + 14 + tl.length * tam * 1.08 + 26 + 30 + pl.length * 28; y = H - 62 - alto;
+      }
       cx.textBaseline = 'top';
       cx.font = '700 18px ' + SANS; cx.fillStyle = '#5FD3C4'; tjEspaciado(cx, 'COLUMNA DE OPINIÓN', X, y, 2.5); y += 22 + 14;
       cx.font = '700 ' + tam + 'px ' + SERIF; cx.fillStyle = '#FFFFFF'; tl.forEach(function (t) { cx.fillText(t, X, y); y += tam * 1.08; }); y += 26;
@@ -1389,13 +1398,14 @@ function dibujarTarjeta(tipo, o) {
       nl = tjRecortar(cx, nl, 3, A2);
       cx.font = '500 20px ' + SANS; var p2 = tjRecortar(cx, tjLineas(cx, o.presentacion, A2), 3, A2);
       var alto2 = 22 + 12 + nl.length * t2 * 1.08 + 18 + p2.length * 28, y2 = CY - alto2 / 2;
+      if (o.url) y2 = Math.min(Math.max(y2, QR_TJ.arriba + QR_TJ.lado + 28), H - 40 - alto2);   // que el nombre no choque con el QR
       cx.textBaseline = 'top';
       cx.font = '700 18px ' + SANS; cx.fillStyle = '#5FD3C4'; tjEspaciado(cx, 'COLUMNISTA DE VOX LIBER', X2, y2, 2.5); y2 += 22 + 12;
       cx.font = '700 ' + t2 + 'px ' + SERIF; cx.fillStyle = '#FFFFFF'; nl.forEach(function (t) { cx.fillText(t, X2, y2); y2 += t2 * 1.08; }); y2 += 18;
       cx.font = '500 20px ' + SANS; cx.fillStyle = '#B9CBE2'; p2.forEach(function (t) { cx.fillText(t, X2, y2); y2 += 28; });
     }
     cx.fillStyle = '#0E9F8E'; cx.fillRect(0, H - 10, W, 10);
-    sellarQR(cv, o.url, { abajo: 36, der: 36 });
+    sellarQR(cv, o.url, { arriba: QR_TJ.arriba, lado: QR_TJ.lado, x: tipo === 'columna' ? 64 + 600 - QR_TJ.lado : W - 64 - QR_TJ.lado });
     var data = cv.toDataURL('image/jpeg', 0.88);
     return { nombre: 'tarjeta.jpg', mime: 'image/jpeg', base64: data.split(',')[1], w: W, h: H };
   });
