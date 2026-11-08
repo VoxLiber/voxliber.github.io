@@ -936,20 +936,20 @@ function laminaSeleccion(formato, titulo, items, textoUno, fondo, url) {
   cx.fillStyle = g; cx.fillRect(0, 0, W, H);
   cx.textBaseline = 'alphabetic'; cx.textAlign = 'left';
   // Logo en texto: «vox» en blanco y «liber» en celeste.
-  cx.font = '700 30px ' + SANS; cx.fillStyle = '#FFFFFF'; cx.fillText('vox', izq, 82);
-  var wv = cx.measureText('vox ').width; cx.fillStyle = CELESTE; cx.fillText('liber', izq + wv, 82);
+  cx.font = '700 70px ' + SANS; cx.fillStyle = '#FFFFFF'; cx.fillText('vox', izq, 104);
+  var wv = cx.measureText('vox ').width; cx.fillStyle = CELESTE; cx.fillText('liber', izq + wv, 104);
   var y, unoSolo = items.length === 1 && formato !== 'seleccion';
   if (formato === 'seleccion') {
-    cx.fillStyle = CELESTE; cx.fillRect(izq, 140, 34, 4);
-    cx.font = '700 19px ' + SANS; if ('letterSpacing' in cx) cx.letterSpacing = '2.6px'; cx.fillText(F.etiqueta, izq + 48, 149); if ('letterSpacing' in cx) cx.letterSpacing = '0px';
+    cx.fillStyle = CELESTE; cx.fillRect(izq, 152, 34, 4);
+    cx.font = '700 19px ' + SANS; if ('letterSpacing' in cx) cx.letterSpacing = '2.6px'; cx.fillText(F.etiqueta, izq + 48, 161); if ('letterSpacing' in cx) cx.letterSpacing = '0px';
     var cab = String(titulo || '').replace(/^Selección Vox Liber\s*·\s*/i, ''); cab = cab.charAt(0).toUpperCase() + cab.slice(1);
-    y = textoAjustado(cx, cab, izq, 160, 640, { familia: SERIF, max: 48, min: 34, lineas: 1, color: '#FFFFFF', inter: 1.08 }) + 14;
+    y = textoAjustado(cx, cab, izq, 172, 640, { familia: SERIF, max: 48, min: 34, lineas: 1, color: '#FFFFFF', inter: 1.08 }) + 14;
   } else {
     cx.font = '700 18px ' + SANS; if ('letterSpacing' in cx) cx.letterSpacing = '1.8px';
     var et = (formato === 'urgente' ? '●  ' : '') + F.etiqueta, pw = cx.measureText(et).width + 36;
-    cx.fillStyle = F.color; rrect(cx, izq, 134, pw, 40, 20); cx.fill(); cx.fillStyle = '#FFFFFF'; cx.fillText(et, izq + 18, 160);
+    cx.fillStyle = F.color; rrect(cx, izq, 146, pw, 40, 20); cx.fill(); cx.fillStyle = '#FFFFFF'; cx.fillText(et, izq + 18, 172);
     if ('letterSpacing' in cx) cx.letterSpacing = '0px';
-    y = textoAjustado(cx, titulo, izq, 190, ancho + 40, { familia: SERIF, max: unoSolo ? 44 : 40, min: 30, lineas: 3, alto: unoSolo ? 190 : 140, color: '#FFFFFF', inter: 1.1 }) + 14;
+    y = textoAjustado(cx, titulo, izq, 202, ancho + 40, { familia: SERIF, max: unoSolo ? 44 : 40, min: 30, lineas: 3, alto: unoSolo ? 190 : 140, color: '#FFFFFF', inter: 1.1 }) + 14;
   }
   if (unoSolo) {
     if (textoUno) textoAjustado(cx, recortar(textoUno, 200), izq, y - 4, ancho, { familia: SANS, peso: 500, max: 22, min: 19, lineas: 3, alto: 520 - y, color: '#D5E1EF', inter: 1.45 });
@@ -1355,7 +1355,7 @@ function dibujarTarjeta(tipo, o) {
     var cv = document.createElement('canvas'); cv.width = W; cv.height = H; var cx = cv.getContext('2d');
     var SERIF = '"Source Serif 4", Georgia, serif', SANS = 'Inter, Arial, sans-serif';
     cx.fillStyle = '#0F2E57'; cx.fillRect(0, 0, W, H);
-    function logo(x, y) { cx.textBaseline = 'alphabetic'; cx.font = '700 30px ' + SANS; cx.fillStyle = '#FFFFFF'; cx.fillText('vox', x, y); var w = cx.measureText('vox ').width; cx.fillStyle = '#3BB4E8'; cx.fillText('liber', x + w, y); }
+    function logo(x, y) { cx.textBaseline = 'alphabetic'; cx.font = '700 70px ' + SANS; cx.fillStyle = '#FFFFFF'; cx.fillText('vox', x, y); var w = cx.measureText('vox ').width; cx.fillStyle = '#3BB4E8'; cx.fillText('liber', x + w, y); }
     if (tipo === 'columna') {
       var PX = 730, PW = W - PX;
       if (foto) {
@@ -1369,7 +1369,7 @@ function dibujarTarjeta(tipo, o) {
       }
       var g = cx.createLinearGradient(PX, 0, PX + PW * 0.35, 0); g.addColorStop(0, 'rgba(15,46,87,1)'); g.addColorStop(1, 'rgba(15,46,87,0)');
       cx.fillStyle = g; cx.fillRect(PX - 1, 0, PW * 0.35 + 1, H);
-      logo(64, 86);
+      logo(64, 108);
       var X = 64, ANCHO = 600, tam = 58, tl;
       do { cx.font = '700 ' + tam + 'px ' + SERIF; tl = tjLineas(cx, o.titulo, ANCHO); if (tl.length <= 3) break; tam -= 6; } while (tam >= 40);
       tl = tjRecortar(cx, tl, 4, ANCHO);
@@ -1386,7 +1386,7 @@ function dibujarTarjeta(tipo, o) {
       cx.font = '700 26px ' + SANS; cx.fillText(o.nombre || '', X, y); y += 30 + 6;
       cx.font = '500 20px ' + SANS; cx.fillStyle = '#B9CBE2'; pl.forEach(function (t) { cx.fillText(t, X, y); y += 28; });
     } else {
-      logo(64, 74);
+      logo(64, 102);
       var CX = 250, CY = 315, R = 150;
       cx.fillStyle = '#0E9F8E'; cx.beginPath(); cx.arc(CX, CY, R + 8, 0, Math.PI * 2); cx.fill();
       cx.save(); cx.beginPath(); cx.arc(CX, CY, R, 0, Math.PI * 2); cx.clip();
