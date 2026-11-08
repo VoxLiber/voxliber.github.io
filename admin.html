@@ -518,7 +518,8 @@ function abrirEditor(tipo, it) {
       '<label class="field">Autor o autores<input name="autores" maxlength="600" value="' + esc(it.id ? it.autores : 'Leyton-Johns, L.') + '" placeholder="Leyton-Johns, L.; Vega-Muñoz, A."><span class="hint">Formato APA: Apellido, inicial. Separa a cada autor con punto y coma. En videos puedes poner Vox Liber. En audios y pódcast, escribe a quienes presentan: se citan como «(Presentador)».</span></label>' +
       '<label class="field" id="edColBox"' + (it.categoria === 'columnas' ? '' : ' style="display:none"') + '>Columnista<select name="columnistaId"><option value="">Sin columnista (Vox Liber)</option>' +
         (S.cfg.columnistas || []).map(function (k) { return '<option value="' + k.id + '"' + (it.columnistaId === k.id ? ' selected' : '') + '>' + esc(k.nombre) + (k.activo === 'NO' ? ' (inactivo)' : '') + '</option>'; }).join('') +
-        '</select><span class="hint">Su ficha aparece al pie de la columna y la columna se suma a su página. Los columnistas se crean en la pestaña Columnas.</span></label>' +
+        '</select><span class="hint">Su ficha aparece al pie de la columna y la columna se suma a su página. Los columnistas se crean en la pestaña Columnas.</span>' +
+        '<label class="check" style="margin-top:8px"><input type="checkbox" name="imagenPropia"' + (it.imagenPropia === 'SI' ? ' checked' : '') + '> Al compartir, usar la imagen de esta columna en vez de la tarjeta con la foto del columnista</label></label>' +
       '<label class="field">Bajada<textarea name="bajada" maxlength="260">' + esc(it.bajada) + '</textarea><span class="hint">Una o dos frases que aparecen bajo el título. Máximo 260 caracteres.</span></label>' +
       '<label class="field">Texto completo (opcional)<textarea name="texto" id="edTexto" style="min-height:260px;font-family:\'Source Serif 4\',Georgia,serif;font-size:16px;line-height:1.6">' + esc(it.texto) + '</textarea>' +
       '<span class="hint">Se lee dentro del sitio. Deja una línea en blanco entre párrafos. Subtítulo: <b>## Texto</b>. Negrita: <b>**texto**</b>. Cita destacada: <b>&gt; texto</b>. <span id="edCuenta"></span></span></label>' +
@@ -629,7 +630,8 @@ $('#edForm').addEventListener('submit', function (e) {
   var btn = $('#edGuardar'); btn.disabled = true; btn.textContent = (A.pdf || A.imagen || A.portada) ? 'Subiendo archivos…' : 'Guardando…';
   var tipo = S.edit.tipo, volver = S.edit.volver || tipo;
   if (S.edit.monitorIds) d.monitorId = S.edit.monitorIds; // viene del Monitor: se marca como llevada al Radar
-  run('adminGuardar', tipo, d).then(function (r) { cerrarEditor(); if (r && r._aviso) toast(r._aviso, true); else toast(r && r.programado ? 'Programado para el ' + fechaProg(r.programado) + '. Se publicará solo.' : 'Guardado. El sitio se actualiza en unos segundos.'); ir(volver); })
+  if (tipo === 'contenidos') d.imagenPropia = !!(this.imagenPropia && this.imagenPropia.checked);
+  tarjetaDeColumna(tipo, d).then(function (tj) { if (tj) d.tarjetaNueva = tj; return run('adminGuardar', tipo, d); }).then(function (r) { cerrarEditor(); if (r && r._aviso) toast(r._aviso, true); else toast(r && r.programado ? 'Programado para el ' + fechaProg(r.programado) + '. Se publicará solo.' : 'Guardado. El sitio se actualiza en unos segundos.'); ir(volver); })
     .catch(function (err) { toast(err.message, true); })
     .then(function () { btn.disabled = false; btn.textContent = 'Guardar'; });
 });
@@ -1161,9 +1163,9 @@ function vColumnas() {
 /* ===== Columnistas ===== */
 function bloqueColumnistas() {
   var l = S.datos.columnistas || [];
-  return '<div class="head" style="margin-top:4px"><div><h2>Columnistas</h2><p class="sub">Cada columnista tiene su ficha al pie de sus columnas y su propia página en el sitio.</p></div><button class="btn btn-p" id="nuevoCol">Nuevo columnista</button></div>' +
+  return '<div class="head" style="margin-top:4px"><div><h2>Columnistas</h2><p class="sub">Cada columnista tiene su ficha al pie de sus columnas y su propia página en el sitio.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-s" id="regenTj" title="Vuelve a dibujar las tarjetas para compartir de todos los columnistas y sus columnas">Regenerar tarjetas</button><button class="btn btn-p" id="nuevoCol">Nuevo columnista</button></div></div>' +
     (l.length ? '<div class="list">' + l.map(function (k) {
-      var pag = S.cfg.sitio + '?autor=' + encodeURIComponent(k.slug);
+      var pag = k.compartir || (S.cfg.sitio + '?autor=' + encodeURIComponent(k.slug));
       return '<div class="row">' + (k.fotoUrl ? '<img class="thumb" src="' + esc(k.fotoUrl) + '" alt="" style="width:56px;height:56px;border-radius:28px">' : '<div class="thumb" style="width:56px;height:56px;border-radius:28px;background:#0E9F8E;color:#fff;font-weight:700">' + esc(String(k.nombre || '?').charAt(0)) + '</div>') +
         '<div class="row-main"><div class="row-title">' + esc(k.nombre) + '</div><div class="row-meta"><span>' + esc(k.presentacion || 'Sin presentación') + '</span>' +
         '<span class="chip" style="background:#E0F5F2;color:#0A7568">' + k.columnas + (k.columnas === 1 ? ' columna' : ' columnas') + '</span>' +
@@ -1203,7 +1205,13 @@ function guardarColumnista(d) {
   if (S.archivos.foto) d.fotoNueva = S.archivos.foto;
   if (S.archivos.quitar_foto) d.quitarFoto = true;
   var btn = $('#edGuardar'); btn.disabled = true; btn.textContent = d.fotoNueva ? 'Subiendo foto…' : 'Guardando…';
-  run('adminGuardarColumnista', d).then(function (k) {
+  var fotoP = d.fotoNueva ? Promise.resolve({ mime: d.fotoNueva.mime, base64: d.fotoNueva.base64 })
+    : (d.id && !d.quitarFoto ? run('adminFotoColumnista', d.id) : Promise.resolve({}));
+  fotoP.then(function (f) {
+    return dibujarTarjeta('columnista', { nombre: d.nombre, presentacion: d.presentacion, mime: f.mime, base64: f.base64 }).then(function (tj) { d.tarjetaNueva = tj; }, function () { /* sin tarjeta: se guarda igual */ });
+  }, function () {}).then(function () { return run('adminGuardarColumnista', d); }).then(function (k) {
+    if (k && k._aviso) toast(k._aviso, true);
+    FOTOS_COL[k.id] = null;
     var l = S.cfg.columnistas || (S.cfg.columnistas = []), i = l.map(function (x) { return x.id; }).indexOf(k.id);
     var corto = { id: k.id, nombre: k.nombre, activo: k.activo };
     if (i > -1) l[i] = corto; else l.push(corto);
@@ -1227,6 +1235,7 @@ function pintarColumnas() {
     }).join('') + '</div>' : '<div class="empty">No hay columnas en esta lista.</div>');
   $$('.filters button').forEach(function (b) { b.onclick = function () { S.filtro = b.getAttribute('data-f'); pintarColumnas(); }; });
   $('#nuevoCol').onclick = function () { abrirColumnista(); };
+  $('#regenTj').onclick = function () { regenerarTarjetas(this); };
   $$('[data-edcol]').forEach(function (b) { b.onclick = function () { abrirColumnista(S.datos.columnistas.filter(function (x) { return x.id === b.getAttribute('data-edcol'); })[0]); }; });
   $$('[data-delcol]').forEach(function (b) { b.onclick = function () {
     if (!confirm('¿Eliminar a este columnista? Solo se puede si no tiene columnas asociadas.')) return;
@@ -1252,6 +1261,125 @@ function pintarColumnas() {
       }).catch(function (e) { b.disabled = false; toast(e.message, true); });
     };
   });
+}
+
+
+/* ===== Tarjetas para compartir (1200 × 630) con la foto del columnista ===== */
+var FOTOS_COL = {};   // datos y foto de cada columnista, para no pedirlos dos veces
+function datosColumnista(id) {
+  if (FOTOS_COL[id]) return Promise.resolve(FOTOS_COL[id]);
+  return run('adminFotoColumnista', id).then(function (r) { FOTOS_COL[id] = r; return r; });
+}
+function tarjetaDeColumna(tipo, d) {
+  if (tipo !== 'contenidos' || d.categoria !== 'columnas' || !d.columnistaId) return Promise.resolve(null);
+  return datosColumnista(d.columnistaId).then(function (k) {
+    return dibujarTarjeta('columna', { titulo: d.titulo, nombre: k.nombre, presentacion: k.presentacion, mime: k.mime, base64: k.base64 });
+  }).catch(function () { return null; });   // si falla, la columna se guarda igual
+}
+function tjImg(src) {
+  return new Promise(function (ok) { if (!src) return ok(null); var i = new Image(); i.onload = function () { ok(i); }; i.onerror = function () { ok(null); }; i.src = src; });
+}
+function tjLineas(cx, texto, ancho) {
+  var pal = String(texto || '').split(/\s+/).filter(Boolean), l = [], act = '';
+  pal.forEach(function (p) { var prueba = act ? act + ' ' + p : p; if (cx.measureText(prueba).width > ancho && act) { l.push(act); act = p; } else act = prueba; });
+  if (act) l.push(act);
+  return l;
+}
+function tjRecortar(cx, l, max, ancho) {
+  if (l.length <= max) return l;
+  l = l.slice(0, max); var u = l[max - 1];
+  while (u && cx.measureText(u + '…').width > ancho) u = u.replace(/\s*\S+$/, '');
+  l[max - 1] = u + '…'; return l;
+}
+function tjEspaciado(cx, txt, x, y, esp) {   // texto con espaciado entre letras
+  if ('letterSpacing' in cx) { cx.letterSpacing = esp + 'px'; cx.fillText(txt, x, y); cx.letterSpacing = '0px'; return; }
+  for (var i = 0; i < txt.length; i++) { cx.fillText(txt[i], x, y); x += cx.measureText(txt[i]).width + esp; }
+}
+function tjIniciales(n) { var p = String(n || '?').trim().split(/\s+/); return ((p[0] || '?').charAt(0) + (p.length > 1 ? p[p.length - 1].charAt(0) : '')).toUpperCase(); }
+function dibujarTarjeta(tipo, o) {
+  var fuentes = ['700 58px "Source Serif 4"', '700 26px Inter', '500 20px Inter', '700 18px Inter'];
+  return Promise.all(fuentes.map(function (f) { return document.fonts ? document.fonts.load(f) : null; }).concat([tjImg(o.base64 ? 'data:' + (o.mime || 'image/jpeg') + ';base64,' + o.base64 : '')]))
+  .then(function (res) {
+    var foto = res[res.length - 1], W = 1200, H = 630;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H; var cx = cv.getContext('2d');
+    var SERIF = '"Source Serif 4", Georgia, serif', SANS = 'Inter, Arial, sans-serif';
+    cx.fillStyle = '#0F2E57'; cx.fillRect(0, 0, W, H);
+    function logo(x, y) { cx.textBaseline = 'alphabetic'; cx.font = '700 30px ' + SANS; cx.fillStyle = '#FFFFFF'; cx.fillText('vox', x, y); var w = cx.measureText('vox ').width; cx.fillStyle = '#3BB4E8'; cx.fillText('liber', x + w, y); }
+    if (tipo === 'columna') {
+      var PX = 730, PW = W - PX;
+      if (foto) {
+        var esc = Math.max(PW / foto.width, H / foto.height), fw = foto.width * esc, fh = foto.height * esc;
+        cx.save(); cx.beginPath(); cx.rect(PX, 0, PW, H); cx.clip();
+        cx.drawImage(foto, PX + (PW - fw) / 2, Math.min(0, (H - fh) * 0.3), fw, fh); cx.restore();
+      } else {
+        cx.fillStyle = '#123A6B'; cx.fillRect(PX, 0, PW, H);
+        cx.fillStyle = '#0E9F8E'; cx.beginPath(); cx.arc(PX + PW / 2 + 40, H / 2, 150, 0, Math.PI * 2); cx.fill();
+        cx.fillStyle = '#FFFFFF'; cx.font = '700 120px ' + SERIF; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText(tjIniciales(o.nombre), PX + PW / 2 + 40, H / 2 + 6); cx.textAlign = 'left';
+      }
+      var g = cx.createLinearGradient(PX, 0, PX + PW * 0.35, 0); g.addColorStop(0, 'rgba(15,46,87,1)'); g.addColorStop(1, 'rgba(15,46,87,0)');
+      cx.fillStyle = g; cx.fillRect(PX - 1, 0, PW * 0.35 + 1, H);
+      logo(64, 86);
+      var X = 64, ANCHO = 600, tam = 58, tl;
+      do { cx.font = '700 ' + tam + 'px ' + SERIF; tl = tjLineas(cx, o.titulo, ANCHO); if (tl.length <= 3) break; tam -= 6; } while (tam >= 40);
+      tl = tjRecortar(cx, tl, 4, ANCHO);
+      cx.font = '500 20px ' + SANS; var pl = tjRecortar(cx, tjLineas(cx, o.presentacion, 600), 2, 600);
+      var alto = 22 + 14 + tl.length * tam * 1.08 + 26 + 30 + pl.length * 28, y = H - 62 - alto;
+      cx.textBaseline = 'top';
+      cx.font = '700 18px ' + SANS; cx.fillStyle = '#5FD3C4'; tjEspaciado(cx, 'COLUMNA DE OPINIÓN', X, y, 2.5); y += 22 + 14;
+      cx.font = '700 ' + tam + 'px ' + SERIF; cx.fillStyle = '#FFFFFF'; tl.forEach(function (t) { cx.fillText(t, X, y); y += tam * 1.08; }); y += 26;
+      cx.font = '700 26px ' + SANS; cx.fillText(o.nombre || '', X, y); y += 30 + 6;
+      cx.font = '500 20px ' + SANS; cx.fillStyle = '#B9CBE2'; pl.forEach(function (t) { cx.fillText(t, X, y); y += 28; });
+    } else {
+      logo(64, 74);
+      var CX = 250, CY = 315, R = 150;
+      cx.fillStyle = '#0E9F8E'; cx.beginPath(); cx.arc(CX, CY, R + 8, 0, Math.PI * 2); cx.fill();
+      cx.save(); cx.beginPath(); cx.arc(CX, CY, R, 0, Math.PI * 2); cx.clip();
+      if (foto) { var e2 = Math.max(2 * R / foto.width, 2 * R / foto.height), w2 = foto.width * e2, h2 = foto.height * e2; cx.drawImage(foto, CX - w2 / 2, CY - R - Math.max(0, (h2 - 2 * R) * 0.2), w2, h2); }
+      else { cx.fillStyle = '#0E9F8E'; cx.fillRect(CX - R, CY - R, 2 * R, 2 * R); cx.fillStyle = '#FFFFFF'; cx.font = '700 110px ' + SERIF; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText(tjIniciales(o.nombre), CX, CY + 6); cx.textAlign = 'left'; }
+      cx.restore();
+      var X2 = 468, A2 = 670, t2 = 64, nl;
+      do { cx.font = '700 ' + t2 + 'px ' + SERIF; nl = tjLineas(cx, o.nombre, A2); if (nl.length <= 2) break; t2 -= 6; } while (t2 >= 44);
+      nl = tjRecortar(cx, nl, 3, A2);
+      cx.font = '500 20px ' + SANS; var p2 = tjRecortar(cx, tjLineas(cx, o.presentacion, A2), 3, A2);
+      var alto2 = 22 + 12 + nl.length * t2 * 1.08 + 18 + p2.length * 28, y2 = CY - alto2 / 2;
+      cx.textBaseline = 'top';
+      cx.font = '700 18px ' + SANS; cx.fillStyle = '#5FD3C4'; tjEspaciado(cx, 'COLUMNISTA DE VOX LIBER', X2, y2, 2.5); y2 += 22 + 12;
+      cx.font = '700 ' + t2 + 'px ' + SERIF; cx.fillStyle = '#FFFFFF'; nl.forEach(function (t) { cx.fillText(t, X2, y2); y2 += t2 * 1.08; }); y2 += 18;
+      cx.font = '500 20px ' + SANS; cx.fillStyle = '#B9CBE2'; p2.forEach(function (t) { cx.fillText(t, X2, y2); y2 += 28; });
+    }
+    cx.fillStyle = '#0E9F8E'; cx.fillRect(0, H - 10, W, 10);
+    var data = cv.toDataURL('image/jpeg', 0.88);
+    return { nombre: 'tarjeta.jpg', mime: 'image/jpeg', base64: data.split(',')[1], w: W, h: H };
+  });
+}
+/* Vuelve a dibujar las tarjetas de todos los columnistas y de sus columnas (por ejemplo, después de cambiar una foto). */
+function regenerarTarjetas(btn) {
+  if (!confirm('Se volverán a dibujar las tarjetas para compartir de todos los columnistas y sus columnas. Puede tardar unos minutos. ¿Seguir?')) return;
+  btn.disabled = true; FOTOS_COL = {};
+  var cols = S.datos.columnistas || [], hechos = 0, fallas = 0;
+  function paso(txt) { btn.textContent = txt; }
+  var cadena = Promise.resolve();
+  cols.forEach(function (k, i) {
+    cadena = cadena.then(function () {
+      paso('Columnista ' + (i + 1) + ' de ' + cols.length + '…');
+      return datosColumnista(k.id).then(function (f) { return dibujarTarjeta('columnista', { nombre: f.nombre, presentacion: f.presentacion, mime: f.mime, base64: f.base64 }); })
+        .then(function (tj) { return run('adminGuardarTarjeta', 'columnista', k.id, tj); }).then(function () { hechos++; }, function () { fallas++; });
+    });
+  });
+  cadena = cadena.then(function () { return run('adminColumnasConColumnista'); }).then(function (l) {
+    var c2 = Promise.resolve();
+    l.forEach(function (c, i) {
+      c2 = c2.then(function () {
+        paso('Columna ' + (i + 1) + ' de ' + l.length + '…');
+        return datosColumnista(c.columnistaId).then(function (f) { return dibujarTarjeta('columna', { titulo: c.titulo, nombre: f.nombre, presentacion: f.presentacion, mime: f.mime, base64: f.base64 }); })
+          .then(function (tj) { return run('adminGuardarTarjeta', 'contenido', c.id, tj); }).then(function () { hechos++; }, function () { fallas++; });
+      });
+    });
+    return c2;
+  });
+  cadena.then(function () { toast(hechos + ' tarjetas listas' + (fallas ? '; ' + fallas + ' no se pudieron generar.' : '.'), !!fallas); })
+    .catch(function (e) { toast(e.message, true); })
+    .then(function () { btn.disabled = false; btn.textContent = 'Regenerar tarjetas'; vColumnas(); });
 }
 
 
