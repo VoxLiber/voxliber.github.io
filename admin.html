@@ -184,6 +184,7 @@ iframe.prev{width:100%;height:640px;border:1px solid var(--line);border-radius:1
         <button data-tab="seleccion">Difundir</button>
         <button data-tab="columnas">Columnas <span class="badge hidden" id="bCol"></span></button>
         <button data-tab="revista">Revista CMIA</button>
+        <button data-tab="auspicios">Auspicios</button>
         <button data-tab="suscriptores">Suscriptores</button>
         <button data-tab="boletin">Boletín</button>
         <button data-tab="ajustes">Ajustes</button>
@@ -235,7 +236,7 @@ iframe.prev{width:100%;height:640px;border:1px solid var(--line);border-radius:1
 
 <script>
 var S = { cfg: null, tab: 'resumen', datos: {}, filtro: 'todas', edit: null, archivos: {} };
-if (/^#(estadisticas|monitor|seleccion|radar|contenidos|recomendados|columnas|suscriptores|boletin|ajustes)$/.test(location.hash)) S.tab = location.hash.slice(1); // admin.html#monitor abre esa pestaña
+if (/^#(estadisticas|monitor|seleccion|radar|contenidos|recomendados|columnas|revista|auspicios|suscriptores|boletin|ajustes)$/.test(location.hash)) S.tab = location.hash.slice(1); // admin.html#monitor abre esa pestaña
 var COLORES = {}; var TIPO_COLOR = { 'Libro': ['#E8F0FB', '#1B5A99'], 'Disco': ['#F2ECFB', '#6A3FC1'], 'Película': ['#FDF1D8', '#8A5A00'], 'Actividad': ['#E0F5F2', '#0A7568'] };
 var ESTADO_COL = { recibida: ['#E8F0FB', '#1B5A99', 'Recibida'], aprobada: ['#E3F6EE', '#0E7A55', 'Aprobada'], rechazada: ['#FDECEC', '#C2312D', 'Rechazada'] };
 
@@ -314,7 +315,7 @@ function ir(tab) {
   S.tab = tab; S.filtro = 'todas';
   $$('#tabs button').forEach(function (b) { b.setAttribute('aria-current', b.getAttribute('data-tab') === tab ? 'true' : 'false'); });
   var v = $('#vista'); v.innerHTML = '<p class="sub">Cargando…</p>';
-  ({ resumen: vResumen, estadisticas: vEstadisticas, contenidos: vContenidos, recomendados: vRecomendados, monitor: vMonitor, radar: vRadar, seleccion: vSeleccion, columnas: vColumnas, revista: vRevista, suscriptores: vSuscriptores, boletin: vBoletin, ajustes: vAjustes })[tab]();
+  ({ resumen: vResumen, estadisticas: vEstadisticas, contenidos: vContenidos, recomendados: vRecomendados, monitor: vMonitor, radar: vRadar, seleccion: vSeleccion, columnas: vColumnas, revista: vRevista, auspicios: vAuspicios, suscriptores: vSuscriptores, boletin: vBoletin, ajustes: vAjustes })[tab]();
 }
 
 /* ===== Resumen ===== */
@@ -603,6 +604,7 @@ $('#edForm').addEventListener('submit', function (e) {
   var fd = new FormData(this), d = { id: S.edit.id };
   fd.forEach(function (v, k) { d[k] = v; });
   if (S.edit.tipo === 'columnista') { guardarColumnista(d); return; }
+  if (S.edit.tipo === 'auspicio') { guardarAuspicio(d); return; }
   if (/^r_/.test(S.edit.tipo)) { guardarRevista(d); return; }
   if (S.edit.tipo === 'radar' && String(d.comentario || '').trim().length < 20) { toast('El comentario de Vox Liber es obligatorio: escribe al menos una frase.', true); $('#rdCom').focus(); return; }
   if (S.edit.tipo === 'radar' && this.destacado && this.destacado.checked) {
@@ -1181,7 +1183,8 @@ function abrirColumnista(k) {
     '<label class="field">Redes y enlaces<textarea name="redes" style="min-height:90px" placeholder="https://www.linkedin.com/in/...&#10;https://x.com/...">' + esc(k.redes) + '</textarea><span class="hint">Un enlace por línea: LinkedIn, X, Instagram, ORCID, Google Académico o su sitio. Hasta 6.</span></label>' +
     '<label class="field">Correo (no se publica)<input type="email" name="correo" maxlength="120" value="' + esc(k.correo) + '"></label>' +
     bloqueImagen('foto', 'Foto', 'Foto de rostro, cuadrada. Se muestra en un círculo.', k.fotoUrl, '1 / 1', 600, 600) +
-    '<label class="check"><input type="checkbox" name="activo"' + (k.activo === 'NO' ? '' : ' checked') + '> Activo (su página y su ficha se muestran en el sitio)</label>';
+    '<label class="check"><input type="checkbox" name="activo"' + (k.activo === 'NO' ? '' : ' checked') + '> Activo (su página y su ficha se muestran en el sitio)</label>' +
+    '<label class="check"><input type="checkbox" name="sinAuspicios"' + (k.sinAuspicios === 'SI' ? ' checked' : '') + '> Sin auspicios (su página y sus columnas nunca muestran banners)</label>';
   $('#editor').classList.remove('hidden');
   $$('#edBody [data-img]').forEach(function (inp) {
     inp.onchange = function () {
@@ -1196,6 +1199,7 @@ function abrirColumnista(k) {
 }
 function guardarColumnista(d) {
   d.activo = !!$('#edForm').activo.checked;
+  d.sinAuspicios = !!$('#edForm').sinAuspicios.checked;
   if (S.archivos.foto) d.fotoNueva = S.archivos.foto;
   if (S.archivos.quitar_foto) d.quitarFoto = true;
   var btn = $('#edGuardar'); btn.disabled = true; btn.textContent = d.fotoNueva ? 'Subiendo foto…' : 'Guardando…';
@@ -1248,6 +1252,127 @@ function pintarColumnas() {
       }).catch(function (e) { b.disabled = false; toast(e.message, true); });
     };
   });
+}
+
+
+/* ===== Auspicios (banners) ===== */
+var AU = { datos: null, dias: 30 };
+var AU_ESTADO = { activo: ['#E3F6EE', '#0E7A55', 'Activo'], programado: ['#EDE9FE', '#5B21B6', 'Programado'], pausado: ['#FDF1D8', '#8A5A00', 'Pausado'], terminado: ['#F1F5F9', '#64748B', 'Terminado'] };
+function vAuspicios() {
+  run('adminAuspicios', AU.dias).then(function (r) { AU.datos = r; pintarAuspicios(); }).catch(function (e) { toast(e.message, true); });
+}
+function auNum(n) { return Number(n || 0).toLocaleString('es-CL'); }
+function auCtr(i, c) { return i ? (c * 100 / i).toLocaleString('es-CL', { maximumFractionDigits: 1 }) + '%' : '·'; }
+function auEspNombre(e) {
+  if (e === 'col') return 'Página del columnista';
+  if (e === 'pie') return 'Al pie de sus columnas';
+  var x = (AU.datos.espacios || []).filter(function (k) { return k.id === e; })[0]; return x ? x.nombre : e;
+}
+function auUbicaciones(b) {
+  var l = b.espacios.map(auEspNombre);
+  var cols = (AU.datos.columnistas || []).filter(function (k) { return b.columnistas.indexOf(k.id) > -1; }).map(function (k) { return 'Columnista: ' + k.nombre; });
+  return l.concat(cols).join(' · ') || 'Sin ubicación';
+}
+function auFecha(t) { if (!t) return 'sin término'; var d = new Date(t); return isNaN(d) ? t : d.toLocaleDateString('es-CL', { day: 'numeric', month: 'short' }) + ', ' + d.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }); }
+function pintarAuspicios() {
+  var r = AU.datos, k = r.kpis;
+  $('#vista').innerHTML = '<div class="head"><div><h2>Auspicios</h2><p class="sub">Banners del sitio y del boletín. La Revista CMIA nunca muestra banners.</p></div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><select id="auDias" class="btn btn-s" style="padding-right:30px">' + [7, 30, 90, 365].map(function (n) { return '<option value="' + n + '"' + (n === r.dias ? ' selected' : '') + '>Últimos ' + n + ' días</option>'; }).join('') + '</select>' +
+    '<button class="btn btn-s" id="auCsv">Descargar informe</button><button class="btn btn-p" id="auNuevo">Nuevo banner</button></div></div>' +
+    '<div class="stats">' + stat(k.activos, 'banners activos') + stat(auNum(k.impresiones), 'impresiones en el período') + stat(auNum(k.clics), 'clics en el período') + stat(auCtr(k.impresiones, k.clics), 'tasa de clics') + '</div>' +
+    '<p class="hint" style="margin:10px 0 18px">Las cifras se actualizan cada 10 minutos. Una impresión es un banner que se mostró en pantalla; cada persona suma como máximo una impresión por banner y espacio cada 30 minutos.</p>' +
+    (r.banners.length ? '<div class="list">' + r.banners.map(function (b) {
+      var e = AU_ESTADO[b.estado] || AU_ESTADO.activo, p = b.periodo, img = b.imgHUrl || b.imgMUrl || b.imgRUrl;
+      var det = Object.keys(p.espacios || {}).map(function (x) { var v = p.espacios[x]; return '<span>' + esc(auEspNombre(x)) + ': ' + auNum(v[0]) + ' / ' + auNum(v[1]) + '</span>'; }).join('');
+      return '<div class="row">' + (img ? '<img class="thumb" src="' + esc(img) + '" alt="" style="width:120px;height:44px;object-fit:cover;border-radius:6px">' : '<div class="thumb" style="width:120px;height:44px;border-radius:6px;background:var(--soft)"></div>') +
+        '<div class="row-main"><div class="row-title">' + esc(b.nombre) + ' <span class="chip" style="background:' + e[0] + ';color:' + e[1] + '">' + e[2] + '</span></div>' +
+        '<div class="row-meta"><span>' + esc(b.auspiciador) + '</span><span>' + esc(b.rotulo) + '</span><span>' + (b.termino ? esc(auFecha(b.inicio)) + ' al ' + esc(auFecha(b.termino)) : 'Desde el ' + esc(auFecha(b.inicio)) + ', sin término') + '</span><span>Peso ' + b.peso + '</span></div>' +
+        '<div class="hint" style="margin-top:4px">' + esc(auUbicaciones(b)) + '</div>' +
+        '<div class="row-meta" style="margin-top:6px"><b>' + auNum(p.impresiones) + '</b> impresiones · <b>' + auNum(p.clics) + '</b> clics · ' + auCtr(p.impresiones, p.clics) + (det ? '</div><div class="row-meta hint" style="margin-top:4px">Por espacio (impresiones / clics): ' + det : '') + '</div></div>' +
+        '<div class="row-actions"><button class="btn btn-s btn-sm" data-aued="' + b.id + '">Editar</button>' +
+        (b.estado === 'pausado' ? '<button class="btn btn-s btn-sm" data-aupa="' + b.id + '" data-p="0">Reanudar</button>' : (b.estado !== 'terminado' ? '<button class="btn btn-s btn-sm" data-aupa="' + b.id + '" data-p="1">Pausar</button>' : '')) +
+        '<button class="btn btn-d btn-sm" data-audel="' + b.id + '">Eliminar</button></div></div>';
+    }).join('') + '</div>' : '<div class="empty">Todavía no hay banners. Crea el primero con «Nuevo banner».</div>') + '<div style="height:34px"></div>';
+  $('#auDias').onchange = function () { AU.dias = +this.value; vAuspicios(); };
+  $('#auNuevo').onclick = function () { abrirAuspicio(); };
+  $('#auCsv').onclick = informeAuspicios;
+  $$('[data-aued]').forEach(function (b) { b.onclick = function () { abrirAuspicio(r.banners.filter(function (x) { return x.id === b.getAttribute('data-aued'); })[0]); }; });
+  $$('[data-aupa]').forEach(function (b) { b.onclick = function () {
+    b.disabled = true;
+    run('adminPausarAuspicio', b.getAttribute('data-aupa'), b.getAttribute('data-p') === '1').then(function () { toast(b.getAttribute('data-p') === '1' ? 'Banner pausado.' : 'Banner reanudado.'); vAuspicios(); }).catch(function (e) { b.disabled = false; toast(e.message, true); });
+  }; });
+  $$('[data-audel]').forEach(function (b) { b.onclick = function () {
+    if (!confirm('¿Eliminar este banner y sus imágenes? Sus cifras quedan guardadas en la planilla.')) return;
+    run('adminEliminarAuspicio', b.getAttribute('data-audel')).then(function () { toast('Banner eliminado.'); vAuspicios(); }).catch(function (e) { toast(e.message, true); });
+  }; });
+}
+function informeAuspicios() {
+  var r = AU.datos, filas = [['Banner', 'Auspiciador', 'Estado', 'Inicio', 'Término', 'Espacio', 'Impresiones', 'Clics', 'Tasa de clics']];
+  r.banners.forEach(function (b) {
+    var p = b.periodo, esp = p.espacios || {};
+    Object.keys(esp).forEach(function (x) { filas.push([b.nombre, b.auspiciador, b.estado, b.inicio, b.termino, auEspNombre(x), esp[x][0], esp[x][1], auCtr(esp[x][0], esp[x][1])]); });
+    filas.push([b.nombre, b.auspiciador, b.estado, b.inicio, b.termino, 'TOTAL', p.impresiones, p.clics, auCtr(p.impresiones, p.clics)]);
+  });
+  var csv = '﻿' + filas.map(function (f) { return f.map(function (v) { v = String(v == null ? '' : v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(';'); }).join('\n');
+  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'Auspicios_Vox_Liber_ultimos_' + r.dias + '_dias.csv'; document.body.appendChild(a); a.click(); a.remove();
+}
+function auLocal(d) { var p = function (n) { return String(n).padStart(2, '0'); }; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes()); }
+function abrirAuspicio(b) {
+  var r = AU.datos; b = b || {}; S.edit = { tipo: 'auspicio', id: b.id || '', volver: 'auspicios' }; S.archivos = {};
+  var hoy = new Date(); hoy.setMinutes(0, 0, 0); var fin = new Date(hoy.getTime() + 30 * 86400000); fin.setHours(23, 59, 0, 0);
+  var esp = b.espacios || [], cols = b.columnistas || [];
+  $('#edTitulo').textContent = b.id ? 'Editar banner' : 'Nuevo banner';
+  $('#edBody').innerHTML =
+    '<div class="grid2"><label class="field">Nombre interno<input name="nombre" required maxlength="100" value="' + esc(b.nombre) + '" placeholder="Por ejemplo: IDEAX · diplomados noviembre"></label>' +
+    '<label class="field">Auspiciador<input name="auspiciador" maxlength="100" value="' + esc(b.auspiciador) + '" placeholder="Nombre de la marca o empresa"></label></div>' +
+    '<label class="field">Enlace de destino<input name="enlace" required maxlength="500" value="' + esc(b.enlace) + '" placeholder="https://"><span class="hint">Adonde lleva el clic. Puedes agregar ?utm_source=voxliber para que el auspiciador vea las visitas en sus estadísticas.</span></label>' +
+    '<div class="grid2"><label class="field">Rótulo<select name="rotulo">' + r.rotulos.map(function (x) { return '<option' + (x === (b.rotulo || 'Publicidad') ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('') + '</select><span class="hint">Para IDEAX, Davinci Factory u otros proyectos propios, usa «Del ecosistema Vox Liber».</span></label>' +
+    '<label class="field">Peso en la rotación<select name="peso">' + [1, 2, 3, 4, 5].slice(0, r.pesoMax).map(function (n) { return '<option value="' + n + '"' + (n === (b.peso || 1) ? ' selected' : '') + '>' + n + (n === 1 ? ' (normal)' : ' (aparece ' + n + ' veces más)') + '</option>'; }).join('') + '</select><span class="hint">Cuando hay varios banners en el mismo espacio, se alternan según su peso.</span></label></div>' +
+    '<div class="grid2"><label class="field">Inicio<input type="datetime-local" name="inicio" step="300" value="' + esc(b.inicio || auLocal(hoy)) + '"></label>' +
+    '<label class="field">Término<input type="datetime-local" name="termino" step="300" value="' + esc(b.id ? b.termino : auLocal(fin)) + '"><span class="hint">Déjalo vacío si no tiene fecha de término.</span></label></div>' +
+    bloqueImagen('imgH', 'Imagen horizontal · 1200 × 110', 'Para la portada, las secciones, las lecturas, el boletín y las páginas de columnistas. Obligatoria.', b.imgHUrl, '1200 / 110', 2400, 240) +
+    bloqueImagen('imgM', 'Imagen móvil · 320 × 100', 'Reemplaza a la horizontal en celulares. Si no la subes, se usa la horizontal.', b.imgMUrl, '320 / 100', 960, 300) +
+    bloqueImagen('imgR', 'Rectángulo · 300 × 250', 'Aparece como una tarjeta dentro de la grilla de las secciones. Opcional.', b.imgRUrl, '300 / 250', 600, 500) +
+    '<div class="field"><b style="display:block;margin-bottom:8px">Dónde aparece</b>' + r.espacios.map(function (x) {
+      return '<label class="check" style="margin:0 0 6px"><input type="checkbox" data-esp="' + x.id + '"' + (esp.indexOf(x.id) > -1 ? ' checked' : '') + '> ' + esc(x.nombre) + '</label>';
+    }).join('') + '<span class="hint">La Revista CMIA queda excluida.</span></div>' +
+    '<div class="field"><b style="display:block;margin-bottom:8px">Páginas de columnistas</b>' + (r.columnistas.length ? r.columnistas.map(function (k) {
+      var no = k.sinAuspicios;
+      return '<label class="check" style="margin:0 0 6px' + (no ? ';opacity:.5' : '') + '"><input type="checkbox" data-colau="' + k.id + '"' + (cols.indexOf(k.id) > -1 && !no ? ' checked' : '') + (no ? ' disabled' : '') + '> ' + esc(k.nombre) + (no ? ' · sin auspicios' : '') + (k.activo ? '' : ' · inactivo') + '</label>';
+    }).join('') : '<span class="hint">Todavía no hay columnistas.</span>') +
+    '<label class="check" style="margin-top:6px"><input type="checkbox" name="pieColumna"' + (b.pieColumna === 'SI' ? ' checked' : '') + '> Mostrar también al pie de cada columna de los columnistas marcados, con la leyenda «Auspicia esta columna»</label>' +
+    '<span class="hint">El banner sale a todo el ancho en la página de cada columnista marcado.</span></div>';
+  $('#editor').classList.remove('hidden');
+  $$('#edBody [data-img]').forEach(function (inp) {
+    inp.onchange = function () {
+      var key = inp.getAttribute('data-img'), file = inp.files[0]; if (!file) return;
+      var box = $('#prev-' + key); box.innerHTML = 'Procesando imagen…';
+      comprimir(file, +inp.getAttribute('data-w'), +inp.getAttribute('data-h')).then(function (res) {
+        S.archivos[key] = res; delete S.archivos['quitar_' + key]; box.innerHTML = '<img src="data:' + res.mime + ';base64,' + res.base64 + '" alt="Vista previa">';
+      }).catch(function (e) { box.innerHTML = 'No se pudo leer la imagen.'; toast(e.message, true); });
+    };
+  });
+  $$('#edBody [data-quitar]').forEach(function (bt) { bt.onclick = function () { var k = bt.getAttribute('data-quitar'); S.archivos['quitar_' + k] = true; delete S.archivos[k]; $('#prev-' + k).innerHTML = 'Sin imagen'; bt.remove(); }; });
+}
+function guardarAuspicio(d) {
+  var f = $('#edForm');
+  d.espacios = $$('#edBody [data-esp]').filter(function (x) { return x.checked; }).map(function (x) { return x.getAttribute('data-esp'); });
+  d.columnistas = $$('#edBody [data-colau]').filter(function (x) { return x.checked; }).map(function (x) { return x.getAttribute('data-colau'); });
+  d.pieColumna = !!f.pieColumna.checked;
+  d.peso = +d.peso || 1;
+  if (!d.espacios.length && !d.columnistas.length) { toast('Marca al menos un lugar donde aparezca el banner.', true); return; }
+  ['imgH', 'imgR', 'imgM'].forEach(function (k) {
+    var t = k.slice(-1);
+    if (S.archivos[k]) d['img' + t + 'Nueva'] = S.archivos[k];
+    if (S.archivos['quitar_' + k]) d['quitarImg' + t] = true;
+  });
+  var btn = $('#edGuardar'); btn.disabled = true; btn.textContent = (d.imgHNueva || d.imgRNueva || d.imgMNueva) ? 'Subiendo imágenes…' : 'Guardando…';
+  run('adminGuardarAuspicio', d).then(function (o) {
+    cerrarEditor();
+    toast(o.estado === 'programado' ? 'Banner guardado. Aparecerá el ' + auFecha(o.inicio) + '.' : 'Banner guardado. El sitio lo muestra en unos minutos.');
+    vAuspicios();
+  }).catch(function (e) { toast(e.message, true); }).then(function () { btn.disabled = false; btn.textContent = 'Guardar'; });
 }
 
 
