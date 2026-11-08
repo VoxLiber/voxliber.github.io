@@ -1904,13 +1904,26 @@ function fichaColumnista(it){
   return '<div class="col-ficha">'+fotoCol(c)+'<div><small>Columnista</small><b>'+esc(c.nombre)+'</b>'+(c.presentacion?'<div class="pres">'+esc(c.presentacion)+'</div>':'')+
     (c.bio?'<p>'+esc(c.bio)+'</p>':'')+'<div class="col-links"><a class="js-autor" data-autor="'+esc(c.slug)+'" href="?autor='+encodeURIComponent(c.slug)+'">Ver todas sus columnas</a>'+redesCol(c)+'</div></div></div>'+aviso;
 }
+/* Compartir la página del columnista: usa su página con tarjeta (/c/slug/) para que la vista previa muestre su foto. */
+function compartirAutor(c){
+  var url=c.compartir||(location.origin+'/?autor='+encodeURIComponent(c.slug)),txt=encodeURIComponent(c.nombre+', columnista de Vox Liber'),eu=encodeURIComponent(url);
+  return '<div class="lec-share" style="margin-top:22px"><b>Comparte su página</b><div class="lec-share-row">'+
+    '<a href="https://wa.me/?text='+txt+'%20'+eu+'" target="_blank" rel="noopener" style="background:#1FA855">WhatsApp</a>'+
+    '<a href="https://t.me/share/url?url='+eu+'&text='+txt+'" target="_blank" rel="noopener" style="background:#229ED9">Telegram</a>'+
+    '<a href="https://x.com/intent/post?text='+txt+'&url='+eu+'" target="_blank" rel="noopener" style="background:#0F172A">X</a>'+
+    '<a href="https://www.facebook.com/sharer/sharer.php?u='+eu+'" target="_blank" rel="noopener" style="background:#1877F2">Facebook</a>'+
+    '<a href="https://www.linkedin.com/sharing/share-offsite/?url='+eu+'" target="_blank" rel="noopener" style="background:#0A66C2">LinkedIn</a>'+
+    '<button type="button" class="js-copiar-autor" data-url="'+esc(url)+'" style="background:var(--soft);color:var(--ink)">Copiar enlace</button></div></div>';
+}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.js-copiar-autor');if(!b)return;var u=b.getAttribute('data-url');
+  (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(function(){b.textContent='Enlace copiado'},function(){prompt('Copia este enlace:',u)})});
 function pintarAutor(r){
   var c=r.columnista,n=r.items.length;document.title=c.nombre+' · Columnista de Vox Liber';
   var k={id:'columnas',icono:'col'};
   $('#lecCont').innerHTML='<section class="cat-page fade"><div class="lec-kick" style="color:#0E9F8E">Columnista · '+n+(n===1?' columna':' columnas')+'</div>'+
     '<div class="autor-head">'+fotoCol(c)+'<div><h1>'+esc(c.nombre)+'</h1>'+(c.presentacion?'<div class="pres">'+esc(c.presentacion)+'</div>':'')+
     ((c.redes||[]).length?'<div class="col-ficha" style="all:unset"><div class="col-links" style="display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px;font-size:14px;font-weight:600">'+redesCol(c).replace(/<a /g,'<a style="color:#0E9F8E" ')+'</div></div>':'')+'</div></div>'+
-    (c.bio?'<p class="autor-bio">'+esc(c.bio)+'</p>':'')+'<div class="au-slot" data-esp="col" data-col="'+esc(c.slug)+'"></div>'+
+    (c.bio?'<p class="autor-bio">'+esc(c.bio)+'</p>':'')+compartirAutor(c)+'<div class="au-slot" data-esp="col" data-col="'+esc(c.slug)+'"></div>'+
     (n?'<div class="cat-grid" style="margin-top:28px">'+r.items.map(function(x){return tarjeta(x,k)}).join('')+'</div>':'<p class="cat-desc" style="margin-top:28px">Todavía no hay columnas publicadas.</p>')+
     '<p class="col-aviso">Las opiniones expresadas son de exclusiva responsabilidad de su autor y no representan necesariamente la línea editorial de Vox Liber.</p>'+
     '<p style="margin-top:24px"><a class="btn-line js-cat" data-cat="columnas" href="?cat=columnas">Ver todas las columnas</a></p>'+
