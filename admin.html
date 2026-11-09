@@ -2140,8 +2140,11 @@ function laminaUnica(o) {
     cx.restore();
     cx.lineWidth = 6; cx.strokeStyle = '#0E9F8E'; cx.beginPath(); cx.arc(cxr, cyr, R + 3, 0, Math.PI * 2); cx.stroke();
     var xn = M + 2 * R + 32, an = W - M - QR - 28 - xn;
-    textoAjustado(cx, o.autor, xn, cyr - 52, an, { familia: SANS, peso: 800, max: 46, min: 30, lineas: 2, color: '#FFFFFF', inter: 1.1 });
-    cx.font = '500 26px ' + SANS; cx.fillStyle = '#B9CBE2'; cx.fillText('Columnista de Vox Liber', xn, cyr + 50);
+    // Nombre en una o dos líneas y, debajo, «Columnista de Vox Liber»; el bloque va centrado junto al círculo
+    var tn = 46, nl; do { cx.font = '800 ' + tn + 'px ' + SANS; nl = lineas(cx, o.autor, an); tn -= 2; } while (nl.length > 2 && tn > 28);
+    tn += 2; nl = nl.slice(0, 2); var inN = Math.round(tn * 1.1), altoN = tn + (nl.length - 1) * inN, yN = cyr - (altoN + 16 + 26) / 2;
+    cx.fillStyle = '#FFFFFF'; nl.forEach(function (ln, i) { cx.fillText(ln, xn, yN + tn * 0.9 + i * inN); });
+    cx.font = '500 26px ' + SANS; cx.fillStyle = '#B9CBE2'; cx.fillText('Columnista de Vox Liber', xn, yN + altoN + 16 + 22);
   } else {
     var wl = logo(M, filaY + fila / 2 + 32, LOGO);
   }
