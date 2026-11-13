@@ -787,6 +787,10 @@ html.leyendo,html.ruta{overflow:hidden}
       </div>
       <div class="recs" id="recs"></div>
     </section>
+
+    <section id="ultimo2" aria-label="Video, radio, revista y papers">
+      <div id="tiles2"></div>
+    </section>
   </main>
 
   <aside class="side">
@@ -1052,7 +1056,9 @@ $('#inicio').addEventListener('mouseleave',restart);
    Papers (índice académico), Radio (banda oscura con episodios) y YouTube (sala de video). */
 function renderTiles(){
   // Todo se define aquí dentro: esta función corre antes de que se carguen otras constantes del archivo.
-  var ORDEN=['columnas','investigacion','revista','papers','radio','youtube'];
+  var ORDEN=['columnas','investigacion','youtube','radio','revista','papers'];
+  // Las dos primeras van arriba, antes del Radar; el resto, después de los Recomendados.
+  var ARRIBA=['columnas','investigacion'];
   var COL={investigacion:'#1B5A99',columnas:'#0E9F8E',youtube:'#E62117',radio:'#6A3FC1',revista:'#3B8FE0',papers:'#0B76AE'};
   var TINTA={radio:'#C9B4FF',youtube:'#FF7A70'};
   var ACCION={investigacion:'Leer el informe',columnas:'Leer la columna',youtube:'Ver el video',radio:'Escuchar',revista:'Leer la revista',papers:'Leer el paper'};
@@ -1155,7 +1161,7 @@ function renderTiles(){
   };
   var FONDO={investigacion:' cs-panel',papers:' cs-panel',radio:' cs-osc cs-radio',youtube:' cs-osc cs-yt'};
 
-  $('#tiles').innerHTML=cats.map(function(c){
+  var pinta=function(c){
     var k=COL[c.id]||c.color||'#1B5A99';
     var items=(c.recientes&&c.recientes.length)?c.recientes:
       (c.ultimo&&c.ultimo!=='Muy pronto'?[{slug:c.slug,titulo:c.ultimo,bajada:c.bajada||'',fecha:c.fecha||'',img:c.img||'',portada:'',url:c.url||'',autores:''}]:[]);
@@ -1164,7 +1170,10 @@ function renderTiles(){
     if(!items.length)return '<section class="cs cs-vacio" '+est+'>'+cabecera(c)+'<div class="cs-nada"><b>Muy pronto.</b> '+esc(c.desc||'')+'</div></section>';
     var f=F[c.id]||F.columnas;
     return '<section class="cs'+(FONDO[c.id]||'')+'" '+est+'>'+cabecera(c)+f(c,items[0],items.slice(1))+'</section>';
-  }).join('');
+  };
+  $('#tiles').innerHTML=cats.filter(function(c){return ARRIBA.indexOf(c.id)>=0}).map(pinta).join('');
+  $('#tiles2').innerHTML=cats.filter(function(c){return ARRIBA.indexOf(c.id)<0}).map(pinta).join('');
+  $('#ultimo2').hidden=!$('#tiles2').innerHTML;
 }
 
 /* ===== Revista CMIA: Cuaderno Multidisciplinar de Investigación Aplicada =====
@@ -1464,7 +1473,7 @@ function esqueleto(){
     '<span class="skb" style="width:100%;height:46px"></span><span class="skb" style="width:82%;height:46px"></span>'+
     '<span class="skb" style="width:70%;height:18px;margin-top:6px"></span><div style="display:flex;gap:12px;margin-top:10px"><span class="skb" style="width:170px;height:52px;border-radius:26px"></span><span class="skb" style="width:140px;height:52px;border-radius:26px"></span></div></div>';
   var hi=$('#heroImg');hi.style.backgroundColor='#13294A';hi.innerHTML='';
-  var t='';for(var k=0;k<6;k++)t+='<div class="tile sk" aria-hidden="true"></div>';$('#tiles').innerHTML=t;
+  var t='';for(var k=0;k<2;k++)t+='<div class="tile sk" aria-hidden="true"></div>';$('#tiles').innerHTML=t;$('#tiles2').innerHTML=t+t;
   var r='';for(var m=0;m<4;m++)r+='<div class="rec"><div class="rec-img sk" style="aspect-ratio:3/4"></div><span class="sk" style="height:18px;width:80%;border-radius:6px"></span></div>';$('#recs').innerHTML=r;
 }
 function mostrarEjemplo(){renderSlide();restart();renderTiles();renderRecs()}
